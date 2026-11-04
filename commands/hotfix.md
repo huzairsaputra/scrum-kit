@@ -36,7 +36,16 @@ Code CLI terpisah, **bukan** lewat tool Agent/subagen:
 - Bug yang bisa menunggu jadwal rilis bukan hotfix: masukkan ke backlog sprint (coldfix), lalu ikut
   `/scrum-kit:rilis`.
 
-Langkah 1–8 berlaku untuk kedua jalur; `<tujuan>` = tujuan MR jalur yang dipilih.
+Langkah 1–8 berlaku untuk kedua jalur; `<tujuan>` = tujuan MR jalur yang dipilih. Setiap worktree
+dibuat dari `<tujuan>`, bukan dari branch integrasi sprint:
+`scripts/kit/worktree-new.sh <wilayah> <id> <n> --base=origin/<tujuan>` (tanpa `--base`, skrip itu
+bercabang dari integrasi sprint berjalan dan pekerjaan sprint yang belum selesai ikut terbawa).
+
+**Cara merge** (langkah 7 dan back-merge): selalu merge commit, tanpa squash, rebase, atau
+fast-forward, agar `/scrum-kit:rilis` bisa melacak hotfix yang belum di-back-merge. GitLab:
+`detailed_merge_status` = `mergeable`, merge dengan `sha` = HEAD MR dan `squash` = false. GitHub:
+`gh pr view <n> --json mergeStateStatus` = `CLEAN`, lalu
+`gh pr merge <n> --merge --match-head-commit <sha>`.
 
 ## Langkah
 
@@ -54,8 +63,12 @@ Langkah 1–8 berlaku untuk kedua jalur; `<tujuan>` = tujuan MR jalur yang dipil
 6. **Integrasi**: worktree baru dari `origin/<tujuan>`, merge semua branch (versi kontrak
    terakhir harus menang — periksa `git diff <branch-kontrak> HEAD -- <kontrak>` kosong), `gate.ci`
    hijau, perbarui `dokumen.serah_terima` dan laporan review.
-7. **MR** ke `<tujuan>` dengan templat proyek dan bukti gate. Tunggu pipeline hijau pada HEAD,
-   centang checklist DoD, pastikan status merge "mergeable", merge dengan SHA HEAD.
+7. **MR** ke `<tujuan>` dengan templat proyek dan bukti gate. Tunggu pipeline hijau pada HEAD dan
+   centang checklist DoD. Merge:
+   - jalur biasa: keputusan PO yang memulai hotfix ini adalah persetujuan merge ke basis (pengecualian
+     tertulis atas aturan `/scrum-kit:sprint`), selama cakupan tidak melebar dari keputusan itu;
+     cakupan melebar → minta persetujuan ulang;
+   - jalur darurat: hanya atas persetujuan PO di chat untuk MR itu, walau semua gate hijau.
 8. **Pasca-merge**: pantau pipeline `<tujuan>` sampai deploy (bila ada job migrasi, pastikan lognya
    melaporkan sukses), sinkron dokumentasi turunan, hapus worktree + branch, siapkan teks pemberitahuan
    singkat untuk tim klien (FE/mobile) bila kontrak berubah.
@@ -64,21 +77,23 @@ Langkah 1–8 berlaku untuk kedua jalur; `<tujuan>` = tujuan MR jalur yang dipil
 
 - **Cakupan minimal**: hanya akar masalah insiden itu. Tanpa fitur, refactor, atau upgrade dependensi;
   temuan lain masuk backlog.
-- **Worktree dari produksi**: setiap worktree dibuat dengan `--base=origin/<tujuan>`
-  (`scripts/kit/worktree-new.sh <wilayah> <id> <n> --base=origin/<tujuan>`), bukan dari basis.
 - **Test regresi wajib**: `qa-test-engineer` menulis test yang mereproduksi insiden. Bukti merah
   sebelum perbaikan dan hijau sesudahnya ditempel di laporan, plus suite penuh modul yang tersentuh.
-- **Tanpa downtime**: migrasi hanya aditif dan kompatibel mundur (tabel, kolom nullable, atau indeks
-  baru). Drop, rename, ubah tipe, atau apa pun yang butuh restart terjadwal → bukan hotfix: berhenti
-  dan usulkan rilis terjadwal dengan pengumuman downtime (`/scrum-kit:rilis`).
+- **Tanpa downtime**: migrasi hanya aditif dan kompatibel mundur: tabel baru, kolom nullable, atau
+  indeks yang dibuat tanpa mengunci tabel (mis. `CREATE INDEX CONCURRENTLY` di PostgreSQL,
+  `ALGORITHM=INPLACE, LOCK=NONE` di MySQL/MariaDB). Drop, rename, ubah tipe, atau apa pun yang butuh
+  restart terjadwal → bukan hotfix: berhenti, beri tahu PO bahwa jalur rilis terjadwal
+  (`/scrum-kit:rilis`) membawa seluruh isi basis, dan biarkan PO memutuskan.
 - **Review**: `code-reviewer`, ditambah `security-auditor` bila insidennya menyangkut keamanan.
-- **Merge ke produksi hanya atas persetujuan PO di chat** untuk MR itu (langkah 7), walau semua gate
-  hijau.
 - **Back-merge** bila `<tujuan>` ≠ `branch.basis`: branch `claude/backmerge-$0` dari
-  `origin/<branch.basis>`, merge `origin/<tujuan>`, MR ke basis. Konflik diselesaikan agen pemilik
-  wilayahnya. Tanpa back-merge, perbaikan hilang di rilis berikutnya.
-- **Tag**: bila proyek memberi tag rilis (`git tag`), beri tag beranotasi versi patch berikutnya pada
-  merge commit di `<tujuan>`.
+  `origin/<branch.basis>`, merge `origin/<tujuan>` (merge commit), MR ke basis. Isinya sudah disetujui
+  di langkah 7, jadi MR ini boleh di-merge begitu pipeline hijau. Ada konflik → berhenti dan laporkan
+  ke manusia beserta berkas yang konflik; jangan menyelesaikannya sendiri. Tanpa back-merge, perbaikan
+  hilang di rilis berikutnya.
+- **Tag**: bila proyek memberi tag rilis, naikkan versi patch dari tag terakhir di `<tujuan>`
+  (`git describe --tags --abbrev=0 origin/<tujuan>`, format tag mengikuti yang sudah ada), beri tag
+  beranotasi pada merge commit di `<tujuan>`, lalu push tag itu.
+- **Serah terima**: perbarui baris "Rilis produksi terakhir" (versi, MR, SHA, tanggal).
 - **Kajian pascainsiden** di `<dokumen.laporan>/hotfix-$0.md`: kronologi, dampak, akar masalah,
   perbaikan, dan pencegahan. Langkah pencegahan masuk backlog atau `dokumen.code_debt`.
 

@@ -22,6 +22,17 @@ a breaking change to `.claude/kit.json`, a command name, or an agent name bumps 
   - Assesses downtime from migrations and config; when needed, drafts a maintenance-window notice.
   - Proposes a semver version and writes the release notes.
   - Opens one MR/PR, merged only on the product owner's approval, then tags the release.
+- Both paths of `/hotfix` now cut worktrees from the merge target (`--base=origin/<target>`). Before,
+  the normal path branched from the running sprint's integration branch and carried unfinished sprint
+  work into the hotfix MR.
+- The normal `/hotfix` path's self-merge is now a written exception: the product owner's go-ahead that
+  starts the hotfix is the merge approval, as long as the scope stays within it.
+- Hotfix, merge-back, and release MRs always use a merge commit (no squash, rebase, or fast-forward),
+  so `/rilis` can detect hotfixes not yet merged back. Merge steps are spelled out for GitLab and GitHub.
+- `/rilis` freezes the release at a recorded base SHA on a `claude/rilis-<version>` branch, stops and
+  reports when the schedule has not arrived yet, and resumes from the same MR when rerun.
+- `kit-init` now asks for `branch.rilis`, also with `--perbarui` on configs that lack it.
+- A conflict during a hotfix merge-back stops the hotfix and is reported to a human.
 - `docs/kit-json.md`, the `CLAUDE.md` and handover templates (new "last production release" line), and
   the `/sprint` rule about the release branch follow suit.
 

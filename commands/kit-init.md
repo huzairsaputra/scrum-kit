@@ -30,7 +30,10 @@ Teks bebas lain di argumen adalah batasan dari manusia (mis. "jangan push", "non
 Tanyakan hanya yang tidak bisa disimpulkan, dengan usulan hasil deteksi sebagai opsi pertama
 "(Disarankan)":
 1. Modul dan wilayah: daftar modul, apakah ada pustaka/skema bersama, apakah ada kontrak API.
-2. Branch: basis MR (`staging` bila ada, selain itu `main`), pola branch integrasi sprint.
+2. Branch: basis MR (`staging` bila ada, selain itu `main`), branch produksi `branch.rilis` (mis. `main`
+   bila basis `staging`; kosong bila produksi di-deploy dari basis), pola branch integrasi sprint.
+   `branch.rilis` dipakai `/scrum-kit:rilis` dan jalur darurat `/scrum-kit:hotfix`; `--perbarui` pada
+   `kit.json` tanpa `branch.rilis` juga menanyakannya.
 3. Gate: perintah fmt/lint/build/test/dod per modul (usul dari langkah 1; bila belum ada, usulkan
    perintah stack bawaan dan catat bahwa CI harus memakai perintah yang sama).
 4. Spesifikasi eksternal Google Drive: ID folder atau "tidak ada"; wajib atau opsional.
