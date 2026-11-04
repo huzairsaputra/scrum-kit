@@ -1,0 +1,17 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "scrum-kit",
+  "description": "Scrum sprints for Claude Code agent teams.",
+  "owner": {
+    "name": "Huzair Saputra",
+    "url": "https://github.com/huzairsaputra"
+  },
+  "plugins": [
+    {
+      "name": "scrum-kit",
+      "description": "Per-branch file ownership, /sprint, /hotfix, and a Definition of Done gate for agent teams.",
+      "source": "./",
+      "category": "development"
+    }
+  ]
+}

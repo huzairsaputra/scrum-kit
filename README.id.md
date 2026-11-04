@@ -1,0 +1,85 @@
+# scrum-kit — starter kit agen pengembangan
+
+> [English](README.md) · **Bahasa Indonesia**
+
+Plugin Claude Code untuk proyek dengan stack apa pun (Go, Laravel, Node, Python, …). Isinya alur
+kerja tim agen ala Scrum yang sudah dipakai di beberapa proyek produksi, tanpa hal yang ditulis mati
+untuk satu proyek:
+
+- **Wilayah kepemilikan per branch.** Hook menolak Write/Edit di luar wilayah agen, berdasarkan nama
+  branch dan `.claude/kit.json`.
+- **Delapan peran agen:** `module-dev`, `shared-module-owner`, `api-contract-keeper`,
+  `qa-test-engineer`, `code-reviewer`, `platform-tooling`, `security-auditor`, `spec-change-adapter`.
+- **Perintah:**
+  - `/scrum-kit:kit-init`: memasang kit di sebuah proyek;
+  - `/scrum-kit:sprint <n>`: menjalankan satu sprint;
+  - `/scrum-kit:hotfix <ID> <deskripsi>`: perubahan kecil langsung ke branch basis.
+- **Gate Definition of Done** memakai perintah proyek sendiri, yaitu perintah yang sama yang
+  dipanggil CI.
+- **Sinkron spesifikasi Google Drive** bersifat opsional per proyek, lewat `spek_eksternal.drive_folder_id`.
+
+## Pasang
+
+Prasyarat: Claude Code, git, Python 3 (`python3`, `python`, atau `py`), dan bash (Git Bash di Windows).
+
+Di sesi Claude Code:
+
+```
+/plugin marketplace add huzairsaputra/scrum-kit
+/plugin install scrum-kit@scrum-kit
+```
+
+Lalu, di repo proyek:
+
+```
+/scrum-kit:kit-init
+```
+
+Perintah ini mewawancarai Anda, lalu menulis `.claude/kit.json`, `CLAUDE.md`,
+`scripts/kit/worktree-new.sh`, templat MR/PR, dan kerangka dokumen sprint ke branch
+`claude/pasang-scrum-kit`. Setelah itu ia menawarkan MR. `.claude/settings.json` proyek ikut
+mendaftarkan marketplace ini, sehingga rekan tim cukup mempercayai folder proyek untuk mendapatkan
+plugin yang sama.
+
+## Struktur
+
+| Path | Isi |
+|---|---|
+| `.claude-plugin/plugin.json`, `marketplace.json` | Manifest plugin. Repo ini sekaligus menjadi marketplace-nya. |
+| `agents/` | Delapan peran agen (nama berlingkup `scrum-kit:<agen>`). |
+| `commands/` | `kit-init`, `sprint`, `hotfix`. |
+| `hooks/` | `hooks.json`, `jalankan.sh` (memilih interpreter Python), `path_ownership.py` beserta self-test. |
+| `scripts/worktree-new.sh` | Membuat worktree + branch wilayah, dengan sparse-checkout opsional. |
+| `scripts/panggil_llm.py` | Satu pintu pemanggilan LLM untuk skrip proyek: Gemini → Anthropic → CLI `claude` (lalu sesi Claude Desktop). Pustaka (`panggil_llm()`) atau CLI (prompt lewat stdin). Hanya stdlib; SDK `anthropic` opsional. |
+| `templates/` | CLAUDE.md, templat MR/PR, backlog, serah terima, utang kode. |
+| `docs/kit-json.md` | Kontrak `.claude/kit.json`. Baca ini sebelum menyunting konfigurasi proyek. |
+
+## Uji
+
+```bash
+py -I hooks/test_path_ownership.py
+```
+
+```bash
+py -I scripts/panggil_llm.py --uji
+```
+
+```bash
+claude plugin validate .
+```
+
+Pengembangan lokal: `claude --plugin-dir .` di repo proyek uji, lalu `/reload-plugins` setelah berkas
+plugin berubah.
+
+## Batasan yang disengaja
+
+- Hook bersifat *fail-open*: kit.json tidak ada, branch di luar pola, atau galat hook berarti
+  path diizinkan. Penegakan keras tetap ada di review dan proteksi branch GitLab/GitHub.
+- Kit tidak membuat Makefile/CI untuk Anda. Ia memakai perintah yang sudah ada, atau mencatat
+  perintah yang harus dibuat `platform-tooling`.
+- Agen plugin mengabaikan `permissionMode` dan hook per agen (batasan Claude Code). Izin diatur di
+  `.claude/settings.json` proyek.
+
+## Lisensi
+
+[MIT](LICENSE) © 2026 Huzair Saputra

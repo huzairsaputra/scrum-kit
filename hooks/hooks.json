@@ -1,0 +1,19 @@
+{
+  "description": "Kepemilikan path per branch wilayah (.claude/kit.json)",
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Write|Edit|NotebookEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "sh",
+            "args": ["${CLAUDE_PLUGIN_ROOT}/hooks/jalankan.sh"],
+            "timeout": 15,
+            "statusMessage": "Memeriksa kepemilikan path"
+          }
+        ]
+      }
+    ]
+  }
+}
