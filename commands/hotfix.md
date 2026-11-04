@@ -46,6 +46,10 @@ fast-forward, agar `/scrum-kit:rilis` bisa melacak hotfix yang belum di-back-mer
 `detailed_merge_status` = `mergeable`, merge dengan `sha` = HEAD MR dan `squash` = false. GitHub:
 `gh pr view <n> --json mergeStateStatus` = `CLEAN`, lalu
 `gh pr merge <n> --merge --match-head-commit <sha>`.
+Sebelum merge, pastikan pengaturan forge tidak mengalahkan aturan ini: GitLab `merge_method` proyek =
+`merge` dan `squash_option` ≠ `always`; selain itu berhenti dan laporkan. Status `not_approved`
+(GitLab) atau `BLOCKED` (GitHub) berarti forge mewajibkan approval: minta manusia memberi approval di
+forge; jangan pernah memakai `--admin` atau melewati proteksi branch.
 
 ## Langkah
 

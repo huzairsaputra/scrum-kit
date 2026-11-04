@@ -5,8 +5,8 @@ a breaking change to `.claude/kit.json`, a command name, or an agent name bumps 
 
 ## v1.1.0 — 2026-11-05
 
-- `/scrum-kit:hotfix` now has two paths, picked up front. The **normal** path is unchanged: a small
-  change approved by the product owner, to `branch.basis`. The **emergency** path is a real hotfix for
+- `/scrum-kit:hotfix` now has two paths, picked up front. The **normal** path is a small change approved
+  by the product owner, to `branch.basis`. The **emergency** path is a real hotfix for
   a production incident (outage, open security hole, data being corrupted or leaked):
   - worktrees are cut from `branch.rilis` (or `branch.basis` when `rilis` is empty);
   - minimal scope, only the root cause;
@@ -31,7 +31,10 @@ a breaking change to `.claude/kit.json`, a command name, or an agent name bumps 
   so `/rilis` can detect hotfixes not yet merged back. Merge steps are spelled out for GitLab and GitHub.
 - `/rilis` freezes the release at a recorded base SHA on a `claude/rilis-<version>` branch, stops and
   reports when the schedule has not arrived yet, and resumes from the same MR when rerun.
-- `kit-init` now asks for `branch.rilis`, also with `--perbarui` on configs that lack it.
+- `kit-init` now asks for `branch.rilis`, also with `--perbarui` on configs that lack it, and spells
+  out how to fill the `{{rilis}}` / `{{rilis_teks}}` template placeholders.
+- Merges stop when forge settings would override the merge-commit rule (GitLab `merge_method`,
+  `squash_option`) or when the forge requires approval; never `--admin`.
 - A conflict during a hotfix merge-back stops the hotfix and is reported to a human.
 - `docs/kit-json.md`, the `CLAUDE.md` and handover templates (new "last production release" line), and
   the `/sprint` rule about the release branch follow suit.
