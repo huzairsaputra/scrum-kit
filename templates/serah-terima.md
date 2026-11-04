@@ -6,6 +6,7 @@ segera. Pekerjaan yang sudah selesai dan tersinkron dipangkas — dokumen ini ha
 ## Status saat ini
 
 - Branch basis: <!-- staging -->, terakhir di-deploy: <!-- MR, SHA, tanggal -->
+- Rilis produksi terakhir: <!-- versi, MR, SHA, tanggal (diisi `/scrum-kit:rilis`) -->
 - Sedang berjalan: <!-- item, branch/worktree, agen -->
 
 ## Antrean

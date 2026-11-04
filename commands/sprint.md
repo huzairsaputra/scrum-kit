@@ -99,6 +99,6 @@ modul lain.
 ## Aturan
 
 - Jangan merge MR ke `branch.basis` tanpa persetujuan manusia; jangan pernah push langsung ke basis
-  maupun `branch.rilis`; jangan membuka MR ke `branch.rilis` tanpa diminta.
+  maupun `branch.rilis`; jangan membuka MR ke `branch.rilis` tanpa diminta (itu tugas `/scrum-kit:rilis`).
 - Jangan menonaktifkan/melewati test merah; akar masalahnya yang diperbaiki.
 - Agen yang melapor selesai tanpa keluaran gate → kembalikan.

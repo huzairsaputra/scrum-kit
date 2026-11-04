@@ -1,8 +1,8 @@
 {
   "name": "scrum-kit",
   "displayName": "scrum-kit — Scrum sprints for Claude Code agent teams",
-  "version": "1.0.1",
-  "description": "Stack-agnostic agent workflow for Claude Code: per-branch file ownership enforced by a hook, orchestrated sprints, hotfixes, and a Definition of Done gate that runs your own CI commands.",
+  "version": "1.1.0",
+  "description": "Stack-agnostic agent workflow for Claude Code: per-branch file ownership enforced by a hook, orchestrated sprints, normal and emergency hotfixes, scheduled releases, and a Definition of Done gate that runs your own CI commands.",
   "author": {
     "name": "Huzair Saputra",
     "url": "https://github.com/huzairsaputra"
