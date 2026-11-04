@@ -7,7 +7,7 @@
 
 <p align="center">
   <a href="LICENSE"><img alt="License: MIT" src="https://img.shields.io/badge/license-MIT-blue.svg"></a>
-  <a href="CHANGELOG.md"><img alt="Version" src="https://img.shields.io/badge/version-1.0.1-green.svg"></a>
+  <a href="CHANGELOG.md"><img alt="Version" src="https://img.shields.io/badge/version-1.1.0-green.svg"></a>
   <img alt="Claude Code plugin" src="https://img.shields.io/badge/Claude%20Code-plugin-orange.svg">
 </p>
 
@@ -64,7 +64,8 @@ plugin just by trusting the folder.
 |---|---|
 | `/scrum-kit:kit-init` | Install the kit in a project (interview, then config + templates). `--perbarui` to revisit. |
 | `/scrum-kit:sprint <n>` | Run one sprint: spec sync → foundation → contract → parallel implementation → QA → review → one integration MR/PR. |
-| `/scrum-kit:hotfix <id> <description>` | A small change approved by the product owner, straight to the base branch with the same gates. |
+| `/scrum-kit:hotfix <id> <description>` | Out-of-sprint work with the same gates. Normal path: a small change approved by the product owner, to the base branch. Emergency path: an urgent production fix with no downtime, merged to the release branch on the product owner's approval, then merged back into base. |
+| `/scrum-kit:rilis [version] [schedule]` | Scheduled release from the base branch to production: readiness checks, downtime assessment, release notes, one MR/PR merged on the product owner's approval, then a tag. |
 
 ## How it works
 
@@ -107,7 +108,7 @@ Full contract: [`docs/kit-json.md`](docs/kit-json.md).
 |---|---|
 | `.claude-plugin/` | Plugin manifest; this repo is also its own marketplace. |
 | `agents/` | The eight roles (`scrum-kit:<role>`). |
-| `commands/` | `kit-init`, `sprint`, `hotfix`. |
+| `commands/` | `kit-init`, `sprint`, `hotfix`, `rilis`. |
 | `hooks/` | `path_ownership.py` with its self-test, and a wrapper that finds a working Python. |
 | `scripts/` | `worktree-new.sh` (worktree + branch, optional sparse checkout), `panggil_llm.py` (one LLM entry point for project scripts). |
 | `templates/` | `CLAUDE.md`, MR/PR template, backlog, handover, code-debt log. |

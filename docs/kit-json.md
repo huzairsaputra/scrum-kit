@@ -1,7 +1,7 @@
 # `.claude/kit.json` — konfigurasi proyek
 
 Satu-satunya berkas yang membedakan satu proyek dari proyek lain. Hook kepemilikan, skrip
-worktree, perintah `/sprint` dan `/hotfix`, serta semua agen membaca berkas ini; tidak ada nama
+worktree, perintah `/sprint`, `/hotfix`, dan `/rilis`, serta semua agen membaca berkas ini; tidak ada nama
 proyek, modul, atau perintah gate yang ditulis mati di plugin. `/kit-init` membuatnya lewat
 wawancara; sesudahnya boleh disunting tangan (di-commit ke repo proyek).
 
@@ -60,7 +60,7 @@ wawancara; sesudahnya boleh disunting tangan (di-commit ke repo proyek).
 | `proyek` | ya | Nama pendek proyek (judul MR, laporan). |
 | `stack` | ya | Label bebas (`go-goravel`, `laravel-12`, `node-express`, …). Agen memakainya untuk memilih idiom; tidak mengubah perilaku hook. |
 | `branch.basis` | ya | Branch tujuan MR (biasanya `staging`; `main` bila tidak ada staging). |
-| `branch.rilis` | tidak | Branch rilis. Agen tidak pernah membuka MR ke sini tanpa perintah manusia. |
+| `branch.rilis` | tidak | Branch rilis (produksi). Hanya `/rilis` dan jalur darurat `/hotfix` yang membuka MR ke sini, dan merge-nya selalu menunggu persetujuan PO. Kosong = produksi di-deploy dari basis. |
 | `branch.integrasi` | ya | Pola branch integrasi satu sprint. `{n}` = nomor sprint tanpa nol depan. |
 | `branch.wilayah` | ya | Pola branch kerja agen. Wajib memuat `{wilayah}`; `{nn}` = nomor sprint dua digit, `{id}` = ID item. Branch yang tidak cocok pola ini (mis. `main`, `staging`, `integrasi-*`, `claude/*`) **tidak dibatasi** hook — itu wilayah manusia/orkestrator. |
 | `modul` | tidak | Daftar modul/aplikasi. Kosong untuk proyek satu modul. |

@@ -95,6 +95,9 @@ Sebuah item selesai bila **semuanya** benar:
 ## 7. Otomasi
 
 - `/scrum-kit:sprint <n>` — orkestrasi satu sprint (backlog di `{{backlog}}`).
-- `/scrum-kit:hotfix <id> <deskripsi>` — perubahan kecil langsung ke `{{basis}}`
-  dengan alur kontrak → implementasi → QA → review → MR.
+- `/scrum-kit:hotfix <id> <deskripsi>` — perubahan di luar sprint dengan alur kontrak →
+  implementasi → QA → review → MR: jalur biasa ke `{{basis}}`, atau jalur darurat ke produksi
+  (perbaikan mendesak tanpa downtime, lalu back-merge).
+- `/scrum-kit:rilis [versi] [jadwal]` — rilis terjadwal `{{basis}}` → produksi, merge atas
+  persetujuan PO.
 - Laporan agen: `{{laporan}}<nama-agen>.md`. Serah terima: `{{serah_terima}}`.

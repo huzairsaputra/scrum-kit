@@ -30,7 +30,10 @@ Teks bebas lain di argumen adalah batasan dari manusia (mis. "jangan push", "non
 Tanyakan hanya yang tidak bisa disimpulkan, dengan usulan hasil deteksi sebagai opsi pertama
 "(Disarankan)":
 1. Modul dan wilayah: daftar modul, apakah ada pustaka/skema bersama, apakah ada kontrak API.
-2. Branch: basis MR (`staging` bila ada, selain itu `main`), pola branch integrasi sprint.
+2. Branch: basis MR (`staging` bila ada, selain itu `main`), branch produksi `branch.rilis` (mis. `main`
+   bila basis `staging`; kosong bila produksi di-deploy dari basis), pola branch integrasi sprint.
+   `branch.rilis` dipakai `/scrum-kit:rilis` dan jalur darurat `/scrum-kit:hotfix`; `--perbarui` pada
+   `kit.json` tanpa `branch.rilis` juga menanyakannya.
 3. Gate: perintah fmt/lint/build/test/dod per modul (usul dari langkah 1; bila belum ada, usulkan
    perintah stack bawaan dan catat bahwa CI harus memakai perintah yang sama).
 4. Spesifikasi eksternal Google Drive: ID folder atau "tidak ada"; wajib atau opsional.
@@ -42,7 +45,7 @@ Tanyakan hanya yang tidak bisa disimpulkan, dengan usulan hasil deteksi sebagai 
 | Berkas | Isi |
 |---|---|
 | `.claude/kit.json` | Hasil langkah 1–2, mengikuti `docs/kit-json.md` persis. |
-| `CLAUDE.md` | Dari `${CLAUDE_PLUGIN_ROOT}/templates/CLAUDE.md`; isi semua `{{...}}`, hapus komentar `/kit-init`. Bila `CLAUDE.md` sudah ada, sisipkan bagian yang belum ada; jangan buang aturan lama. |
+| `CLAUDE.md` | Dari `${CLAUDE_PLUGIN_ROOT}/templates/CLAUDE.md`; isi semua `{{...}}` (`{{rilis_teks}}` = spasi lalu ``maupun `<branch.rilis>` ``, mis. `` maupun `main` `` dengan spasi pembuka; bila `branch.rilis` kosong, `{{rilis_teks}}` dikosongkan dan `` `{{rilis}}`, `` dihapus), hapus komentar `/kit-init`. Bila `CLAUDE.md` sudah ada, sisipkan bagian yang belum ada; jangan buang aturan lama. |
 | `scripts/kit/worktree-new.sh` | Salin dari `${CLAUDE_PLUGIN_ROOT}/scripts/worktree-new.sh` (agar tim tanpa plugin pun bisa memakainya). |
 | `.gitlab/merge_request_templates/Default.md` (GitLab) atau `.github/pull_request_template.md` (GitHub) | Dari `templates/merge_request.md`, kecuali templat proyek sudah ada. |
 | `<dokumen.backlog>` sprint 1, `<dokumen.serah_terima>`, `<dokumen.code_debt>` | Dari `templates/` (`backlog.md`, `serah-terima.md`, `code-debt.md`); hanya bila belum ada. Ganti `{{nn}}` dengan `01` (nama berkas dan isi). |

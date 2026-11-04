@@ -9,7 +9,7 @@
   "plugins": [
     {
       "name": "scrum-kit",
-      "description": "Per-branch file ownership, /sprint, /hotfix, and a Definition of Done gate for agent teams.",
+      "description": "Per-branch file ownership, /sprint, /hotfix, /rilis, and a Definition of Done gate for agent teams.",
       "source": "./",
       "category": "development"
     }

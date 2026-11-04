@@ -13,7 +13,9 @@ untuk satu proyek:
 - **Perintah:**
   - `/scrum-kit:kit-init`: memasang kit di sebuah proyek;
   - `/scrum-kit:sprint <n>`: menjalankan satu sprint;
-  - `/scrum-kit:hotfix <ID> <deskripsi>`: perubahan kecil langsung ke branch basis.
+  - `/scrum-kit:hotfix <ID> <deskripsi>`: perubahan di luar sprint, jalur biasa (perubahan kecil ke
+    branch basis) atau jalur darurat (perbaikan mendesak ke produksi, lalu back-merge);
+  - `/scrum-kit:rilis [versi] [jadwal]`: rilis terjadwal branch basis → branch rilis (produksi).
 - **Gate Definition of Done** memakai perintah proyek sendiri, yaitu perintah yang sama yang
   dipanggil CI.
 - **Sinkron spesifikasi Google Drive** bersifat opsional per proyek, lewat `spek_eksternal.drive_folder_id`.
@@ -47,7 +49,7 @@ plugin yang sama.
 |---|---|
 | `.claude-plugin/plugin.json`, `marketplace.json` | Manifest plugin. Repo ini sekaligus menjadi marketplace-nya. |
 | `agents/` | Delapan peran agen (nama berlingkup `scrum-kit:<agen>`). |
-| `commands/` | `kit-init`, `sprint`, `hotfix`. |
+| `commands/` | `kit-init`, `sprint`, `hotfix`, `rilis`. |
 | `hooks/` | `hooks.json`, `jalankan.sh` (memilih interpreter Python), `path_ownership.py` beserta self-test. |
 | `scripts/worktree-new.sh` | Membuat worktree + branch wilayah, dengan sparse-checkout opsional. |
 | `scripts/panggil_llm.py` | Satu pintu pemanggilan LLM untuk skrip proyek: Gemini → Anthropic → CLI `claude` (lalu sesi Claude Desktop). Pustaka (`panggil_llm()`) atau CLI (prompt lewat stdin). Hanya stdlib; SDK `anthropic` opsional. |
