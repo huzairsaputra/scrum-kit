@@ -45,7 +45,7 @@ Tanyakan hanya yang tidak bisa disimpulkan, dengan usulan hasil deteksi sebagai 
 | Berkas | Isi |
 |---|---|
 | `.claude/kit.json` | Hasil langkah 1–2, mengikuti `docs/kit-json.md` persis. |
-| `CLAUDE.md` | Dari `${CLAUDE_PLUGIN_ROOT}/templates/CLAUDE.md`; isi semua `{{...}}` (`{{rilis_teks}}` = `` maupun `<branch.rilis>` ``; bila `branch.rilis` kosong, `{{rilis_teks}}` dikosongkan dan `` `{{rilis}}`, `` dihapus), hapus komentar `/kit-init`. Bila `CLAUDE.md` sudah ada, sisipkan bagian yang belum ada; jangan buang aturan lama. |
+| `CLAUDE.md` | Dari `${CLAUDE_PLUGIN_ROOT}/templates/CLAUDE.md`; isi semua `{{...}}` (`{{rilis_teks}}` = spasi lalu ``maupun `<branch.rilis>` ``, mis. `` maupun `main` `` dengan spasi pembuka; bila `branch.rilis` kosong, `{{rilis_teks}}` dikosongkan dan `` `{{rilis}}`, `` dihapus), hapus komentar `/kit-init`. Bila `CLAUDE.md` sudah ada, sisipkan bagian yang belum ada; jangan buang aturan lama. |
 | `scripts/kit/worktree-new.sh` | Salin dari `${CLAUDE_PLUGIN_ROOT}/scripts/worktree-new.sh` (agar tim tanpa plugin pun bisa memakainya). |
 | `.gitlab/merge_request_templates/Default.md` (GitLab) atau `.github/pull_request_template.md` (GitHub) | Dari `templates/merge_request.md`, kecuali templat proyek sudah ada. |
 | `<dokumen.backlog>` sprint 1, `<dokumen.serah_terima>`, `<dokumen.code_debt>` | Dari `templates/` (`backlog.md`, `serah-terima.md`, `code-debt.md`); hanya bila belum ada. Ganti `{{nn}}` dengan `01` (nama berkas dan isi). |
