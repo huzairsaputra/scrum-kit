@@ -7,7 +7,7 @@
 
 <p align="center">
   <a href="LICENSE"><img alt="License: MIT" src="https://img.shields.io/badge/license-MIT-blue.svg"></a>
-  <a href="CHANGELOG.md"><img alt="Version" src="https://img.shields.io/badge/version-1.1.0-green.svg"></a>
+  <a href="CHANGELOG.md"><img alt="Version" src="https://img.shields.io/badge/version-1.2.0-green.svg"></a>
   <img alt="Claude Code plugin" src="https://img.shields.io/badge/Claude%20Code-plugin-orange.svg">
 </p>
 
@@ -102,6 +102,17 @@ A minimal `kit.json` for a single-module Laravel app:
 
 Full contract: [`docs/kit-json.md`](docs/kit-json.md).
 
+## Upgrading to 1.2.0
+
+- The hook only reads a `branch.wilayah` that is a string with `{wilayah}` as one whole segment between
+  `/` (e.g. `sprint-{nn}/{wilayah}/{id}`). A list or a pattern like `sprint-{nn}-{wilayah}-{id}` now
+  turns ownership checks off with a warning (it never worked: every write was blocked). Run
+  `/scrum-kit:kit-init --perbarui` to validate and migrate it.
+- Agent reports are now `<dokumen.laporan>/<agent>-<item-id>.md` (was `<agent>.md`), so parallel
+  instances no longer collide.
+- Agents are dispatched with `env -u ANTHROPIC_API_KEY claude -p ...`, so the CLI uses your
+  subscription instead of billing an API key found in the environment.
+
 ## Repository layout
 
 | Path | Contents |
@@ -112,6 +123,7 @@ Full contract: [`docs/kit-json.md`](docs/kit-json.md).
 | `hooks/` | `path_ownership.py` with its self-test, and a wrapper that finds a working Python. |
 | `scripts/` | `worktree-new.sh` (worktree + branch, optional sparse checkout), `panggil_llm.py` (one LLM entry point for project scripts). |
 | `templates/` | `CLAUDE.md`, MR/PR template, backlog, handover, code-debt log. |
+| `docs/` | `kit-json.md` (the `.claude/kit.json` contract) and `alur-bersama.md` (how commands dispatch agents and merge, shared by `sprint`, `hotfix`, `rilis`). |
 
 ## Test
 

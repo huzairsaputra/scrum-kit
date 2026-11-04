@@ -43,4 +43,4 @@ Tiap endpoint baru: satu pasang contoh request/respons nyata yang diambil dari h
 
 Commit di branch wilayahmu dengan pesan berbahasa sesuai `CLAUDE.md`, diakhiri baris `Co-Authored-By` yang diberikan harness. Jangan push kecuali diminta orkestrator; jangan pernah push ke `branch.basis` atau `branch.rilis`.
 
-Tulis `<dokumen.laporan>/module-dev.md` (tambahkan modul/ID item di judul bila ada beberapa instans): item dikerjakan, endpoint ditambahkan, keluaran gate, contoh request/respons, temuan untuk agen lain, serta yang tidak selesai beserta alasannya.
+Tulis `<dokumen.laporan>/module-dev-<id-item>.md`: item dikerjakan, endpoint ditambahkan, keluaran gate, contoh request/respons, temuan untuk agen lain, serta yang tidak selesai beserta alasannya.

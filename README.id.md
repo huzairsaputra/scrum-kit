@@ -43,6 +43,16 @@ Perintah ini mewawancarai Anda, lalu menulis `.claude/kit.json`, `CLAUDE.md`,
 mendaftarkan marketplace ini, sehingga rekan tim cukup mempercayai folder proyek untuk mendapatkan
 plugin yang sama.
 
+### Catatan upgrade ke 1.2.0
+
+- Hook hanya membaca `branch.wilayah` berupa string dengan `{wilayah}` sebagai satu segmen utuh di
+  antara `/` (mis. `sprint-{nn}/{wilayah}/{id}`). List atau pola seperti `sprint-{nn}-{wilayah}-{id}`
+  kini mematikan pemeriksaan kepemilikan dengan peringatan (dulu memblokir semua penulisan). Jalankan
+  `/scrum-kit:kit-init --perbarui` untuk memvalidasi dan memigrasikannya.
+- Laporan agen kini ditulis ke `<dokumen.laporan>/<agen>-<id-item>.md` (dulu `<agen>.md`).
+- Dispatch agen memakai `env -u ANTHROPIC_API_KEY claude -p ...` agar CLI memakai langganan, bukan
+  menagih key API (lihat `docs/alur-bersama.md`).
+
 ## Struktur
 
 | Path | Isi |
@@ -55,6 +65,7 @@ plugin yang sama.
 | `scripts/panggil_llm.py` | Satu pintu pemanggilan LLM untuk skrip proyek: Gemini → Anthropic → CLI `claude` (lalu sesi Claude Desktop). Pustaka (`panggil_llm()`) atau CLI (prompt lewat stdin). Hanya stdlib; SDK `anthropic` opsional. |
 | `templates/` | CLAUDE.md, templat MR/PR, backlog, serah terima, utang kode. |
 | `docs/kit-json.md` | Kontrak `.claude/kit.json`. Baca ini sebelum menyunting konfigurasi proyek. |
+| `docs/alur-bersama.md` | Cara mendispatch agen (CLI headless tanpa key API) dan cara merge, dipakai bersama `sprint`, `hotfix`, `rilis`. |
 
 ## Uji
 

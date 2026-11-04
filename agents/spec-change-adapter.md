@@ -37,4 +37,4 @@ Jalankan `gate.fmt`, `gate.lint`, `gate.build` (semua modul), migrasi di basis d
 
 Commit di branch wilayahmu, pesan berbahasa sesuai `CLAUDE.md`, diakhiri baris `Co-Authored-By` yang diberikan harness. Jangan push kecuali diminta orkestrator.
 
-Tulis `<dokumen.laporan>/spec-change-adapter.md`: sumber Drive (nama berkas, tanggal modifikasi, tanggal diambil), diff empat sisi, yang diubah, temuan untuk agen lain (backlog salah alamat, kode masih merujuk bentuk lama), dan yang belum selesai beserta alasannya.
+Tulis `<dokumen.laporan>/spec-change-adapter-<id-item>.md`: sumber Drive (nama berkas, tanggal modifikasi, tanggal diambil), diff empat sisi, yang diubah, temuan untuk agen lain (backlog salah alamat, kode masih merujuk bentuk lama), dan yang belum selesai beserta alasannya.

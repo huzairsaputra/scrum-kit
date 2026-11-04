@@ -11,19 +11,8 @@ Pola ini untuk perubahan yang tidak menunggu sprint (keputusan PO tertulis di ch
 orkestrator: tidak menulis kode aplikasi sendiri. Baca `CLAUDE.md` dan `.claude/kit.json` dulu;
 nomor sprint = sprint berjalan (tanya bila tidak jelas dari `dokumen.serah_terima`).
 
-**Cara mendispatch agen.** Setiap agen di bawah (`scrum-kit:<agen>`) dijalankan sebagai proses Claude
-Code CLI terpisah, **bukan** lewat tool Agent/subagen:
-
-- Lewat Bash dengan `run_in_background`, dari dalam worktree item:
-  `cd <worktree> && claude -p --agent scrum-kit:<agen> --permission-mode auto "<prompt>"`.
-  Prompt panjang atau berisi tanda kutip: tulis ke berkas di scratchpad, lalu
-  `cd <worktree> && claude -p --agent scrum-kit:<agen> --permission-mode auto < <berkas-prompt>`.
-- Hasil agen dibaca dari keluaran perintah itu (kamu diberi tahu saat prosesnya selesai; jangan
-  polling). Laporan tanpa keluaran gate = belum selesai, kembalikan.
-- CLI terkena batas pemakaian atau gagal → Anthropic API. Tool Agent/subagen hanya dipakai bila CLI
-  dan Anthropic API sama-sama habis atau gagal, atau bila pengguna memintanya di sesi ini.
-- `claude -p` tidak bisa memberi persetujuan tulis `.claude/**`. Agen yang perlu mengubah berkas di
-  `.claude/` melaporkan isi utuh berkas itu; kamu yang menulisnya di sesi interaktif dan meng-commit-nya.
+**Cara mendispatch agen**: baca `${CLAUDE_PLUGIN_ROOT}/docs/alur-bersama.md` bagian "Mendispatch
+agen" dan ikuti.
 
 ## Pilih jalur dulu
 
@@ -41,17 +30,8 @@ dibuat dari `<tujuan>`, bukan dari branch integrasi sprint:
 `scripts/kit/worktree-new.sh <wilayah> <id> <n> --base=origin/<tujuan>` (tanpa `--base`, skrip itu
 bercabang dari integrasi sprint berjalan dan pekerjaan sprint yang belum selesai ikut terbawa).
 
-**Cara merge** (langkah 7 dan back-merge): selalu merge commit, tanpa squash, rebase, atau
-fast-forward, agar `/scrum-kit:rilis` bisa melacak hotfix yang belum di-back-merge. GitLab:
-`detailed_merge_status` = `mergeable`, merge dengan `sha` = HEAD MR dan `squash` = false. GitHub:
-`gh pr view <n> --json mergeStateStatus` = `CLEAN`, lalu
-`gh pr merge <n> --merge --match-head-commit <sha>`.
-Sebelum merge, pastikan pengaturan forge tidak mengalahkan aturan ini: GitLab `merge_method` proyek =
-`merge` dan `squash_option` ≠ `always`; selain itu berhenti dan laporkan. Status `not_approved`
-(GitLab), atau `BLOCKED` dengan `gh pr view <n> --json reviewDecision` = `REVIEW_REQUIRED` (GitHub),
-berarti forge mewajibkan approval: minta manusia memberi approval di forge. `BLOCKED` karena hal lain
-(check wajib pending/gagal, percakapan belum diselesaikan) → laporkan penghambatnya. Jangan pernah
-memakai `--admin` atau melewati proteksi branch.
+**Cara merge** (langkah 7 dan back-merge): baca `${CLAUDE_PLUGIN_ROOT}/docs/alur-bersama.md` bagian
+"Cara merge" dan ikuti.
 
 ## Langkah
 

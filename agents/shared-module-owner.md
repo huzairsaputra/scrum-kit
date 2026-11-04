@@ -45,4 +45,4 @@ Jangan pernah menjalankan migrasi atau test terhadap basis data bersama/produksi
 
 Commit di branch wilayahmu, pesan berbahasa sesuai `CLAUDE.md`, diakhiri baris `Co-Authored-By` yang diberikan harness. Jangan push kecuali diminta orkestrator.
 
-Tulis `<dokumen.laporan>/shared-module-owner.md`: item dikerjakan, tabel/kolom berubah, tipe kontrak ditambahkan, keluaran gate, temuan untuk agen lain, dan yang belum selesai beserta alasannya.
+Tulis `<dokumen.laporan>/shared-module-owner-<id-item>.md`: item dikerjakan, tabel/kolom berubah, tipe kontrak ditambahkan, keluaran gate, temuan untuk agen lain, dan yang belum selesai beserta alasannya.

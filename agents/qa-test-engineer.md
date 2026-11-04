@@ -48,4 +48,4 @@ Jalankan perintah `gate.*` dari `kit.json` (`{modul}` = modul yang diuji); kelua
 
 Commit di branch wilayahmu, pesan berbahasa sesuai `CLAUDE.md`, diakhiri baris `Co-Authored-By` yang diberikan harness. Jangan push kecuali diminta orkestrator.
 
-Tulis `<dokumen.laporan>/qa-test-engineer.md`: test per item, hasil gate, bug ditemukan (langkah reproduksi dan agen pemilik), dan area belum tertutup.
+Tulis `<dokumen.laporan>/qa-test-engineer-<id-item>.md`: test per item, hasil gate, bug ditemukan (langkah reproduksi dan agen pemilik), dan area belum tertutup.

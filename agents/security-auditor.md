@@ -46,4 +46,4 @@ Tiap temuan wajib memuat: tingkat (kritis/tinggi/sedang/rendah), berkas dan bari
 
 Commit di branch wilayahmu, pesan berbahasa sesuai `CLAUDE.md`, diakhiri baris `Co-Authored-By` yang diberikan harness. Jangan push kecuali diminta orkestrator.
 
-Tulis ringkasan ke `<dokumen.laporan>/security-auditor.md` (jumlah temuan per tingkat, rujukan ke berkas temuan, batas cakupan).
+Tulis ringkasan ke `<dokumen.laporan>/security-auditor-<id-item>.md` (jumlah temuan per tingkat, rujukan ke berkas temuan, batas cakupan).

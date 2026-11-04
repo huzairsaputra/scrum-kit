@@ -17,16 +17,7 @@ Baca `CLAUDE.md` dan `.claude/kit.json` dulu. `branch.rilis` kosong → berhenti
 di-deploy dari basis, tidak ada yang perlu dipromosikan (isi `branch.rilis` lewat
 `/scrum-kit:kit-init --perbarui` bila proyek punya branch produksi).
 
-**Cara merge**: selalu merge commit, tanpa squash, rebase, atau fast-forward. GitLab:
-`detailed_merge_status` = `mergeable`, merge dengan `sha` dan `squash` = false. GitHub:
-`gh pr view <n> --json mergeStateStatus` = `CLEAN`, lalu
-`gh pr merge <n> --merge --match-head-commit <sha>`.
-Sebelum merge, pastikan pengaturan forge tidak mengalahkan aturan ini: GitLab `merge_method` proyek =
-`merge` dan `squash_option` ≠ `always`; selain itu berhenti dan laporkan. Status `not_approved`
-(GitLab), atau `BLOCKED` dengan `gh pr view <n> --json reviewDecision` = `REVIEW_REQUIRED` (GitHub),
-berarti forge mewajibkan approval: minta manusia memberi approval di forge. `BLOCKED` karena hal lain
-(check wajib pending/gagal, percakapan belum diselesaikan) → laporkan penghambatnya. Jangan pernah
-memakai `--admin` atau melewati proteksi branch.
+**Cara merge**: baca `${CLAUDE_PLUGIN_ROOT}/docs/alur-bersama.md` bagian "Cara merge" dan ikuti.
 
 **Lanjutan**: bila MR `claude/rilis-<versi>` → `branch.rilis` sudah terbuka (perintah dijalankan ulang
 saat jadwal tiba), ambil `S` dari baris `S: <sha>` di deskripsinya dan langsung ke langkah 7. Jangan

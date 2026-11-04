@@ -25,6 +25,17 @@ Teks bebas lain di argumen adalah batasan dari manusia (mis. "jangan push", "non
 - `CLAUDE.md`, `.claude/` yang sudah ada (jangan hapus isinya; gabungkan).
 - Jangan membaca `.env` mana pun.
 
+**`--perbarui`: periksa `branch.wilayah` lebih dulu.** Sejak 1.0.0 hook hanya membaca pola berupa
+string dengan `{wilayah}` sebagai satu segmen utuh di antara `/` (mis. `sprint-{nn}/{wilayah}/{id}`).
+Pola lain membuat hook diam-diam berhenti memeriksa kepemilikan: peringatannya hanya di stderr dengan
+exit 0, yang tidak terlihat oleh model maupun manusia. Bila pola tidak lolos, tunjukkan pola lama dan
+usulan penggantinya, lalu tawarkan migrasi:
+- list (mis. `["sprint-{nn}/{wilayah}/{id}"]`) → string pertamanya;
+- pemisah `-` di sekitar `{wilayah}` (mis. `sprint-{nn}-{wilayah}-{id}`) → `/` (`sprint-{nn}/{wilayah}/{id}`).
+Branch worktree lama yang memakai pola lama tidak cocok lagi dengan pola baru, sehingga hook juga tidak
+membatasinya. Sebutkan ini di laporan, dan sarankan worktree itu dibuat ulang dengan `worktree-new.sh`
+sesudah pekerjaannya di-merge atau dipindahkan.
+
 ## 2. Wawancara (AskUserQuestion, maksimal dua putaran)
 
 Tanyakan hanya yang tidak bisa disimpulkan, dengan usulan hasil deteksi sebagai opsi pertama

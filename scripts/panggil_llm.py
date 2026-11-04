@@ -43,6 +43,7 @@ import urllib.request
 TIMEOUT_DETIK = 900
 GEMINI_MODEL_BAWAAN = "gemini-3.6-flash"
 ANTHROPIC_MODEL_BAWAAN = "claude-opus-5-5"
+INSTRUKSI_JSON = "Balas hanya JSON valid, tanpa pagar kode atau teks lain."
 
 
 class PanggilanLLMGagal(RuntimeError):
@@ -51,6 +52,16 @@ class PanggilanLLMGagal(RuntimeError):
 
 def _peringatan(pesan: str) -> None:
     print(f"PERINGATAN: {pesan}", file=sys.stderr)
+
+
+def teks_gemini(hasil: dict) -> str | None:
+    """Teks dari respons generateContent; None bila jawabannya tidak selesai normal (mis. MAX_TOKENS)."""
+    kandidat = hasil["candidates"][0]
+    alasan = kandidat.get("finishReason")
+    if alasan and alasan != "STOP":
+        _peringatan(f"Gemini API berhenti ({alasan}) -- lanjut ke Anthropic API.")
+        return None
+    return kandidat["content"]["parts"][0]["text"].strip() or None
 
 
 def panggil_gemini(prompt: str, sistem: str | None = None, json_saja: bool = False) -> str | None:
@@ -75,14 +86,13 @@ def panggil_gemini(prompt: str, sistem: str | None = None, json_saja: bool = Fal
     try:
         with urllib.request.urlopen(req, timeout=TIMEOUT_DETIK) as resp:
             hasil = json.loads(resp.read().decode("utf-8"))
-        teks = hasil["candidates"][0]["content"]["parts"][0]["text"].strip()
+        return teks_gemini(hasil)
     except urllib.error.HTTPError as e:
         _peringatan(f"Gemini API gagal (HTTP {e.code}) -- lanjut ke Anthropic API.")
         return None
     except (urllib.error.URLError, TimeoutError, OSError, KeyError, IndexError, TypeError, ValueError) as e:
         _peringatan(f"Gemini API gagal ({type(e).__name__}) -- lanjut ke Anthropic API.")
         return None
-    return teks or None
 
 
 def panggil_anthropic(prompt: str, sistem: str | None = None) -> str | None:
@@ -133,9 +143,11 @@ def panggil_claude_cli(prompt: str, sistem: str | None = None) -> str | None:
     perintah = ["claude", "-p", "--output-format", "json"]
     if sistem:
         perintah += ["--append-system-prompt", sistem]
+    # Tanpa ANTHROPIC_API_KEY: bila ada, `claude -p` menagih API, bukan langganan.
+    env = {k: v for k, v in os.environ.items() if k != "ANTHROPIC_API_KEY"}
     try:
         proses = subprocess.run(
-            perintah, input=prompt, capture_output=True, text=True, encoding="utf-8", timeout=TIMEOUT_DETIK
+            perintah, input=prompt, capture_output=True, text=True, encoding="utf-8", timeout=TIMEOUT_DETIK, env=env
         )
         hasil = json.loads(proses.stdout)
     except (subprocess.TimeoutExpired, json.JSONDecodeError, OSError) as e:
@@ -152,15 +164,26 @@ def panggil_claude_cli(prompt: str, sistem: str | None = None) -> str | None:
 def panggil_llm(prompt: str, sistem: str | None = None, json_saja: bool = False) -> tuple[str, str]:
     """Kembalikan (teks, nama_backend) dari backend pertama yang berhasil:
     gemini -> anthropic -> claude-cli. Lempar PanggilanLLMGagal bila semua gagal
-    (langkah 4: kerjakan di sesi Claude Desktop)."""
+    (langkah 4: kerjakan di sesi Claude Desktop). `json_saja`: jawaban yang bukan
+    JSON valid dianggap gagal dan backend berikutnya dicoba."""
+    sistem_lain = sistem
+    if json_saja:  # Gemini memakai responseMimeType; backend lain lewat instruksi sistem.
+        sistem_lain = f"{sistem}\n\n{INSTRUKSI_JSON}" if sistem else INSTRUKSI_JSON
     for nama, panggil in (
         ("gemini", lambda: panggil_gemini(prompt, sistem, json_saja)),
-        ("anthropic", lambda: panggil_anthropic(prompt, sistem)),
-        ("claude-cli", lambda: panggil_claude_cli(prompt, sistem)),
+        ("anthropic", lambda: panggil_anthropic(prompt, sistem_lain)),
+        ("claude-cli", lambda: panggil_claude_cli(prompt, sistem_lain)),
     ):
         teks = panggil()
-        if teks is not None:
-            return teks, nama
+        if teks is None:
+            continue
+        if json_saja:
+            try:
+                json.loads(teks)
+            except ValueError:
+                _peringatan(f"{nama} tidak membalas JSON valid -- lanjut ke backend berikutnya.")
+                continue
+        return teks, nama
     raise PanggilanLLMGagal(
         "Semua backend gagal atau tidak tersedia (Gemini, Anthropic, CLI claude): "
         "lanjutkan di sesi Claude Desktop."
@@ -172,10 +195,12 @@ def _uji() -> None:
     modul = sys.modules[__name__]
     asli = (modul.panggil_gemini, modul.panggil_anthropic, modul.panggil_claude_cli)
     jejak: list[str] = []
+    argumen: list[tuple] = []
 
     def tiruan(nama, hasil):
-        def f(*_a, **_k):
+        def f(*a, **_k):
             jejak.append(nama)
+            argumen.append(a)
             return hasil
         return f
 
@@ -199,9 +224,30 @@ def _uji() -> None:
             raise AssertionError("seharusnya PanggilanLLMGagal")
         except PanggilanLLMGagal:
             pass
+
+        # --json: jawaban bukan JSON -> backend berikutnya; instruksi JSON sampai ke Anthropic/CLI.
+        jejak.clear()
+        argumen.clear()
+        modul.panggil_gemini = tiruan("gemini", "bukan json")
+        modul.panggil_anthropic = tiruan("anthropic", '{"a": 1}')
+        assert panggil_llm("x", "S", json_saja=True) == ('{"a": 1}', "anthropic"), jejak
+        assert argumen[1] == ("x", f"S\n\n{INSTRUKSI_JSON}"), argumen
     finally:
         modul.panggil_gemini, modul.panggil_anthropic, modul.panggil_claude_cli = asli
-    print("OK: urutan gemini -> anthropic -> claude-cli -> PanggilanLLMGagal")
+
+    # Gemini: jawaban terpotong bukan sukses.
+    def respons(alasan):
+        kandidat = {"content": {"parts": [{"text": " ok "}]}}
+        if alasan:
+            kandidat["finishReason"] = alasan
+        return {"candidates": [kandidat]}
+
+    assert teks_gemini(respons("STOP")) == "ok"
+    assert teks_gemini(respons(None)) == "ok"
+    assert teks_gemini(respons("MAX_TOKENS")) is None
+
+    assert main(["--sistem"]) == 2  # tanpa nilai: pesan pemakaian, bukan IndexError
+    print("OK: urutan gemini -> anthropic -> claude-cli -> PanggilanLLMGagal, --json, finishReason, --sistem")
 
 
 def main(argv: list[str]) -> int:
@@ -210,8 +256,13 @@ def main(argv: list[str]) -> int:
         return 0
     sistem = None
     if "--sistem" in argv:
-        sistem = argv[argv.index("--sistem") + 1]
-    prompt = sys.stdin.read()
+        i = argv.index("--sistem") + 1
+        if i >= len(argv):
+            print('Pemakaian: panggil_llm.py [--sistem "<teks>"] [--json] < prompt', file=sys.stderr)
+            return 2
+        sistem = argv[i]
+    # Byte mentah: sys.stdin memakai code page ANSI di Windows.
+    prompt = sys.stdin.buffer.read().decode("utf-8", errors="replace")
     if not prompt.strip():
         print("GAGAL: prompt kosong (kirim lewat stdin).", file=sys.stderr)
         return 2

@@ -100,4 +100,6 @@ Sebuah item selesai bila **semuanya** benar:
   (perbaikan mendesak tanpa downtime, lalu back-merge).
 - `/scrum-kit:rilis [versi] [jadwal]` — rilis terjadwal `{{basis}}` → produksi, merge atas
   persetujuan PO.
-- Laporan agen: `{{laporan}}<nama-agen>.md`. Serah terima: `{{serah_terima}}`.
+- Laporan agen: `{{laporan}}<nama-agen>-<id-item>.md` (`<id-item>` = ID item dari prompt
+  orkestrator, bagian `{id}` branch wilayah; satu berkas per item agar agen paralel tidak bentrok).
+  Serah terima: `{{serah_terima}}`.
