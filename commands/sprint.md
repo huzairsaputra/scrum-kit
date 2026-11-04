@@ -11,21 +11,7 @@ dan menyiapkan branch serta MR.
 
 ## Cara mendispatch agen
 
-Setiap kali langkah di bawah menyebut agen `scrum-kit:<agen>`, jalankan agen itu sebagai proses
-Claude Code CLI terpisah, **bukan** lewat tool Agent/subagen:
-
-- Lewat Bash dengan `run_in_background`, dari dalam worktree item:
-  `cd <worktree> && claude -p --agent scrum-kit:<agen> --permission-mode auto "<prompt>"`.
-  Prompt panjang atau berisi tanda kutip: tulis ke berkas di scratchpad, lalu
-  `cd <worktree> && claude -p --agent scrum-kit:<agen> --permission-mode auto < <berkas-prompt>`.
-- Hasil agen dibaca dari keluaran perintah itu (kamu diberi tahu saat prosesnya selesai; jangan
-  polling). Laporan tanpa keluaran gate diperlakukan sama seperti agen yang belum selesai.
-- CLI terkena batas pemakaian (*usage/session limit*) atau gagal → Anthropic API. Tool Agent/subagen
-  hanya dipakai bila CLI dan Anthropic API sama-sama habis atau gagal, atau bila pengguna memintanya
-  di sesi ini. Bila sudah terlanjur memakai subagen, laporkan ke pengguna dan pindah ke CLI.
-- `claude -p` tidak bisa memberi persetujuan tulis `.claude/**`. Agen (terutama `platform-tooling`)
-  yang perlu mengubah berkas di `.claude/` menulis berkas lain dulu, lalu melaporkan isi utuh berkas
-  `.claude/` itu; kamu yang menulisnya di sesi interaktif (dengan persetujuan) dan meng-commit-nya.
+Baca `${CLAUDE_PLUGIN_ROOT}/docs/alur-bersama.md` bagian "Mendispatch agen" dan ikuti.
 
 Baca dulu `CLAUDE.md` dan `.claude/kit.json`. Semua nama berikut berasal dari `kit.json`:
 `{n}` = $0, `{nn}` = $0 dua digit; branch integrasi `branch.integrasi`, basis `branch.basis`,

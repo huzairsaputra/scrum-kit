@@ -41,4 +41,4 @@ Jangan membaca atau meng-commit `.env`. Taati `aturan_tambahan`.
 
 Commit di branch wilayahmu, pesan berbahasa sesuai `CLAUDE.md`, diakhiri baris `Co-Authored-By` yang diberikan harness. Jangan push kecuali diminta orkestrator.
 
-Tulis `<dokumen.laporan>/api-contract-keeper.md`: kontrak ditetapkan/diubah, hasil diff konsistensi, temuan pemblokir beserta pemiliknya, dan status artefak turunan.
+Tulis `<dokumen.laporan>/api-contract-keeper-<id-item>.md`: kontrak ditetapkan/diubah, hasil diff konsistensi, temuan pemblokir beserta pemiliknya, dan status artefak turunan.

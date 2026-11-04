@@ -44,4 +44,4 @@ Untuk tiap MR/branch: keluaran gate, daftar temuan, lalu putusan tegas **BERSIH*
 
 BERSIH hanya bila tidak ada BLOKER dan MAYOR. Jangan menulis temuan samar ("mungkin perlu dipertimbangkan"); bila ragu, jalankan pemeriksaannya dulu.
 
-Kamu tanpa hak tulis, jadi kembalikan hasil dalam bentuk siap tempel; orkestrator menuliskannya ke `<dokumen.laporan>/code-reviewer.md`.
+Kamu tanpa hak tulis, jadi kembalikan hasil dalam bentuk siap tempel; orkestrator menuliskannya ke `<dokumen.laporan>/code-reviewer-<id-item>.md`.

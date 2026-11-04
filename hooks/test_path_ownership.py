@@ -18,6 +18,8 @@ import unittest
 AKAR_HOOK = os.path.dirname(os.path.abspath(__file__))
 HOOK = os.path.join(AKAR_HOOK, "path_ownership.py")
 PEMBUNGKUS = os.path.join(AKAR_HOOK, "jalankan.sh")
+# Pemisah `/`: bash (MSYS) membaca backslash sebagai escape.
+WORKTREE_NEW = os.path.join(os.path.dirname(AKAR_HOOK), "scripts", "worktree-new.sh").replace("\\", "/")
 
 # Contoh dari docs/kit-json.md (bagian yang dipakai hook).
 KIT = {
@@ -41,6 +43,12 @@ KIT = {
         "tests": {"agen": "qa-test-engineer", "tulis": ["*/tests/**", "**/*_test.go"]},
         "contract": {"agen": "api-contract-keeper", "tulis": ["docs/api/**"]},
         "tooling": {"agen": "platform-tooling", "tulis": [".claude/**", "scripts/**", "Makefile"]},
+    },
+    "dokumen": {
+        "backlog": "docs/sprints/sprint-{nn}-backlog.md",
+        "laporan": "docs/sprints/reports/sprint-{nn}/",
+        "serah_terima": "docs/sprints/serah-terima.md",
+        "code_debt": "docs/sprints/code-debt-backlog.md",
     },
 }
 
@@ -225,6 +233,23 @@ class UjiKepemilikan(unittest.TestCase):
         self.assertTolak(panggil(payload_tulis(bash + "/mobile/x.go", self.akar), self.akar))
         self.assertIzin(panggil(payload_tulis(bash + "/admin/x.go", self.akar), self.akar))
 
+    def test_laporan_agen_dari_wilayah_mana_pun(self):
+        self.assertIzin(self.tulis("sprint-03/admin/BE-1", "docs/sprints/reports/sprint-03/module-dev-BE-1.md"))
+        self.assertIzin(self.tulis("sprint-03/tests/QA-1", "docs/sprints/reports/sprint-03/qa-test-engineer-QA-1.md"))
+
+    def test_laporan_hanya_folder_sprint_berangka(self):
+        self.assertTolak(self.tulis("sprint-03/admin/BE-1", "docs/sprints/reports-palsu/x"))
+        self.assertTolak(self.tulis("sprint-03/admin/BE-1", "docs/sprints/reports/sprint-x/y.md"))
+
+    def test_backlog_dari_wilayah_modul_ditolak(self):
+        self.assertTolak(self.tulis("sprint-03/admin/BE-1", "docs/sprints/sprint-03-backlog.md"))
+        self.assertTolak(self.tulis("sprint-03/admin/BE-1", "docs/sprints/serah-terima.md"))
+
+    def test_dokumen_sprint_dari_tooling(self):
+        for relatif in ("docs/sprints/sprint-03-backlog.md", "docs/sprints/serah-terima.md", "docs/sprints/code-debt-backlog.md"):
+            self.assertIzin(self.tulis("sprint-03/tooling/T-1", relatif))
+        self.assertTolak(self.tulis("sprint-03/tooling/T-1", "docs/api/x.yaml"))
+
     def test_worktree_terpisah(self):
         ganti_branch(self.akar, "main")
         wt = os.path.realpath(tempfile.mkdtemp(prefix="kit-wt-"))
@@ -256,6 +281,36 @@ class UjiTanpaKonfigurasi(unittest.TestCase):
             self.assertIn("PERINGATAN", hasil.stderr.decode())
         finally:
             shutil.rmtree(akar, ignore_errors=True)
+
+    def test_pola_wilayah_bukan_segmen_utuh_dilewati(self):
+        # `sprint-03-admin-BE-1` akan terbaca wilayah `admin-BE`; hook memperingatkan, bukan menolak semua.
+        for pola, branch in (("sprint-{nn}-{wilayah}-{id}", "sprint-03-admin-BE-1"), (["sprint-{nn}/{wilayah}/{id}"], "sprint-03/admin/BE-1")):
+            kit = dict(KIT, branch=dict(KIT["branch"], wilayah=pola))
+            akar = buat_repo(isi_kit=json.dumps(kit))
+            try:
+                ganti_branch(akar, branch)
+                hasil = panggil(payload_tulis(os.path.join(akar, "mobile", "x.go"), akar), akar)
+                self.assertEqual(hasil.returncode, 0, hasil.stderr.decode())
+                self.assertIn("segmen utuh", hasil.stderr.decode())
+            finally:
+                shutil.rmtree(akar, ignore_errors=True)
+
+    def kode_dokumen(self, dokumen, relatif):
+        akar = buat_repo(isi_kit=json.dumps(dict(KIT, dokumen=dokumen)))
+        try:
+            ganti_branch(akar, "sprint-03/admin/BE-1")
+            hasil = panggil(payload_tulis(os.path.join(akar, *relatif.split("/")), akar), akar)
+            return hasil.returncode
+        finally:
+            shutil.rmtree(akar, ignore_errors=True)
+
+    def test_dokumen_bukan_objek_tetap_menolak(self):
+        self.assertEqual(self.kode_dokumen("docs/", "mobile/x.go"), 2)
+
+    def test_nn_di_segmen_tengah_tidak_membuka_wilayah_lain(self):
+        dokumen = {"laporan": "docs/{nn}/laporan/"}
+        self.assertEqual(self.kode_dokumen(dokumen, "docs/api/v2/laporan/openapi.yaml"), 2)
+        self.assertEqual(self.kode_dokumen(dokumen, "docs/03/laporan/module-dev-BE-1.md"), 0)
 
     def test_repo_tanpa_commit(self):
         akar = buat_repo(commit=False)
@@ -298,6 +353,48 @@ class UjiPembungkus(unittest.TestCase):
             self.assertIn("PERINGATAN", hasil.stderr.decode())
         finally:
             shutil.rmtree(kosong, ignore_errors=True)
+
+
+# `which` mengikuti urutan PATH, jadi di Windows bisa mengembalikan System32\bash.exe (WSL), yang tidak
+# memahami path Windows; kelas ini dilewati di situ alih-alih gagal.
+BASH = shutil.which("bash")
+BASH_WSL = bool(BASH) and os.path.normcase(BASH).endswith(os.path.normcase(os.path.join("system32", "bash.exe")))
+
+
+@unittest.skipUnless(BASH and not BASH_WSL, "bash tidak tersedia atau bash WSL (perlu Git Bash di Windows); worktree-new.sh tidak diuji")
+class UjiWorktreeNew(unittest.TestCase):
+    def setUp(self):
+        self.akar = buat_repo()
+        self.kedua = self.akar + "-kedua"
+        self.wt = os.path.join(os.path.dirname(self.akar), os.path.basename(self.akar) + "-wt")
+        git(self.akar, "worktree", "add", "-q", "-b", "kerja", self.kedua)
+
+    def tearDown(self):
+        for d in (self.wt, self.kedua, self.akar):
+            shutil.rmtree(d, ignore_errors=True)
+
+    def skrip(self, *argumen):
+        hasil = subprocess.run([BASH, WORKTREE_NEW, *argumen], cwd=self.kedua, capture_output=True, env=LINGKUNGAN, timeout=120)
+        self.assertEqual(hasil.returncode, 0, hasil.stderr.decode(errors="replace"))
+
+    def test_base_head_dari_worktree_kedua(self):
+        git(self.kedua, "commit", "-q", "--allow-empty", "-m", "di worktree kedua")
+        head_kedua = subprocess.run(["git", "rev-parse", "HEAD"], cwd=self.kedua, capture_output=True, text=True, env=LINGKUNGAN).stdout.strip()
+        self.skrip("shared", "SH-1", "3", "--base=HEAD")
+        sha = subprocess.run(["git", "rev-parse", "sprint-03/shared/SH-1"], cwd=self.akar, capture_output=True, text=True, env=LINGKUNGAN).stdout.strip()
+        self.assertEqual(sha, head_kedua, "--base=HEAD harus HEAD worktree pemanggil, bukan worktree utama")
+
+    def test_pemanggil_sparse_tidak_diwariskan(self):
+        # `git worktree add` (>= 2.36) menyalin pola sparse worktree pemanggil ke worktree baru.
+        for relatif in ("admin/a.go", "mobile/m.go"):
+            os.makedirs(os.path.join(self.kedua, os.path.dirname(relatif)), exist_ok=True)
+            open(os.path.join(self.kedua, relatif), "w").close()
+        git(self.kedua, "add", "-A")
+        git(self.kedua, "commit", "-q", "-m", "isi")
+        git(self.kedua, "sparse-checkout", "set", "--cone", "admin")
+        self.assertFalse(os.path.exists(os.path.join(self.kedua, "mobile", "m.go")), "prasyarat: pemanggil sparse")
+        self.skrip("shared", "SH-2", "3", "--base=HEAD")
+        self.assertTrue(os.path.isfile(os.path.join(self.wt, "shared-SH-2", "mobile", "m.go")), "wilayah tanpa SPARSE harus checkout penuh")
 
 
 if __name__ == "__main__":

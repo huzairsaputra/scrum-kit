@@ -44,4 +44,4 @@ Tempel keluaran di laporan; tanpa keluaran gate berarti belum selesai.
 
 Commit di branch wilayahmu, pesan berbahasa sesuai `CLAUDE.md`, diakhiri baris `Co-Authored-By` yang diberikan harness. Jangan push kecuali diminta orkestrator; jangan pernah push ke `branch.basis`/`branch.rilis`.
 
-Tulis `<dokumen.laporan>/platform-tooling.md`: perubahan perkakas, bukti gate (termasuk bukti CI bisa merah), utang teknis tersisa, dan dampak bagi agen lain (mis. nama perintah yang berubah).
+Tulis `<dokumen.laporan>/platform-tooling-<id-item>.md`: perubahan perkakas, bukti gate (termasuk bukti CI bisa merah), utang teknis tersisa, dan dampak bagi agen lain (mis. nama perintah yang berubah).

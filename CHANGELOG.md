@@ -3,6 +3,32 @@
 All notable changes to scrum-kit. Versions follow [Semantic Versioning](https://semver.org/):
 a breaking change to `.claude/kit.json`, a command name, or an agent name bumps the major version.
 
+## v1.2.0 — 2026-11-05
+
+Fixes from a whole-repo audit (13 findings) and an independent review of those fixes.
+
+- **Hook:** agents may write their own reports under `dokumen.laporan`. `platform-tooling` may also write
+  the backlog, handover, and code-debt docs. Before, every agent report was blocked. Document paths match
+  by regex: `{nn}` and `{n}` only accept digits, and a malformed `dokumen` key never opens other paths.
+- **Hook:** `branch.wilayah` must be a string with `{wilayah}` as one whole segment between `/`. Other
+  patterns warn and skip the check; `worktree-new.sh` refuses them; `kit-init --perbarui` offers a
+  migration. The unused list form and the never-sent `MultiEdit` tool were removed.
+- **Dispatch:** `env -u ANTHROPIC_API_KEY claude -p …`, and `panggil_llm.py` runs the `claude` CLI
+  without that key. A key in the environment made `claude -p` bill the API instead of the subscription,
+  so the CLI fallback failed exactly when the API was out of credit.
+- **Reports:** every agent writes `<dokumen.laporan>/<agent>-<item-id>.md`, so two `module-dev`
+  instances no longer collide on merge.
+- **`worktree-new.sh`:** `--base=HEAD` now means the caller's worktree, not the main one. A new worktree
+  without sparse paths no longer inherits the caller's sparse checkout. Both are covered by new tests.
+- **`panggil_llm.py`:**
+  - a Gemini answer cut off (`finishReason` ≠ `STOP`) falls through to the next backend;
+  - `--json` is enforced on every backend, and an answer that is not JSON falls through;
+  - stdin is read as UTF-8 on Windows;
+  - `--sistem` without a value prints usage instead of crashing.
+- **Commands:** the agent dispatch and merge rules live once, in `docs/alur-bersama.md`, instead of in
+  three commands.
+- Hook self-test: 28 → 37 tests.
+
 ## v1.1.0 — 2026-11-05
 
 - `/scrum-kit:hotfix` now has two paths, picked up front. The **normal** path is a small change approved

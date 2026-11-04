@@ -9,8 +9,11 @@ git pada worktree tempat berkas berada. Aturannya dibaca dari `<akar repo>/.clau
 Kontrak
 -------
 - Diizinkan (exit 0) bila: berkas di luar repo git, tidak ada kit.json, branch tidak cocok
-  pola `branch.wilayah` (branch manusia/orkestrator), atau path cocok `tulis` dan tidak
-  cocok `kecuali`.
+  pola `branch.wilayah` (branch manusia/orkestrator), path cocok `tulis` dan tidak cocok
+  `kecuali`, atau path adalah dokumen agen (`dokumen.laporan` untuk semua wilayah;
+  `dokumen.backlog`/`serah_terima`/`code_debt` untuk wilayah `platform-tooling`).
+- Pola `branch.wilayah` kosong atau `{wilayah}`-nya bukan satu segmen utuh di antara `/`:
+  peringatan, lalu diizinkan (pola itu tidak bisa dibaca tanpa salah tebak).
 - Ditolak (exit 2, pesan di stderr, stdout kosong): wilayah tak dikenal, atau path di luar
   wilayah.
 - Galat tak terduga (JSON rusak, git gagal, kit.json rusak): fail-open. Peringatan ke stderr
@@ -29,7 +32,7 @@ import subprocess
 import sys
 
 NAMA_PLUGIN = "scrum-kit"
-TOOL_DIPERIKSA = {"Write", "Edit", "MultiEdit", "NotebookEdit"}
+TOOL_DIPERIKSA = {"Write", "Edit", "NotebookEdit"}
 WINDOWS = os.name == "nt"
 
 
@@ -170,6 +173,28 @@ def diizinkan(definisi: dict, modul: str | None, path: str) -> bool:
     return not any(cocok_glob(path, g) for g in kecuali)
 
 
+def dokumen_agen(cfg: dict, definisi: dict, path: str) -> bool:
+    """Laporan agen (semua wilayah); backlog, serah terima, dan utang kode juga untuk platform-tooling."""
+    dokumen = cfg.get("dokumen") or {}
+    if not isinstance(dokumen, dict):
+        return False  # kunci salah bentuk tidak boleh membuka semua path
+    kunci_dok = ["laporan"]
+    if definisi.get("agen") == "platform-tooling":
+        kunci_dok += ["backlog", "serah_terima", "code_debt"]
+    for k in kunci_dok:
+        if not dokumen.get(k):
+            continue
+        pola = str(dokumen[k])
+        if k == "laporan":
+            pola = pola.rstrip("/") + "/{id}"
+        # Regex, bukan glob: {nn}/{n} hanya menerima digit, dan sisa path dibaca literal.
+        if WINDOWS:
+            path, pola = path.lower(), pola.lower()
+        if regex_branch(pola).fullmatch(path):
+            return True
+    return False
+
+
 def pemilik_lain(cfg: dict, path: str, kecuali_nama: str) -> list[str]:
     """Agen dari wilayah lain yang boleh menulis path ini (untuk saran di pesan penolakan)."""
     agen: list[str] = []
@@ -238,10 +263,15 @@ def keputusan(payload: dict) -> tuple[int, str]:
         cfg = json.load(f)
 
     pola = (cfg.get("branch") or {}).get("wilayah")
-    if isinstance(pola, list):
-        pola = pola[0] if pola else None
     if not pola:
         peringatan("kit.json tanpa branch.wilayah; dilewati.")
+        return 0, ""
+    # `[^/]+` hanya bisa memisahkan {wilayah} dengan benar bila ia satu segmen utuh.
+    if not isinstance(pola, str) or "{wilayah}" not in pola.split("/"):
+        peringatan(
+            f"branch.wilayah '{pola}': {{wilayah}} wajib satu segmen utuh di antara '/' "
+            "(mis. sprint-{nn}/{wilayah}/{id}); kepemilikan tidak diperiksa."
+        )
         return 0, ""
 
     branch = jalankan_git(akar, "rev-parse", "--abbrev-ref", "HEAD") or jalankan_git(
@@ -249,7 +279,7 @@ def keputusan(payload: dict) -> tuple[int, str]:
     )
     if not branch:
         return 0, ""
-    cocok = regex_branch(str(pola)).fullmatch(branch)
+    cocok = regex_branch(pola).fullmatch(branch)
     if not cocok:
         return 0, ""  # branch manusia/orkestrator
 
@@ -266,7 +296,7 @@ def keputusan(payload: dict) -> tuple[int, str]:
         return 2, f"[{NAMA_PLUGIN}] Penulisan ditolak: {hasil}"
 
     definisi, modul = hasil
-    if diizinkan(definisi, modul, relatif):
+    if diizinkan(definisi, modul, relatif) or dokumen_agen(cfg, definisi, relatif):
         return 0, ""
     return 2, pesan_tolak(nama, branch, relatif, definisi, modul, cfg)
 

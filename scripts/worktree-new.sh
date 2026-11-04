@@ -65,7 +65,9 @@ def larik(nama, nilai):
 
 skalar("KIT_BASIS", branch.get("basis"))
 skalar("KIT_INTEGRASI", branch.get("integrasi"))
-skalar("KIT_POLA_WILAYAH", branch.get("wilayah"))
+# Hanya string; bentuk lain (mis. list) dianggap kosong dan ditolak di bawah.
+pola = branch.get("wilayah")
+skalar("KIT_POLA_WILAYAH", pola if isinstance(pola, str) else "")
 larik("KIT_MODUL", cfg.get("modul") or [])
 larik("KIT_BERSAMA", cfg.get("checkout_bersama") or [])
 larik("KIT_WILAYAH", [k for k, v in wilayah.items() if not v.get("per_modul")])
@@ -74,7 +76,9 @@ PYEOF
 )" || gagal "kit.json tidak bisa dibaca/diurai: $BERKAS_KIT"
 eval "$KIT_ENV"
 
-[[ -n "$KIT_POLA_WILAYAH" && "$KIT_POLA_WILAYAH" == *"{wilayah}"* ]] || gagal "kit.json: branch.wilayah wajib ada dan memuat {wilayah}."
+# {wilayah} harus satu segmen utuh: hook memisahkannya dengan [^/]+ (sprint-{nn}-{wilayah}-{id} salah baca).
+[[ "/$KIT_POLA_WILAYAH/" == *"/{wilayah}/"* ]] ||
+	gagal "kit.json: branch.wilayah wajib string yang memuat {wilayah} sebagai satu segmen utuh di antara '/' (mis. sprint-{nn}/{wilayah}/{id})."
 [[ -n "$KIT_BASIS" ]] || gagal "kit.json: branch.basis wajib ada."
 
 NAMA_WILAYAH_SAH=("${KIT_WILAYAH[@]}")
@@ -168,7 +172,6 @@ INTEGRASI="$(isi_pola "$KIT_INTEGRASI")"
 NAMA_REPO="$(basename "$AKAR")"
 TUJUAN="$(dirname "$AKAR")/${NAMA_REPO}-wt/$WILAYAH-$ITEM"
 
-cd "$AKAR"
 [[ ! -e "$TUJUAN" ]] || gagal "$TUJUAN sudah ada. Hapus dulu: git worktree remove '$TUJUAN'"
 if git show-ref --verify --quiet "refs/heads/$BRANCH"; then gagal "branch $BRANCH sudah ada."; fi
 
@@ -218,6 +221,9 @@ git worktree add --quiet -b "$BRANCH" "$TUJUAN" "$BASE"
 if ((${#SPARSE[@]} > 0)); then
 	git -C "$TUJUAN" sparse-checkout init --cone
 	git -C "$TUJUAN" sparse-checkout set "${SPARSE[@]}"
+elif [[ "$(git -C "$TUJUAN" config --bool core.sparseCheckout || true)" == "true" ]]; then
+	# git >= 2.36 menyalin pola sparse worktree pemanggil; wilayah ini butuh seluruh repo.
+	git -C "$TUJUAN" sparse-checkout disable
 fi
 
 # Berkas yang benar-benar ada di disk: entri skip-worktree ditandai 'S' oleh ls-files -v.
