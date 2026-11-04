@@ -46,7 +46,7 @@ Tanyakan hanya yang tidak bisa disimpulkan, dengan usulan hasil deteksi sebagai 
 | `scripts/kit/worktree-new.sh` | Salin dari `${CLAUDE_PLUGIN_ROOT}/scripts/worktree-new.sh` (agar tim tanpa plugin pun bisa memakainya). |
 | `.gitlab/merge_request_templates/Default.md` (GitLab) atau `.github/pull_request_template.md` (GitHub) | Dari `templates/merge_request.md`, kecuali templat proyek sudah ada. |
 | `<dokumen.backlog>` sprint 1, `<dokumen.serah_terima>`, `<dokumen.code_debt>` | Dari `templates/` (`backlog.md`, `serah-terima.md`, `code-debt.md`); hanya bila belum ada. Ganti `{{nn}}` dengan `01` (nama berkas dan isi). |
-| `.claude/settings.json` | Gabungkan (jangan timpa): `extraKnownMarketplaces.scrum-kit` (`{"source": {"source": "github", "repo": "huzairsaputra/scrum-kit"}}`), `enabledPlugins["scrum-kit@scrum-kit"]: true`, dan `permissions.deny` untuk `Read/Edit/Write(./**/.env)`. |
+| `.claude/settings.json` | Gabungkan (jangan timpa): `extraKnownMarketplaces.scrum-kit` (`{"source": {"source": "github", "repo": "huzairsaputra/scrum-kit"}}`), `enabledPlugins["scrum-kit@scrum-kit"]: true`, dan `permissions.deny` untuk `Read(./**/.env)` dan `Edit(./**/.env)` (aturan Edit mencakup semua tool penyunting berkas; aturan `Write(...)` diabaikan Claude Code). |
 | `.gitignore` | Pastikan `.env`, `.env.*`, dan `*.env` diabaikan, kecuali contoh (`!.env.example`, `!.env.*.example`). Berkas env yang SUDAH ter-track (`git ls-files '*.env*' '.env*'`, selain contoh) tidak terlindungi `.gitignore`: jangan dibaca, jangan dihapus — catat sebagai utang `SEC` di `dokumen.code_debt` dan laporkan ke manusia (rotasi rahasia + `git rm --cached` adalah keputusannya). |
 
 ## 4. Verifikasi

@@ -3,6 +3,12 @@
 All notable changes to scrum-kit. Versions follow [Semantic Versioning](https://semver.org/):
 a breaking change to `.claude/kit.json`, a command name, or an agent name bumps the major version.
 
+## v1.0.1 — 2026-11-05
+
+- `kit-init` no longer writes a `Write(./**/.env)` deny rule. Claude Code ignores `Write(...)` in file
+  permissions and warns on every start; `Edit(./**/.env)` already covers every file-editing tool.
+  Existing projects can delete that line from `.claude/settings.json`.
+
 ## v1.0.0 — 2026-11-05
 
 Scrum sprints for Claude Code agent teams, installable.
