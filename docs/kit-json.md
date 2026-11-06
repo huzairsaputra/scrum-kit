@@ -19,7 +19,7 @@ wawancara; sesudahnya boleh disunting tangan (di-commit ke repo proyek).
   },
   "modul": ["admin", "mobile", "opd"],
   "wilayah": {
-    "modul":    { "agen": "module-dev",          "tulis": ["{modul}/**"], "kecuali": ["{modul}/tests/**", "*/bootstrap/migrations.go"], "per_modul": true },
+    "modul":    { "agen": "module-dev",          "tulis": ["{modul}/**"], "kecuali": ["{modul}/tests/**", "{modul}/**/*_test.go", "*/bootstrap/migrations.go"], "per_modul": true },
     "shared":   { "agen": "shared-module-owner", "tulis": ["shared/**", "*/bootstrap/migrations.go"] },
     "tests":    { "agen": "qa-test-engineer",    "tulis": ["*/tests/**", "**/*_test.go"] },
     "contract": { "agen": "api-contract-keeper", "tulis": ["docs/api/**"] },

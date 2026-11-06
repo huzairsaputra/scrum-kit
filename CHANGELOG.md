@@ -3,6 +3,29 @@
 All notable changes to scrum-kit. Versions follow [Semantic Versioning](https://semver.org/):
 a breaking change to `.claude/kit.json`, a command name, or an agent name bumps the major version.
 
+## v1.2.1 — 2026-11-06
+
+Correctness fixes found by running real sprints (Claude Code and Codex CLI) against the same
+process; no new features.
+
+- **Merging:** a merge needs a successful CI run on the MR's exact head SHA. "No checks" is never
+  green: GitHub reports `CLEAN` on a repository without required checks even when nothing ran.
+  Wait for CI with one blocking command (`gh run watch`); when no run appears, stop and ask a human,
+  who alone may start CI by hand.
+- **Sprint:** step 0 checks the base locally and on the forge; one draft MR per item, from the QA
+  branch, marked ready only after a CLEAN review and green CI; items that edit the same file run one
+  after the other; an item that needs a decision outside its scope is marked blocked, asked once,
+  and the sprint goes on; the integration MR opens only when at least one item merged.
+- **Review:** the reviewer diffs against the MR target (`origin/<branch.integrasi>`, or the hotfix
+  target), leaves the reports folder out of its diff, and reads reports only after its verdict.
+- **Gates:** run only configured gates, exactly as written, nothing appended; shell syntax goes
+  through `bash -c`; an unconfigured gate is "not configured", not a failure.
+- **Cleanup:** item branches are deleted, locally and on the remote, only after
+  `git merge-base --is-ancestor` confirms they are merged.
+- A negative authorization test is required only when the item touches authentication,
+  authorization, endpoints or personal data. The example config keeps module implementers out of
+  `{modul}/**/*_test.go`.
+
 ## v1.2.0 — 2026-11-05
 
 Fixes from a whole-repo audit (13 findings) and an independent review of those fixes.

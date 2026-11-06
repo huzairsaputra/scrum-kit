@@ -35,7 +35,7 @@ Kamu satu-satunya penulis kode aplikasi untuk **satu modul** pada satu item back
 
 ## Gate sebelum melapor selesai
 
-Jalankan persis perintah `gate.*` dari `kit.json` dengan `{modul}` diganti modulmu: `gate.fmt`, `gate.lint`, `gate.build`, `gate.test` (siapkan dulu lewat `gate.siapkan_test` bila ada), dan `gate.dod`. Semuanya wajib hijau dan **keluarannya ditempel di laporan**. Tanpa keluaran gate, item belum selesai. Jangan men-`skip` atau menonaktifkan test/lint agar hijau.
+Jalankan persis perintah `gate.*` dari `kit.json` dengan `{modul}` diganti modulmu: `gate.fmt`, `gate.lint`, `gate.build`, `gate.test` (siapkan dulu lewat `gate.siapkan_test` bila ada), dan `gate.dod`. Semua yang dikonfigurasi wajib hijau dan **keluarannya ditempel di laporan**. Tanpa keluaran gate, item belum selesai. Jangan men-`skip` atau menonaktifkan test/lint agar hijau.
 
 Tiap endpoint baru: satu pasang contoh request/respons nyata yang diambil dari hasil test atau eksekusi; bila tidak bisa diverifikasi, tandai "belum terverifikasi", jangan dikarang.
 

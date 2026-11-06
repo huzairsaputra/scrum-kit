@@ -13,6 +13,9 @@ dan menyiapkan branch serta MR.
 
 Baca `${CLAUDE_PLUGIN_ROOT}/docs/alur-bersama.md` bagian "Mendispatch agen" dan ikuti.
 
+**Cara merge** (termasuk syarat CI dan bersih-bersih branch): baca berkas yang sama bagian "Cara
+merge" dan ikuti.
+
 Baca dulu `CLAUDE.md` dan `.claude/kit.json`. Semua nama berikut berasal dari `kit.json`:
 `{n}` = $0, `{nn}` = $0 dua digit; branch integrasi `branch.integrasi`, basis `branch.basis`,
 backlog `dokumen.backlog`, laporan `dokumen.laporan`, gate `gate.*`.
@@ -31,7 +34,8 @@ Hanya bila `spek_eksternal.drive_folder_id` terisi; selain itu lewati.
 ## Langkah 0 — Persiapan
 
 1. Baca backlog sprint $0. Belum ada/kosong → berhenti, minta manusia mengisinya. Jangan mengarang backlog.
-2. `gate.ci` hijau di basis. Merah → serahkan ke `scrum-kit:platform-tooling` lebih dulu.
+2. Jalankan `gate.ci` secara lokal di basis, dan periksa juga pipeline basis bila forge punya;
+   laporkan keduanya. Merah → serahkan ke `scrum-kit:platform-tooling` lebih dulu.
 3. `git fetch origin`; buat branch integrasi dari `origin/<branch.basis>` bila belum ada, push.
 4. Kelompokkan item menurut wilayah pemiliknya (`wilayah.*.agen`).
 
@@ -50,6 +54,8 @@ Implementer tidak mulai sebelum kontraknya ada.
 
 Satu `scrum-kit:module-dev` per modul, worktree per item. Prompt agen memuat: modul, ID item, path
 backlog, branch, dan pengingat membaca `CLAUDE.md`. Maksimal dua item berjalan per agen.
+Item yang menyunting berkas yang sama berjalan berurutan: worktree item kedua dibuat dari branch
+integrasi (`git fetch origin` dulu) sesudah item pertama merge.
 
 ## Langkah 4 — Pengujian
 
@@ -59,28 +65,34 @@ modul lain.
 
 ## Langkah 5 — Review dan merge per item
 
-- `scrum-kit:code-reviewer` untuk tiap item; `scrum-kit:security-auditor` bila item menyentuh
-  autentikasi, data pribadi, atau berkas unggahan. Temuan dikirim ke agen pemilik; ulangi sampai BERSIH.
-- MR item → branch integrasi. **Pipeline MR harus hijau pada HEAD** sebelum merge; merah = berhenti,
-  baca log job, jangan menumpuk MR di atasnya, tidak ada "merah yang diharapkan".
-- Implementasi yang sengaja membuat test lama merah tidak dibuka sebagai MR sendiri: MR dibuka dari
-  branch QA yang memuat implementasinya.
-- Merge **hanya lewat MR** (`--no-ff`, satu merge commit per item); lepas status draft dulu; centang
-  checklist DoD di deskripsi sebelum merge.
+- `scrum-kit:code-reviewer` untuk tiap item (basis diff `origin/<branch.integrasi>`);
+  `scrum-kit:security-auditor` bila item menyentuh autentikasi, data pribadi, atau berkas unggahan.
+  Temuan dikirim ke agen pemilik; ulangi sampai BERSIH. Perbaikan butuh keputusan di luar cakupan atau
+  wilayah item → tandai item terblokir, tanya manusia sekali beserta opsinya, lanjutkan item lain, dan
+  cantumkan di ringkasan.
+- Satu MR per item → branch integrasi, dibuka sebagai draft dari branch QA (memuat commit
+  implementasinya); branch implementasi tidak mendapat MR sendiri. Tandai siap hanya bila review
+  BERSIH dan CI pada SHA HEAD sukses ("Cara merge"); merah = berhenti, baca log job, jangan menumpuk
+  MR di atasnya, tidak ada "merah yang diharapkan".
+- Merge **hanya lewat MR** (`--no-ff`, satu merge commit per item); centang checklist DoD di deskripsi
+  sebelum merge; sesudahnya bersihkan branch item ("Cara merge").
 
 ## Langkah 6 — Penutup
 
 1. `api-contract-keeper` sekali lagi: kontrak = kode yang benar-benar ada.
-2. Tulis `<dokumen.laporan>/ringkasan.md`: goal, item selesai/tidak (alasannya), story point,
-   temuan terbuka, impediment.
-3. **SATU** MR draft branch integrasi → `branch.basis`, isi dari templat MR proyek. Setelah merge,
+2. Tulis `<dokumen.laporan>/ringkasan.md`: goal, item selesai/tidak (alasannya), item terblokir,
+   worktree dan branch item yang belum merge, story point, temuan terbuka, impediment. Perbarui
+   `dokumen.serah_terima` dan `dokumen.code_debt`, lalu commit ringkasan, putusan review yang disimpan,
+   serah terima, dan code debt di branch integrasi, dan push.
+3. Hanya bila minimal satu item sudah merge: **SATU** MR draft branch integrasi → `branch.basis`, isi
+   dari templat MR proyek. Tidak ada item yang merge → tanpa MR integrasi; laporkan. Setelah merge,
    pekerjaan baru masuk backlog sprint berikutnya, bukan MR susulan dari branch integrasi.
 4. Sesudah merge: sinkron dokumentasi turunan (koleksi Postman, portal dokumentasi) bila proyek
    punya targetnya; jangan sebelum merge.
 5. Laporkan ke manusia: status MR + pipeline, temuan terbuka, keputusan yang dibutuhkan; susun temuan
    yang belum jadi backlog sebagai "kandidat sprint berikutnya" atau "perlu perubahan mendesak"
    (wajib beralasan cacat kritis).
-6. Perbarui `dokumen.serah_terima` dan `dokumen.code_debt`; bersihkan worktree dan branch item.
+6. Worktree dan branch item yang belum merge tetap disimpan (tercantum di ringkasan).
 
 ## Aturan
 
