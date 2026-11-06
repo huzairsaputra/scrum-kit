@@ -11,7 +11,7 @@ Kamu peninjau independen sebelum manusia meninjau. Nilaimu terletak pada ketiada
 
 ## Langkah pertama
 
-Baca `CLAUDE.md` dan `.claude/kit.json`. Ambil: `stack`, `modul`, `wilayah` (siapa pemilik path apa), `gate.*`, `kontrak`, `aturan_tambahan`. Tentukan diff yang ditinjau (`git diff <branch.basis>...HEAD`, atau MR/branch yang disebut orkestrator) dan modul yang tersentuh.
+Baca `CLAUDE.md` dan `.claude/kit.json`. Ambil: `stack`, `modul`, `wilayah` (siapa pemilik path apa), `gate.*`, `kontrak`, `aturan_tambahan`. Basis diff disebut orkestrator: `origin/<branch.integrasi>` untuk MR item sprint (tujuannya branch integrasi), `origin/<tujuan>` untuk hotfix. Tinjau `git diff <basis>...HEAD -- . ':(exclude)<dokumen.laporan>'` dan tentukan modul yang tersentuh. Laporan peran di `<dokumen.laporan>` baru dibaca sesudah putusanmu tertulis.
 
 ## Batas
 

@@ -44,19 +44,19 @@ bercabang dari integrasi sprint berjalan dan pekerjaan sprint yang belum selesai
    dibutuhkan modul lain, lalu `module-dev` per modul. Tiap agen menjalankan gate fmt/lint/build.
 4. **QA** per modul: `qa-test-engineer` di worktree `tests --modul=<m>` yang sudah memuat merge
    kontrak + implementasi; suite penuh modul itu hijau; tanpa `skip`.
-5. **Review**: `code-reviewer` atas seluruh diff. Temuan → agen pemilik → QA ulang + review ulang
+5. **Review**: `code-reviewer` atas seluruh diff (basis diff `origin/<tujuan>`). Temuan → agen pemilik → QA ulang + review ulang
    sampai BERSIH. Risiko yang sengaja diterima PO dicatat di `dokumen.code_debt`.
 6. **Integrasi**: worktree baru dari `origin/<tujuan>`, merge semua branch (versi kontrak
    terakhir harus menang — periksa `git diff <branch-kontrak> HEAD -- <kontrak>` kosong), `gate.ci`
    hijau, perbarui `dokumen.serah_terima` dan laporan review.
-7. **MR** ke `<tujuan>` dengan templat proyek dan bukti gate. Tunggu pipeline hijau pada HEAD dan
-   centang checklist DoD. Merge:
+7. **MR** ke `<tujuan>` dengan templat proyek dan bukti gate. Tunggu CI sukses pada SHA HEAD (lihat
+   "Cara merge") dan centang checklist DoD. Merge:
    - jalur biasa: keputusan PO yang memulai hotfix ini adalah persetujuan merge ke basis (pengecualian
      tertulis atas aturan `/scrum-kit:sprint`), selama cakupan tidak melebar dari keputusan itu;
      cakupan melebar → minta persetujuan ulang;
    - jalur darurat: hanya atas persetujuan PO di chat untuk MR itu, walau semua gate hijau.
 8. **Pasca-merge**: pantau pipeline `<tujuan>` sampai deploy (bila ada job migrasi, pastikan lognya
-   melaporkan sukses), sinkron dokumentasi turunan, hapus worktree + branch, siapkan teks pemberitahuan
+   melaporkan sukses), sinkron dokumentasi turunan, bersihkan worktree dan branch (lihat "Cara merge"), siapkan teks pemberitahuan
    singkat untuk tim klien (FE/mobile) bila kontrak berubah.
 
 ## Jalur darurat: aturan tambahan

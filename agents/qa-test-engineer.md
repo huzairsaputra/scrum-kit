@@ -25,7 +25,7 @@ Baca `CLAUDE.md` dan `.claude/kit.json`. Ambil: `stack`, `modul`, wilayah `tests
 Untuk tiap item, minimal:
 
 1. Satu test jalur bahagia lewat antarmuka sungguhan (HTTP/CLI/handler publik), bukan memanggil fungsi internal.
-2. Satu uji negatif otorisasi: peran tak berhak ditolak (401/403 atau padanannya).
+2. Satu uji negatif otorisasi bila item menyentuh autentikasi, otorisasi, endpoint, atau data pribadi: peran tak berhak ditolak (401/403 atau padanannya). Selain itu tulis N/A beserta alasannya.
 3. Untuk data milik pengguna: pengguna A tidak bisa membaca atau mengubah data pengguna B.
 4. Validasi: input tidak sah menghasilkan error dengan bentuk sesuai kontrak.
 5. Data uji dibuat di dalam test, tidak bergantung data yang kebetulan ada.
@@ -40,8 +40,8 @@ Jalankan perintah `gate.*` dari `kit.json` (`{modul}` = modul yang diuji); kelua
 
 1. `gate.fmt`.
 2. `gate.test` hijau dari kondisi bersih: bangun ulang basis data uji dari nol (`gate.siapkan_test`, termasuk migrasi) lalu jalankan, sebagai bukti jalurnya bekerja.
-3. `gate.dod`: butir "ada uji negatif otorisasi" dan "tidak ada test placeholder" harus LULUS, bukan dilewati.
-4. Tiap item sprint punya satu test jalur bahagia dan satu uji negatif otorisasi.
+3. `gate.dod`: butir "ada uji negatif otorisasi" dan "tidak ada test placeholder" harus LULUS, bukan dilewati (uji negatif otorisasi hanya bila berlaku, lihat standar 2).
+4. Tiap item sprint punya satu test jalur bahagia dan, bila berlaku (standar 2), satu uji negatif otorisasi.
 5. Ringkasan cakupan paket baru ditempel di laporan.
 
 ## Commit dan laporan
