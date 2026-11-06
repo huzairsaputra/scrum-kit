@@ -20,6 +20,11 @@ untuk satu proyek:
   dipanggil CI.
 - **Sinkron spesifikasi Google Drive** bersifat opsional per proyek, lewat `spek_eksternal.drive_folder_id`.
 
+> **Butuh versi berbahasa Inggris yang juga jalan di agen selain Claude Code?**
+> [Lanewright](https://www.agensi.io/r/HUZAIRSAPUTRA?to=/skills/lanewright-sprint-workflow-for-ai-coding-agent-teams) adalah versi berbayar scrum-kit yang dibangun ulang dalam bahasa Inggris: satu
+> skill dengan lima mode, pemeriksaan kepemilikan yang juga jalan di Codex CLI dan agen lain, dan
+> [benchmark publik](https://github.com/huzairsaputra/lanewright). (Link referral; scrum-kit tetap gratis dan MIT.)
+
 ## Pasang
 
 Prasyarat: Claude Code, git, Python 3 (`python3`, `python`, atau `py`), dan bash (Git Bash di Windows).
