@@ -26,6 +26,11 @@ project describes itself in one file, `.claude/kit.json`.
 > The agent prompts, commands, and templates are written in **Bahasa Indonesia**. Claude reads them
 > fine in any language; your team's docs and commit messages follow whatever you set in `CLAUDE.md`.
 
+> **Want it in English, and on agents other than Claude Code?** [Lanewright](https://www.agensi.io/r/HUZAIRSAPUTRA?to=/skills/lanewright-sprint-workflow-for-ai-coding-agent-teams) is the paid,
+> English rebuild of scrum-kit: one skill with five modes, an ownership check that also runs in Codex
+> CLI and other agents, and a [public benchmark](https://github.com/huzairsaputra/lanewright). (Referral link; scrum-kit stays free
+> and MIT.)
+
 ## What you get
 
 - **Per-branch file ownership.** A `PreToolUse` hook reads the branch name (`sprint-03/admin/BE-1`) and
