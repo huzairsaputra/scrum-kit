@@ -38,8 +38,8 @@ CI pada SHA HEAD) dilewati." Semua langkah tetap berlaku, dengan pengganti berik
   branch basis: `git branch <branch.integrasi> <branch.basis>`.
 - Langkah 5: tanpa MR. Syarat CI diganti `gate.ci` lokal yang hijau pada HEAD branch yang akan
   di-merge. Keluaran gate itu dan checklist DoD yang dicentang ditulis ke **catatan merge**: satu
-  berkas per merge di folder laporan sprint, `<dokumen.laporan>/merge-<branch item, "/" menjadi
-  "->.md` (mis. `merge-sprint-03-tests-QA-01.md`), yang ikut di merge commit. Branch item (branch
+  berkas per merge di folder laporan sprint, `<dokumen.laporan>/merge-<branch item>.md` dengan `/`
+  di nama branch diganti `-` (mis. `merge-sprint-03-tests-QA-01.md`), yang ikut di merge commit. Branch item (branch
   yang sama yang akan menjadi sumber MR, lihat Langkah 5) di-merge ke branch integrasi dengan merge
   commit: `git switch <branch.integrasi>`, `git merge --no-ff --no-commit <branch item>`, tulis
   catatan merge, `git add -- <catatan merge>`, lalu `git commit --no-edit`.
