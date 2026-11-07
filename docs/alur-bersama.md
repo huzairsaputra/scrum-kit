@@ -1,7 +1,8 @@
 # Alur bersama perintah orkestrasi
 
 Dirujuk oleh `/scrum-kit:sprint`, `/scrum-kit:hotfix`, dan `/scrum-kit:rilis`. Aturan yang khusus
-satu perintah tetap ditulis di perintah itu.
+satu perintah tetap ditulis di perintah itu; cara membaca laporan gerbang kesiapan backlog
+(`/scrum-kit:sprint`) dirinci di sini.
 
 ## Mendispatch agen
 
@@ -79,3 +80,44 @@ dilewati" di laporan, lalu:
 - Sesudah merge, hanya bila `git merge-base --is-ancestor <branch> <tujuan>` sukses:
   `git worktree remove <worktree>` dan `git branch -D <branch>`. Tidak ada `git push`, termasuk
   `git push origin --delete`. Selain itu simpan branch dan worktree-nya, lalu laporkan.
+
+## Gerbang kesiapan backlog
+
+Dipakai `/scrum-kit:sprint` langkah 0.3, sebelum dokumen sprint di-commit. Laporan kesiapan
+`docs/sprints/backlog-check-<nn>.md` ditulis skill gratis "Backlog Check" dari Lanewright Planning,
+bukan oleh scrum-kit. Laporan itu tidak pernah wajib: tanpa laporan, sprint lanjut bila pengguna
+memintanya.
+
+Cara membaca laporan (bahasa Inggris atau Indonesia):
+
+- **Baris backlog**: di tabel "Checked files" / "Berkas yang diperiksa", baris yang berkasnya =
+  `dokumen.backlog` dengan `{nn}` terisi (abaikan backtick dan `./` di depan; `\` = `/`). Baris
+  `.proposed.md` tidak dipakai: persetujuan hanya mencakup berkas resmi.
+- **Sidik jari**: SHA-256 isi berkas dengan CRLF dibaca sebagai LF, dihitung
+  `scripts/backlog-sidik.py` persis seperti `backlog_check.py` Backlog Check. Tidak ada baris untuk
+  backlog itu, selnya "not computed" / "tidak dihitung", atau tidak ada peluncur Python → kesegaran
+  laporan tidak bisa dipastikan: perlakukan seperti sidik jari berbeda (usang).
+- **Putusan**: baris backlog yang sama di tabel "Verdict" / "Putusan", dibandingkan utuh (`BELUM
+  SIAP` memuat kata `SIAP`): `READY` = `SIAP`; `READY WITH WARNINGS` = `SIAP DENGAN PERINGATAN` atau
+  `SIAP DENGAN CATATAN`; `NOT READY` = `BELUM SIAP`. Nilai lain diperlakukan seperti `NOT READY`.
+- **Persetujuan terisi** hanya bila "Approved by" / "Disetujui oleh", "Role" / "Peran", dan "Date" /
+  "Tanggal" berisi nilai (bukan kosong atau `____`) dan baris Status = "approved" / "disetujui".
+  Selain itu blok persetujuan dianggap kosong. Isi "Overrides" / "Pengecualian" disebutkan saat
+  bertanya ke product owner.
+
+Aturan:
+
+- Orkestrator tidak pernah mengisi blok persetujuan, mengubah Status, atau menyunting laporan; bila
+  backlog harus diperiksa ulang, manusia menjalankan ulang Backlog Check.
+- Tiap keadaan ditanyakan sekali, tidak berulang. Laporan usang sekaligus belum disetujui atau
+  `NOT READY` → satu pertanyaan untuk keduanya.
+- Lanjut tanpa persetujuan hanya atas keputusan eksplisit product owner, dengan alasan.
+- Hasil gerbang dicatat satu baris di `dokumen.serah_terima` (bagian "Status saat ini"), diakhiri
+  `(sprint <nn>, <tanggal>)`, dan ikut di-commit bersama dokumen sprint (langkah 0.4):
+  - lulus: `Gerbang laporan: lulus, putusan <putusan>, disetujui <nama> (<peran>) <tanggal persetujuan>`;
+  - tanpa laporan: `Gerbang laporan: tanpa laporan kesiapan, dilanjutkan atas keputusan pengguna`;
+  - hanya usang: `Gerbang laporan: laporan usang (sidik jari berbeda), dilanjutkan atas keputusan pengguna`;
+  - `NOT READY` atau belum disetujui (usang atau tidak): `Gerbang laporan: dilanjutkan tanpa
+    persetujuan, alasan <alasan product owner>`, ditambah "laporan usang" bila berlaku.
+- Berhenti di gerbang (pengguna tidak melanjutkan) → tidak ada worktree yang dibuat; laporkan apa yang
+  perlu dilakukan (membuat laporan, menjalankan ulang Backlog Check, atau persetujuan).

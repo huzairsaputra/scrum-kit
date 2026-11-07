@@ -87,6 +87,14 @@ forge checks, creates the integration branch locally from the base branch, merge
 into it with a merge commit, and merges the integration branch into the base branch locally only after
 the product owner approves. Nothing is pushed; a green local `gate.ci` stands in for forge CI.
 
+**Backlog readiness gate.** Before committing the sprint documents, `/scrum-kit:sprint` looks for
+`docs/sprints/backlog-check-<nn>.md`, the readiness report written by the free Lanewright Planning
+skill Backlog Check. No report: it says so once and asks whether to go on without one; the report is
+never required. If the report's SHA-256 for the backlog differs from the current file, the report is
+stale and the orchestrator asks once. A NOT READY verdict or an empty sign-off stops the sprint until
+the product owner decides, and that decision goes into the handover document. The orchestrator never
+fills the sign-off itself.
+
 A minimal `kit.json` for a single-module Laravel app:
 
 ```json
@@ -131,7 +139,7 @@ Full contract: [`docs/kit-json.md`](docs/kit-json.md).
 | `agents/` | The eight roles (`scrum-kit:<role>`). |
 | `commands/` | `kit-init`, `sprint`, `hotfix`, `rilis`. |
 | `hooks/` | `path_ownership.py` with its self-test, and a wrapper that finds a working Python. |
-| `scripts/` | `worktree-new.sh` (worktree + branch, optional sparse checkout), `panggil_llm.py` (one LLM entry point for project scripts). |
+| `scripts/` | `worktree-new.sh` (worktree + branch, optional sparse checkout), `panggil_llm.py` (one LLM entry point for project scripts), `backlog-sidik.py` (backlog SHA-256 for the readiness gate). |
 | `templates/` | `CLAUDE.md`, MR/PR template, backlog, handover, code-debt log. |
 | `docs/` | `kit-json.md` (the `.claude/kit.json` contract) and `alur-bersama.md` (how commands dispatch agents and merge, shared by `sprint`, `hotfix`, `rilis`). |
 
@@ -140,6 +148,7 @@ Full contract: [`docs/kit-json.md`](docs/kit-json.md).
 ```bash
 py -I hooks/test_path_ownership.py
 py -I scripts/panggil_llm.py --uji
+py -I scripts/backlog-sidik.py --self-test
 claude plugin validate .
 ```
 

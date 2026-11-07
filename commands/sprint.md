@@ -55,10 +55,30 @@ Hanya bila `spek_eksternal.drive_folder_id` terisi; selain itu lewati.
 1. Baca backlog sprint $0. Belum ada/kosong → berhenti, minta manusia mengisinya. Jangan mengarang backlog.
 2. Jalankan `gate.ci` secara lokal di basis, dan periksa juga pipeline basis bila forge punya;
    laporkan keduanya. Merah → serahkan ke `scrum-kit:platform-tooling` lebih dulu.
-3. **Dokumen sprint ter-commit di basis, sebelum worktree pertama dibuat.** Worktree peran hanya
+3. **Gerbang kesiapan backlog.** Cara membaca laporan dan baris serah terimanya:
+   `${CLAUDE_PLUGIN_ROOT}/docs/alur-bersama.md` bagian "Gerbang kesiapan backlog". Laporannya:
+   `docs/sprints/backlog-check-{nn}.md`.
+   - Tidak ada → sampaikan sekali bahwa belum ada laporan kesiapan, dan bahwa skill gratis
+     "Backlog Check" dari Lanewright Planning membuatnya; tanya apakah lanjut tanpa laporan. Laporan
+     ini tidak wajib: lanjut bila pengguna berkata begitu, selain itu berhenti.
+   - Ada → baca putusan, tabel berkas yang diperiksa, dan blok persetujuan. Hitung sidik jari backlog
+     sprint $0 saat ini: `PELUNCUR=$(sh "${CLAUDE_PLUGIN_ROOT}/hooks/cari-python.sh" --peluncur)`, lalu
+     `$PELUNCUR "${CLAUDE_PLUGIN_ROOT}/scripts/backlog-sidik.py" <backlog>`; bandingkan dengan baris
+     backlog itu di tabel.
+   - Sidik jari berbeda → laporan usang (backlog berubah sesudah diperiksa): sampaikan, lalu tanya
+     sekali: lanjut, atau berhenti untuk menjalankan ulang Backlog Check.
+   - Putusan NOT READY / BELUM SIAP, atau blok persetujuan kosong (belum ada yang menyetujui) →
+     berhenti dan tanya product owner sekali. Lanjut hanya atas keputusan eksplisitnya, dicatat di
+     serah terima sebagai baris "Gerbang laporan: dilanjutkan tanpa persetujuan, alasan <alasan>".
+     Bila laporan juga usang, satukan dalam pertanyaan yang sama.
+   - Sidik jari cocok, putusan READY / READY WITH WARNINGS (atau padanan Indonesianya), dan
+     persetujuan terisi → lanjut dan catat di serah terima.
+   Jangan pernah mengisi blok persetujuan atau mengubah laporan itu sendiri.
+4. **Dokumen sprint ter-commit di basis, sebelum worktree pertama dibuat.** Worktree peran hanya
    melihat berkas yang ter-commit; backlog yang belum ter-commit terlihat sebagai templat kosong, dan
    ID yang dikutip kriteria penerimaan (mis. F-01, BR-03, A-04) tidak bisa dicari. Daftar: backlog
-   sprint $0, ditambah `docs/requirements/` dan rencana mingguan bila ada.
+   sprint $0, ditambah `docs/requirements/`, rencana mingguan, dan laporan kesiapan bila ada, serta
+   `dokumen.serah_terima` bila langkah 3 menulis barisnya.
    - Di branch basis (`git switch <branch.basis>`, `git fetch origin`,
      `git merge --ff-only origin/<branch.basis>`): `git status --porcelain -- <daftar>` harus kosong
      dan `git ls-files -- <daftar>` memuat setiap berkas.
@@ -67,13 +87,13 @@ Hanya bila `spek_eksternal.drive_folder_id` terisi; selain itu lewati.
      (perubahan lain yang ter-stage tidak ikut). Tidak dikonfirmasi → berhenti.
    - Dokumen ini milik orkestrator. Hook kepemilikan tidak membatasi branch basis (di luar pola
      `branch.wilayah`), dan ia tidak memeriksa `git commit`. Commit ini **tidak** di-push ke basis; ia
-     sampai ke basis lewat MR integrasi (langkah 4).
-4. `git fetch origin`; buat branch integrasi bila belum ada dari `<branch.basis>` lokal (=
-   `origin/<branch.basis>` ditambah commit dokumen langkah 3; `git merge-base --is-ancestor
+     sampai ke basis lewat MR integrasi (langkah 5).
+5. `git fetch origin`; buat branch integrasi bila belum ada dari `<branch.basis>` lokal (=
+   `origin/<branch.basis>` ditambah commit dokumen langkah 4; `git merge-base --is-ancestor
    origin/<branch.basis> <branch.basis>` harus sukses, selain itu berhenti), push. Branch integrasi
    sudah ada tetapi tanpa backlog itu (`git cat-file -e <branch.integrasi>:<backlog>` gagal) → merge
    `<branch.basis>` lokal ke branch integrasi (merge commit), push.
-5. Kelompokkan item menurut wilayah pemiliknya (`wilayah.*.agen`).
+6. Kelompokkan item menurut wilayah pemiliknya (`wilayah.*.agen`).
 
 ## Langkah 1 — Fondasi (barrier)
 
@@ -162,7 +182,7 @@ item QA selalu memakai ID item QA itu sendiri:
 - Jangan merge MR ke `branch.basis` tanpa persetujuan manusia (pengecualian tertulis: hotfix jalur biasa
   dan back-merge di `/scrum-kit:hotfix`); jangan pernah push langsung ke basis
   maupun `branch.rilis`; jangan membuka MR ke `branch.rilis` tanpa diminta (itu tugas `/scrum-kit:rilis`).
-- Jangan membuat worktree sebelum langkah 0.3 lulus: peran tidak pernah mulai dari backlog yang belum
+- Jangan membuat worktree sebelum langkah 0.4 lulus: peran tidak pernah mulai dari backlog yang belum
   ter-commit.
 - Jangan menonaktifkan/melewati test merah; akar masalahnya yang diperbaiki.
 - Agen yang melapor selesai tanpa keluaran gate → kembalikan.

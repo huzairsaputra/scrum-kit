@@ -8,6 +8,7 @@ segera. Pekerjaan yang sudah selesai dan tersinkron dipangkas — dokumen ini ha
 - Branch basis: <!-- staging -->, terakhir di-deploy: <!-- MR, SHA, tanggal -->
 - Rilis produksi terakhir: <!-- versi, MR, SHA, tanggal (diisi `/scrum-kit:rilis`) -->
 - Sedang berjalan: <!-- item, branch/worktree, agen -->
+- Gerbang laporan: <!-- hasil gerbang kesiapan backlog `/scrum-kit:sprint`, (sprint nn, tanggal); lihat docs/alur-bersama.md di plugin scrum-kit -->
 
 ## Antrean
 
