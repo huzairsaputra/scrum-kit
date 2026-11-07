@@ -128,16 +128,17 @@ Itu model bawaan: QA mengerjakan item implementer, dengan ID item itu. Backlog b
 **item QA sendiri** (item berwilayah `tests` dengan ID-nya sendiri). Worktree, branch, laporan, dan MR
 item QA selalu memakai ID item QA itu sendiri:
 
-- **(a) Item QA yang menyebut item yang diujinya** (`Menguji: <ID>` di teks item): dibuat sesudah
+- **(a) Item QA yang menyebut item yang diujinya** (penanda `Menguji: <ID>` atau `Tests: <ID>` di
+  teks item; Sprint Planner menulis `Tests:`, keduanya sama artinya): dibuat sesudah
   build item yang diuji hijau, di atas branch item itu:
   `worktree-new.sh tests <id-QA> $0 --base=<branch item yang diuji>` (ditambah `--modul=<m>` bila
   ada modul). Branch item yang diuji tidak ada (sudah merge, atau di luar sprint) → tanpa `--base`.
   Menguji beberapa item → `--base` ke branch item pertama, lalu merge branch item lainnya ke worktree
   itu (`git merge --no-ff`) sebelum agen mulai. Prompt agen memuat ID item QA dan ID item yang diuji.
-- **(b) Item implementasi tanpa item QA**: begitu minimal satu item backlog memuat `Menguji:`, model
-  bawaan tidak dipakai di sprint ini; item implementasi yang tidak disebut `Menguji:` item mana pun
+- **(b) Item implementasi tanpa item QA**: begitu minimal satu item backlog memuat penanda itu, model
+  bawaan tidak dipakai di sprint ini; item implementasi yang tidak disebut penanda item mana pun
   tidak mendapat QA.
-- **(c) Item QA tanpa item implementasi** (mis. fixture; tanpa `Menguji:`): worktree dari branch
+- **(c) Item QA tanpa item implementasi** (mis. fixture; tanpa penanda): worktree dari branch
   integrasi (`worktree-new.sh tests <id-QA> $0`), tanpa menunggu item lain.
 
 ## Langkah 5 — Review dan merge per item

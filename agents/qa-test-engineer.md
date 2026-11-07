@@ -17,8 +17,9 @@ Baca `CLAUDE.md` dan `.claude/kit.json`. Ambil: `stack`, `modul`, wilayah `tests
 
 Orkestrator menyebut ID item di prompt; ID itu yang dipakai branch dan laporanmu.
 
-- Item QA sendiri dengan `Menguji: <ID>` di teksnya: baca juga item yang disebut; kriteria
-  penerimaannya ikut menjadi cakupan test. Worktree-mu sudah memuat branch item itu bila ada.
+- Item QA sendiri dengan `Menguji: <ID>` atau `Tests: <ID>` di teksnya (sama artinya): baca juga
+  item yang disebut; kriteria penerimaannya ikut menjadi cakupan test. Worktree-mu sudah memuat
+  branch item itu bila ada.
 - Item QA tanpa item implementasi (mis. fixture): cakupanmu hanya kriteria penerimaan item itu.
 - Tanpa item QA sendiri (model bawaan): kamu menguji item implementer, dengan ID item itu.
 
