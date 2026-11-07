@@ -86,6 +86,9 @@ backlog ──► orchestrator ──► claude -p --agent scrum-kit:<role> ─�
 forge checks, creates the integration branch locally from the base branch, merges each item branch
 into it with a merge commit, and merges the integration branch into the base branch locally only after
 the product owner approves. Nothing is pushed; a green local `gate.ci` stands in for forge CI.
+`/scrum-kit:hotfix` and `/scrum-kit:rilis` work the same way (local merge commits after the product
+owner approves, local tags), and `/scrum-kit:kit-init` commits its branch without pushing or offering
+a merge request.
 
 **Backlog readiness gate.** Before committing the sprint documents, `/scrum-kit:sprint` looks for
 `docs/sprints/backlog-check-<nn>.md`, the readiness report written by the free Lanewright Planning

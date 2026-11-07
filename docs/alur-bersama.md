@@ -69,8 +69,10 @@ hotfix yang belum di-back-merge.
 
 ### Mode lokal (tanpa remote)
 
-Bila `git remote` kosong, tidak ada forge. Nyatakan "Mode lokal: tidak ada remote; pemeriksaan forge
-dilewati" di laporan, lalu:
+Bila `git remote` kosong, tidak ada forge. Berlaku untuk `/scrum-kit:sprint`, `/scrum-kit:hotfix`,
+dan `/scrum-kit:rilis` (rinciannya di bagian "Mode lokal" tiap perintah); `/scrum-kit:kit-init` pada
+mode ini tidak push dan tidak menawarkan MR. Nyatakan "Mode lokal: tidak ada remote; pemeriksaan
+forge dilewati" di laporan, lalu:
 
 - Syarat CI pada SHA HEAD diganti `gate.ci` lokal yang hijau pada HEAD yang akan di-merge; keluarannya
   ditempel di laporan. Pemeriksaan forge (status merge, approval, pengaturan merge) dilewati.
@@ -80,6 +82,7 @@ dilewati" di laporan, lalu:
 - Sesudah merge, hanya bila `git merge-base --is-ancestor <branch> <tujuan>` sukses:
   `git worktree remove <worktree>` dan `git branch -D <branch>`. Tidak ada `git push`, termasuk
   `git push origin --delete`. Selain itu simpan branch dan worktree-nya, lalu laporkan.
+- Tag rilis atau hotfix dibuat lokal dan tidak di-push.
 
 ## Gerbang kesiapan backlog
 

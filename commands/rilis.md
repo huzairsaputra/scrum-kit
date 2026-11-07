@@ -24,6 +24,32 @@ saat jadwal tiba), ambil `S` dari baris `S: <sha>` di deskripsinya dan langsung 
 menghitung ulang `S` dan jangan push ulang branch itu. Branch `claude/rilis-<versi>` sudah ada tetapi
 MR-nya belum ada → berhenti dan laporkan SHA branch itu ke manusia.
 
+## Mode lokal (tanpa remote)
+
+Periksa `git remote` sekali di awal. Kosong → rilis berjalan dalam **mode lokal**, seperti
+`/scrum-kit:sprint`. Tulis di awal laporan ke manusia: "Mode lokal: tidak ada remote; pemeriksaan
+forge (pipeline, MR, CI pada SHA HEAD) dilewati." Semua langkah tetap berlaku, dengan pengganti
+berikut:
+
+- Tanpa `git fetch` dan tanpa `git push`; `origin/<branch>` dibaca sebagai `<branch>` lokal. Tidak
+  ada yang di-push, termasuk tag.
+- Langkah 1: daftar perubahan diambil dari merge commit lokal (`Merge branch '<branch>'`), bukan
+  nomor MR/PR.
+- Langkah 2: pipeline basis diganti `gate.ci` lokal yang hijau pada `S` (di worktree sementara pada
+  `S`, keluarannya di laporan). "MR integrasi sprint yang masih terbuka" = branch integrasi sprint
+  yang belum masuk basis (`git branch --no-merged <basis>`).
+- Langkah 5–6: tanpa MR. Bekukan isi rilis dengan `git branch claude/rilis-<versi> S`. Catatan rilis
+  (diawali baris `rilis: <proyek> <versi>`, lalu `S: <sha>`) ditulis ke berkas di scratchpad dan
+  ditunjukkan ke PO.
+- **Lanjutan**: branch `claude/rilis-<versi>` sudah ada → `S` = `git rev-parse claude/rilis-<versi>`,
+  susun ulang catatan rilis dari isi rilis pada `S`, lalu langsung ke langkah 7.
+- Langkah 7: sesudah PO menyetujui di chat: `git switch <rilis>` lalu
+  `git merge --no-ff -F <berkas catatan> claude/rilis-<versi>` (catatan rilis menjadi pesan merge
+  commit).
+- Langkah 8: tanpa pemantauan pipeline; deploy di luar kit, laporkan ke manusia. Tag beranotasi
+  dibuat lokal. Hapus `claude/rilis-<versi>` hanya bila `git merge-base --is-ancestor
+  claude/rilis-<versi> <rilis>` sukses.
+
 ## Langkah
 
 1. **Isi rilis.** `git fetch origin`, catat `S` = `git rev-parse origin/<basis>`. Isi rilis =
@@ -74,7 +100,8 @@ MR-nya belum ada → berhenti dan laporkan SHA branch itu ke manusia.
 
 ## Aturan
 
-- Jangan pernah push langsung ke `branch.rilis` maupun basis; semua lewat MR.
+- Jangan pernah push langsung ke `branch.rilis` maupun basis; semua lewat MR (mode lokal: merge lokal
+  atas persetujuan PO, lihat "Mode lokal").
 - Pipeline merah, konflik basis ↔ rilis, atau deploy gagal → berhenti dan laporkan; jangan
   menambal di branch rilis. Perbaikan yang mendesak lewat `/scrum-kit:hotfix` jalur darurat.
 - Rollback produksi adalah keputusan PO dan DevOps; siapkan informasinya (SHA rilis sebelumnya,
