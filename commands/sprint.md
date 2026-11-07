@@ -182,7 +182,8 @@ item QA selalu memakai ID item QA itu sendiri:
 
 ## Langkah 6 — Penutup
 
-1. `api-contract-keeper` sekali lagi: kontrak = kode yang benar-benar ada.
+1. Bila `kontrak` terisi (seperti langkah 2; selain itu lewati): `api-contract-keeper` sekali lagi:
+   kontrak = kode yang benar-benar ada.
 2. Tulis `<dokumen.laporan>/ringkasan.md`: goal, item selesai/tidak (alasannya), item terblokir,
    item yang merge "tanpa item QA",
    worktree dan branch item yang belum merge, story point, temuan terbuka, impediment. Perbarui
