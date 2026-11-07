@@ -73,6 +73,10 @@ Hanya bila `spek_eksternal.drive_folder_id` terisi; selain itu lewati.
      Bila laporan juga usang, satukan dalam pertanyaan yang sama.
    - Sidik jari cocok, putusan READY / READY WITH WARNINGS (atau padanan Indonesianya), dan
      persetujuan terisi → lanjut dan catat di serah terima.
+   - Baca juga kolom `Butir DoD tidak berlaku (disetujui):` / `DoD not applicable (approved):` di blok
+     persetujuan. Himpunan butir DoD tidak berlaku yang disetujui = butir yang disebut di sana, hanya
+     bila persetujuan terisi dan sidik jari cocok; selain itu (termasuk tanpa laporan, atau laporan
+     tanpa kolom itu) kosong. Himpunan ini dipakai di langkah 5 dan 6.
    Jangan pernah mengisi blok persetujuan atau mengubah laporan itu sendiri.
 4. **Dokumen sprint ter-commit di basis, sebelum worktree pertama dibuat.** Worktree peran hanya
    melihat berkas yang ter-commit; backlog yang belum ter-commit terlihat sebagai templat kosong, dan
@@ -156,6 +160,11 @@ item QA selalu memakai ID item QA itu sendiri:
   Tandai siap hanya bila review
   BERSIH dan CI pada SHA HEAD sukses ("Cara merge"); merah = berhenti, baca log job, jangan menumpuk
   MR di atasnya, tidak ada "merah yang diharapkan".
+- Butir DoD yang ditandai "tidak berlaku" oleh peran atau peninjau: ikuti
+  `${CLAUDE_PLUGIN_ROOT}/docs/alur-bersama.md` bagian "Butir DoD tidak berlaku selama sprint" (diterima
+  bila ada di himpunan langkah 0.3, selain itu tanya product owner sekali). Butir yang "menunggu
+  persetujuan product owner" tidak dicentang dan tidak dihitung terpenuhi; item tetap merge ke branch
+  integrasi hanya bila semua butir DoD lainnya terpenuhi.
 - Merge **hanya lewat MR** (`--no-ff`, satu merge commit per item); centang checklist DoD di deskripsi
   sebelum merge; sesudahnya bersihkan branch item ("Cara merge").
 
@@ -167,6 +176,10 @@ item QA selalu memakai ID item QA itu sendiri:
    worktree dan branch item yang belum merge, story point, temuan terbuka, impediment. Perbarui
    `dokumen.serah_terima` dan `dokumen.code_debt`, lalu commit ringkasan, putusan review yang disimpan,
    serah terima, dan code debt di branch integrasi, dan push.
+   Ada persetujuan butir DoD yang tertunda → cantumkan setiap persetujuan itu (item, butir, alasan) di
+   ringkasan dan di serah terima (bagian "Menunggu pihak lain"), lalu berhenti di sini: tanpa merge
+   branch integrasi ke basis, langsung ke langkah 5, dan laporkan bahwa merge akhir menunggu product
+   owner. Sesudah product owner menyetujui semuanya, lanjutkan dari langkah 3.
 3. Hanya bila minimal satu item sudah merge: **SATU** MR draft branch integrasi → `branch.basis`, isi
    dari templat MR proyek. Tidak ada item yang merge → tanpa MR integrasi; laporkan. Setelah merge,
    pekerjaan baru masuk backlog sprint berikutnya, bukan MR susulan dari branch integrasi.
@@ -182,6 +195,7 @@ item QA selalu memakai ID item QA itu sendiri:
 - Jangan merge MR ke `branch.basis` tanpa persetujuan manusia (pengecualian tertulis: hotfix jalur biasa
   dan back-merge di `/scrum-kit:hotfix`); jangan pernah push langsung ke basis
   maupun `branch.rilis`; jangan membuka MR ke `branch.rilis` tanpa diminta (itu tugas `/scrum-kit:rilis`).
+- Jangan pernah merge ke `branch.basis` selama ada persetujuan butir DoD "tidak berlaku" yang tertunda.
 - Jangan membuat worktree sebelum langkah 0.4 lulus: peran tidak pernah mulai dari backlog yang belum
   ter-commit.
 - Jangan menonaktifkan/melewati test merah; akar masalahnya yang diperbaiki.

@@ -23,6 +23,9 @@ segera. Pekerjaan yang sudah selesai dan tersinkron dipangkas — dokumen ini ha
 ## Butir DoD tidak berlaku
 
 Hanya berlaku dengan alasan tertulis dan persetujuan product owner (Definition of Done di `CLAUDE.md`).
+Kolom persetujuan: `disetujui di laporan kesiapan <berkas laporan> (<tanggal>)`, `disetujui PO di
+chat (<tanggal>)`, atau `menunggu persetujuan product owner` (merge akhir ke branch basis menunggu;
+cantumkan juga di "Menunggu pihak lain").
 
 | Sprint | Item | Butir DoD | Alasan | Disetujui PO (tanggal) |
 |---|---|---|---|---|
