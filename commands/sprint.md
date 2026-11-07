@@ -81,6 +81,22 @@ Begitu build sebuah modul hijau, `scrum-kit:qa-test-engineer` untuk modul itu
 modul lain. Bila `modul` di `kit.json` kosong (proyek satu modul), hilangkan `--modul`:
 `worktree-new.sh tests <id> $0`.
 
+Itu model bawaan: QA mengerjakan item implementer, dengan ID item itu. Backlog bisa juga memuat
+**item QA sendiri** (item berwilayah `tests` dengan ID-nya sendiri). Worktree, branch, laporan, dan MR
+item QA selalu memakai ID item QA itu sendiri:
+
+- **(a) Item QA yang menyebut item yang diujinya** (`Menguji: <ID>` di teks item): dibuat sesudah
+  build item yang diuji hijau, di atas branch item itu:
+  `worktree-new.sh tests <id-QA> $0 --base=<branch item yang diuji>` (ditambah `--modul=<m>` bila
+  ada modul). Branch item yang diuji tidak ada (sudah merge, atau di luar sprint) → tanpa `--base`.
+  Menguji beberapa item → `--base` ke branch item pertama, lalu merge branch item lainnya ke worktree
+  itu (`git merge --no-ff`) sebelum agen mulai. Prompt agen memuat ID item QA dan ID item yang diuji.
+- **(b) Item implementasi tanpa item QA**: begitu minimal satu item backlog memuat `Menguji:`, model
+  bawaan tidak dipakai di sprint ini; item implementasi yang tidak disebut `Menguji:` item mana pun
+  tidak mendapat QA.
+- **(c) Item QA tanpa item implementasi** (mis. fixture; tanpa `Menguji:`): worktree dari branch
+  integrasi (`worktree-new.sh tests <id-QA> $0`), tanpa menunggu item lain.
+
 ## Langkah 5 — Review dan merge per item
 
 - `scrum-kit:code-reviewer` untuk tiap item (basis diff `origin/<branch.integrasi>`);
@@ -89,7 +105,16 @@ modul lain. Bila `modul` di `kit.json` kosong (proyek satu modul), hilangkan `--
   wilayah item → tandai item terblokir, tanya manusia sekali beserta opsinya, lanjutkan item lain, dan
   cantumkan di ringkasan.
 - Satu MR per item → branch integrasi, dibuka sebagai draft dari branch QA (memuat commit
-  implementasinya); branch implementasi tidak mendapat MR sendiri. Tandai siap hanya bila review
+  implementasinya); branch implementasi tidak mendapat MR sendiri. Backlog dengan item QA sendiri
+  (Langkah 4):
+  - (a) MR dari branch item QA itu sendiri. Item yang diuji ikut di MR itu (commitnya ada di branch
+    QA) dan tidak mendapat MR sendiri; deskripsi MR menyebut kedua ID.
+  - (b) MR dari branch item implementasi itu sendiri, dengan catatan terlihat **"tanpa item QA"** di
+    judul dan di awal deskripsi MR. Butir pengujian di checklist DoD tidak dicentang, tetapi ditandai
+    "tanpa item QA".
+  - (c) MR dari branch item QA itu sendiri.
+
+  Tandai siap hanya bila review
   BERSIH dan CI pada SHA HEAD sukses ("Cara merge"); merah = berhenti, baca log job, jangan menumpuk
   MR di atasnya, tidak ada "merah yang diharapkan".
 - Merge **hanya lewat MR** (`--no-ff`, satu merge commit per item); centang checklist DoD di deskripsi
@@ -99,6 +124,7 @@ modul lain. Bila `modul` di `kit.json` kosong (proyek satu modul), hilangkan `--
 
 1. `api-contract-keeper` sekali lagi: kontrak = kode yang benar-benar ada.
 2. Tulis `<dokumen.laporan>/ringkasan.md`: goal, item selesai/tidak (alasannya), item terblokir,
+   item yang merge "tanpa item QA",
    worktree dan branch item yang belum merge, story point, temuan terbuka, impediment. Perbarui
    `dokumen.serah_terima` dan `dokumen.code_debt`, lalu commit ringkasan, putusan review yang disimpan,
    serah terima, dan code debt di branch integrasi, dan push.
