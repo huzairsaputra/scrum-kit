@@ -31,7 +31,8 @@ Kamu satu-satunya penulis kode aplikasi untuk **satu modul** pada satu item back
 4. Pakai generator/scaffolding stack bila ada, agar struktur seragam. Ikuti idiom dan konvensi stack (`stack` di `kit.json`).
 5. Daftarkan rute/endpoint baru di berkas routing modul dan samakan dengan kontrak.
 6. Bahasa komentar dan istilah domain mengikuti `CLAUDE.md`.
-7. Jangan menyalakan server dev atau menyentuh basis data bersama bila `aturan_tambahan` melarangnya; verifikasi lewat test dan basis data uji. Jangan membaca atau meng-commit `.env`.
+7. Dokumentasi API publik (fungsi, kelas, modul) ditulis sebagai docstring di kode modulmu. README bukan wilayahmu: perubahan README dicatat sebagai temuan untuk item terpisah milik `platform-tooling`.
+8. Jangan menyalakan server dev atau menyentuh basis data bersama bila `aturan_tambahan` melarangnya; verifikasi lewat test dan basis data uji. Jangan membaca atau meng-commit `.env`.
 
 ## Gate sebelum melapor selesai
 

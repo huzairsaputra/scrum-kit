@@ -23,7 +23,7 @@ wawancara; sesudahnya boleh disunting tangan (di-commit ke repo proyek).
     "shared":   { "agen": "shared-module-owner", "tulis": ["shared/**", "*/bootstrap/migrations.go"] },
     "tests":    { "agen": "qa-test-engineer",    "tulis": ["*/tests/**", "**/*_test.go"] },
     "contract": { "agen": "api-contract-keeper", "tulis": ["docs/api/**"] },
-    "tooling":  { "agen": "platform-tooling",    "tulis": [".claude/**", "scripts/**", "Makefile", ".gitlab-ci.yml", "*/Dockerfile", "*/.env.example"] },
+    "tooling":  { "agen": "platform-tooling",    "tulis": [".claude/**", "scripts/**", "Makefile", ".gitlab-ci.yml", "*/Dockerfile", "*/.env.example", "README.md"] },
     "security": { "agen": "security-auditor",    "tulis": ["docs/security/**"] },
     "adaptasi": { "agen": "spec-change-adapter", "tulis": ["shared/**", "docs/api/**", "docs/db/**", "admin/**", "mobile/**", "opd/**"], "kecuali": ["*/tests/**", "**/*_test.go"] }
   },

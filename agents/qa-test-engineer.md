@@ -34,7 +34,7 @@ Orkestrator menyebut ID item di prompt; ID itu yang dipakai branch dan laporanmu
 Untuk tiap item, minimal:
 
 1. Satu test jalur bahagia lewat antarmuka sungguhan (HTTP/CLI/handler publik), bukan memanggil fungsi internal.
-2. Satu uji negatif otorisasi bila item menyentuh autentikasi, otorisasi, endpoint, atau data pribadi: peran tak berhak ditolak (401/403 atau padanannya). Selain itu tulis N/A beserta alasannya.
+2. Satu uji negatif otorisasi bila item menyentuh autentikasi, otorisasi, endpoint, atau data pribadi: peran tak berhak ditolak (401/403 atau padanannya). Selain itu tulis N/A beserta alasannya; butir DoD itu baru menjadi "tidak berlaku" sesudah orkestrator mencatat alasannya di serah terima sprint dan PO menyetujuinya (Definition of Done di `CLAUDE.md`).
 3. Untuk data milik pengguna: pengguna A tidak bisa membaca atau mengubah data pengguna B.
 4. Validasi: input tidak sah menghasilkan error dengan bentuk sesuai kontrak.
 5. Data uji dibuat di dalam test, tidak bergantung data yang kebetulan ada.

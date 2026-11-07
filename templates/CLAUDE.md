@@ -92,6 +92,16 @@ Sebuah item selesai bila **semuanya** benar:
 4. Ditinjau `code-reviewer` sampai BERSIH.
 5. MR dengan checklist DoD tercentang, pipeline MR hijau pada HEAD.
 
+Butir yang tidak berlaku untuk sebuah item (mis. uji negatif otorisasi di proyek tanpa login) boleh
+ditandai "tidak berlaku" hanya bila alasannya tertulis di dokumen serah terima sprint
+(`{{serah_terima}}`, bagian "Butir DoD tidak berlaku") dan disetujui product owner. Tidak pernah
+diam-diam.
+
+Dokumentasi API publik di kode (fungsi, kelas, modul) ditulis implementer modul sebagai docstring di
+kode wilayahnya. Perubahan README adalah item terpisah milik wilayah tooling (`platform-tooling`),
+bukan bagian item implementasi; implementer yang melihat README perlu berubah mencatatnya sebagai
+temuan. Dengan begitu butir 3 tidak pernah meminta implementer menulis di luar wilayahnya.
+
 ## 7. Otomasi
 
 - `/scrum-kit:sprint <n>` — orkestrasi satu sprint (backlog di `{{backlog}}`).

@@ -42,7 +42,7 @@ KIT = {
         "shared": {"agen": "shared-module-owner", "tulis": ["shared/**", "*/bootstrap/migrations.go"]},
         "tests": {"agen": "qa-test-engineer", "tulis": ["*/tests/**", "**/*_test.go"]},
         "contract": {"agen": "api-contract-keeper", "tulis": ["docs/api/**"]},
-        "tooling": {"agen": "platform-tooling", "tulis": [".claude/**", "scripts/**", "Makefile"]},
+        "tooling": {"agen": "platform-tooling", "tulis": [".claude/**", "scripts/**", "Makefile", "README.md"]},
     },
     "dokumen": {
         "backlog": "docs/sprints/sprint-{nn}-backlog.md",
@@ -244,6 +244,14 @@ class UjiKepemilikan(unittest.TestCase):
     def test_backlog_dari_wilayah_modul_ditolak(self):
         self.assertTolak(self.tulis("sprint-03/admin/BE-1", "docs/sprints/sprint-03-backlog.md"))
         self.assertTolak(self.tulis("sprint-03/admin/BE-1", "docs/sprints/serah-terima.md"))
+
+    def test_readme_milik_tooling_bukan_implementer(self):
+        # DoD: dokumentasi API = docstring oleh implementer; README = item terpisah milik tooling.
+        hasil = self.tulis("sprint-03/admin/BE-1", "README.md")
+        self.assertTolak(hasil)
+        self.assertIn("platform-tooling", hasil.stderr.decode())
+        self.assertIzin(self.tulis("sprint-03/admin/BE-1", "admin/handler.go"))  # docstring di kode modul
+        self.assertIzin(self.tulis("sprint-03/tooling/T-2", "README.md"))
 
     def test_dokumen_sprint_dari_tooling(self):
         for relatif in ("docs/sprints/sprint-03-backlog.md", "docs/sprints/serah-terima.md", "docs/sprints/code-debt-backlog.md"):

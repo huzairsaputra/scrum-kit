@@ -66,7 +66,7 @@ Tanyakan hanya yang tidak bisa disimpulkan, dengan usulan hasil deteksi sebagai 
 
 | Berkas | Isi |
 |---|---|
-| `.claude/kit.json` | Hasil langkah 1–2, mengikuti `docs/kit-json.md` persis. |
+| `.claude/kit.json` | Hasil langkah 1–2, mengikuti `docs/kit-json.md` persis. Wilayah `tooling` memuat `README.md`: perubahan README adalah item milik `platform-tooling` (Definition of Done di `CLAUDE.md`). |
 | `CLAUDE.md` | Dari `${CLAUDE_PLUGIN_ROOT}/templates/CLAUDE.md`; isi semua `{{...}}` (`{{rilis_teks}}` = spasi lalu ``maupun `<branch.rilis>` ``, mis. `` maupun `main` `` dengan spasi pembuka; bila `branch.rilis` kosong, `{{rilis_teks}}` dikosongkan dan `` `{{rilis}}`, `` dihapus), hapus komentar `/kit-init`. Bila `CLAUDE.md` sudah ada, sisipkan bagian yang belum ada; jangan buang aturan lama. |
 | `scripts/kit/worktree-new.sh` | Salin dari `${CLAUDE_PLUGIN_ROOT}/scripts/worktree-new.sh` (agar tim tanpa plugin pun bisa memakainya). |
 | `.gitlab/merge_request_templates/Default.md` (GitLab) atau `.github/pull_request_template.md` (GitHub) | Dari `templates/merge_request.md`, kecuali templat proyek sudah ada. |

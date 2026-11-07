@@ -18,6 +18,7 @@ Modul:
 - [ ] Validasi input dan otorisasi mengikuti pola framework; minimal satu uji negatif otorisasi
 - [ ] Tidak ada rahasia/`.env`; perubahan tidak keluar dari wilayah kepemilikan
 - [ ] Ditinjau `code-reviewer` (BERSIH) dan pipeline MR hijau pada HEAD
+- [ ] Butir yang ditandai "tidak berlaku" punya alasan di serah terima sprint dan disetujui PO (atau tidak ada)
 
 ## Bukti gate
 
