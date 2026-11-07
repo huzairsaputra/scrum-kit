@@ -355,6 +355,40 @@ class UjiPembungkus(unittest.TestCase):
             shutil.rmtree(kosong, ignore_errors=True)
 
 
+@unittest.skipUnless(shutil.which("sh"), "sh tidak tersedia")
+class UjiCariPeluncur(unittest.TestCase):
+    """cari-python.sh --peluncur: python3 → python → py -3; stub Microsoft Store (exit 49) dilewati."""
+
+    STUB = '#!/bin/sh\necho "Python was not found; run without arguments to install from the Microsoft Store" >&2\nexit 49\n'
+    PY_LAYAK = '#!/bin/sh\n[ "$1" = "-3" ] && [ "$2" = "--version" ] && echo "Python 3.12.0" && exit 0\nexit 9\n'
+
+    def peluncur(self, berkas):
+        palsu = tempfile.mkdtemp(prefix="kit-peluncur-")
+        try:
+            for nama, isi in berkas.items():
+                jalur = os.path.join(palsu, nama)
+                with open(jalur, "w", encoding="utf-8", newline="\n") as f:
+                    f.write(isi)
+                os.chmod(jalur, 0o755)
+            sh = shutil.which("sh")
+            # Direktori palsu di depan: python3/python/py asli di PATH tertutup oleh stub.
+            env = dict(LINGKUNGAN, PATH=palsu + os.pathsep + os.path.dirname(sh))
+            hasil = subprocess.run([sh, os.path.join(AKAR_HOOK, "cari-python.sh"), "--peluncur"], capture_output=True, env=env, timeout=60)
+            return hasil.returncode, hasil.stdout.decode().strip()
+        finally:
+            shutil.rmtree(palsu, ignore_errors=True)
+
+    def test_stub_store_dilewati_jatuh_ke_py_3(self):
+        self.assertEqual(self.peluncur({"python3": self.STUB, "python": self.STUB, "py": self.PY_LAYAK}), (0, "py -3"))
+
+    def test_python3_didahulukan(self):
+        layak = '#!/bin/sh\necho "Python 3.11.2"\n'
+        self.assertEqual(self.peluncur({"python3": layak, "python": layak, "py": self.PY_LAYAK}), (0, "python3"))
+
+    def test_semua_stub_gagal(self):
+        self.assertEqual(self.peluncur({"python3": self.STUB, "python": self.STUB, "py": self.STUB}), (1, ""))
+
+
 # `which` mengikuti urutan PATH, jadi di Windows bisa mengembalikan System32\bash.exe (WSL), yang tidak
 # memahami path Windows; kelas ini dilewati di situ alih-alih gagal.
 BASH = shutil.which("bash")

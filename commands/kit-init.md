@@ -22,6 +22,10 @@ Teks bebas lain di argumen adalah batasan dari manusia (mis. "jangan push", "non
 - Calon modul: direktori aplikasi di akar (monorepo) atau satu modul (repo tunggal).
 - Perintah gate yang SUDAH ada: target `Makefile`, `composer.json` scripts, `package.json` scripts,
   `.gitlab-ci.yml`/workflow. Utamakan perintah yang dipanggil CI.
+- Peluncur Python untuk gate: `PELUNCUR=$(sh "${CLAUDE_PLUGIN_ROOT}/hooks/cari-python.sh" --peluncur)`.
+  Skrip mencoba `python3`, `python`, lalu `py -3`; kandidat layak hanya bila `<kandidat> --version`
+  jalan dan mencetak versi Python 3. Di Windows `python` sering berupa stub Microsoft Store yang keluar
+  dengan kode 49 sebelum menjalankan apa pun, jadi jangan menganggap `python` jalan.
 - `CLAUDE.md`, `.claude/` yang sudah ada (jangan hapus isinya; gabungkan).
 - Jangan membaca `.env` mana pun.
 
@@ -47,6 +51,13 @@ Tanyakan hanya yang tidak bisa disimpulkan, dengan usulan hasil deteksi sebagai 
    `kit.json` tanpa `branch.rilis` juga menanyakannya.
 3. Gate: perintah fmt/lint/build/test/dod per modul (usul dari langkah 1; bila belum ada, usulkan
    perintah stack bawaan dan catat bahwa CI harus memakai perintah yang sama).
+   Gate (`ci`, `test`, `build`, dan lainnya) yang memanggil Python ditulis dengan `$PELUNCUR` dari
+   langkah 1 (mis. `py -3 -m pytest`, bukan `python -m pytest`). Sebutkan di wawancara dan di laporan
+   akhir peluncur yang dipilih dan alasannya (mis. "`python` di mesin ini stub Microsoft Store, exit
+   49; dipakai `py -3`"). Berkas CI proyek yang memanggil `python` dibiarkan apa adanya; catat di
+   laporan dan di tabel gate `CLAUDE.md` bahwa gate lokal hanya berbeda di peluncur. Tidak ada
+   peluncur yang layak → tulis gate persis seperti di CI dan laporkan bahwa gate Python tidak bisa
+   dijalankan di mesin ini.
 4. Spesifikasi eksternal Google Drive: ID folder atau "tidak ada"; wajib atau opsional.
 5. Aturan tambahan proyek (basis data bersama yang tak boleh disentuh, server dev yang tak boleh
    dinyalakan, wilayah DevOps yang tak boleh diubah).

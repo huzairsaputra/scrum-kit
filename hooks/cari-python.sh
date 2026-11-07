@@ -7,6 +7,21 @@
 # sesi Claude Code bisa tidak memuat `py` walau Python terpasang — jadi setelah PATH, coba
 # lokasi pemasangan bawaan Windows. Kandidat layak hanya bila `-c "import sys"` sukses.
 
+#
+# --peluncur: cetak NAMA peluncur (python3, python, atau "py -3") untuk ditulis di gate kit.json,
+# bukan path mesin ini. Layak hanya bila `<peluncur> --version` jalan dan mencetak "Python 3.";
+# stub Microsoft Store mencetak "Python was not found" dan keluar dengan kode 49.
+
+if [ "${1:-}" = "--peluncur" ]; then
+	for p in python3 python "py -3"; do
+		# $p sengaja tanpa kutip: "py -3" = perintah + argumen.
+		if v=$($p --version 2>&1); then
+			case "$v" in "Python 3."*) echo "$p"; exit 0 ;; esac
+		fi
+	done
+	exit 1
+fi
+
 layak() { "$1" -c "import sys; sys.exit(0 if sys.version_info[0] == 3 else 1)" >/dev/null 2>&1; }
 
 for p in python3 python py; do
