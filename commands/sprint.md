@@ -166,7 +166,12 @@ item QA selalu memakai ID item QA itu sendiri:
 
   Tandai siap hanya bila review
   BERSIH dan CI pada SHA HEAD sukses ("Cara merge"); merah = berhenti, baca log job, jangan menumpuk
-  MR di atasnya, tidak ada "merah yang diharapkan".
+  MR di atasnya, tidak ada "merah yang diharapkan". Satu pengecualian: test lama yang gagal hanya
+  karena item itu sengaja mengganti perilaku yang diujinya (dan backlog mengharapkannya) boleh merah
+  di branch item implementasi, asalkan item QA yang menulis ulang test itu (bentuk (a)) di-merge di
+  sprint yang sama dan branch integrasi hijau. Item itu merge lewat branch QA-nya, tidak pernah
+  sendiri; branch QA (yang dinilai CI dan review) tetap harus hijau. Tanpa item QA seperti itu, merah
+  tetap merah.
 - Butir DoD yang ditandai "tidak berlaku" oleh peran atau peninjau: ikuti
   `${CLAUDE_PLUGIN_ROOT}/docs/alur-bersama.md` bagian "Butir DoD tidak berlaku selama sprint" (diterima
   bila ada di himpunan langkah 0.3, selain itu tanya product owner sekali). Butir yang "menunggu

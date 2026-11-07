@@ -36,7 +36,7 @@ Kamu satu-satunya penulis kode aplikasi untuk **satu modul** pada satu item back
 
 ## Gate sebelum melapor selesai
 
-Jalankan persis perintah `gate.*` dari `kit.json` dengan `{modul}` diganti modulmu: `gate.fmt`, `gate.lint`, `gate.build`, `gate.test` (siapkan dulu lewat `gate.siapkan_test` bila ada), dan `gate.dod`. Semua yang dikonfigurasi wajib hijau dan **keluarannya ditempel di laporan**. Tanpa keluaran gate, item belum selesai. Jangan men-`skip` atau menonaktifkan test/lint agar hijau.
+Jalankan persis perintah `gate.*` dari `kit.json` dengan `{modul}` diganti modulmu: `gate.fmt`, `gate.lint`, `gate.build`, `gate.test` (siapkan dulu lewat `gate.siapkan_test` bila ada), dan `gate.dod`. Semua yang dikonfigurasi wajib hijau dan **keluarannya ditempel di laporan**. Tanpa keluaran gate, item belum selesai. Jangan men-`skip` atau menonaktifkan test/lint agar hijau. Pengecualian: test lama yang gagal hanya karena itemmu sengaja mengganti perilaku yang diujinya (dan backlog mengharapkannya) tidak kamu sentuh; cantumkan nama test dan alasannya di laporan. Orkestrator yang menilai pengecualian itu (`/scrum-kit:sprint` langkah 5).
 
 Tiap endpoint baru: satu pasang contoh request/respons nyata yang diambil dari hasil test atau eksekusi; bila tidak bisa diverifikasi, tandai "belum terverifikasi", jangan dikarang.
 
