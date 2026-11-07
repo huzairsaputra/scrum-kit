@@ -109,7 +109,9 @@ Hanya bila `spek_eksternal.drive_folder_id` terisi; selain itu lewati.
 
 Item skema/pustaka bersama (`shared-module-owner`) dan perkakas (`platform-tooling`) paralel, masing-
 masing di worktree sendiri (`scripts/kit/worktree-new.sh <wilayah> <id> $0`). Keduanya merge ke branch
-integrasi sebelum lanjut. Lewati bila tidak ada.
+integrasi sebelum lanjut. Lewati bila tidak ada. Langkah ini hanya untuk item kedua peran itu: item
+berlabel "fondasi" (*foundation*) yang wilayahnya milik `module-dev` bukan item langkah 1; ia berjalan
+di langkah 3 seperti item modul lain.
 
 ## Langkah 2 — Kontrak lebih dulu
 
