@@ -37,12 +37,21 @@ CI pada SHA HEAD) dilewati." Semua langkah tetap berlaku, dengan pengganti berik
 - Langkah 0: pipeline basis dilewati (hanya `gate.ci` lokal); branch integrasi dibuat lokal dari
   branch basis: `git branch <branch.integrasi> <branch.basis>`.
 - Langkah 5: tanpa MR. Syarat CI diganti `gate.ci` lokal yang hijau pada HEAD branch yang akan
-  di-merge (keluarannya di laporan), dan checklist DoD dicentang di laporan item. Branch item (branch
+  di-merge. Keluaran gate itu dan checklist DoD yang dicentang ditulis ke **catatan merge**: satu
+  berkas per merge di folder laporan sprint, `<dokumen.laporan>/merge-<branch item, "/" menjadi
+  "->.md` (mis. `merge-sprint-03-tests-QA-01.md`), yang ikut di merge commit. Branch item (branch
   yang sama yang akan menjadi sumber MR, lihat Langkah 5) di-merge ke branch integrasi dengan merge
-  commit: `git switch <branch.integrasi>` lalu `git merge --no-ff <branch item>`.
-- Langkah 6: tanpa MR integrasi. Sesudah product owner menyetujui di chat: `git switch
-  <branch.basis>` lalu `git merge --no-ff <branch.integrasi>`. Belum disetujui → berhenti dan
-  laporkan; branch integrasi tetap ada.
+  commit: `git switch <branch.integrasi>`, `git merge --no-ff --no-commit <branch item>`, tulis
+  catatan merge, `git add -- <catatan merge>`, lalu `git commit --no-edit`.
+- Langkah 6: tanpa MR integrasi. Branch integrasi disimpan sampai product owner menyetujui dan merge
+  akhir selesai. Belum disetujui (atau masih ada persetujuan butir DoD yang tertunda) → berhenti dan
+  laporkan. Sesudah product owner menyetujui di chat: `git switch <branch.basis>`, `git merge --no-ff
+  --no-commit <branch.integrasi>`, tulis catatan merge `<dokumen.laporan>/merge-<branch.integrasi>.md`,
+  dan perbarui lagi `dokumen.serah_terima`: baris "menunggu persetujuan" (merge akhir dan butir DoD)
+  tidak boleh tertinggal; ganti dengan merge akhir (sprint, tanggal, persetujuan PO) dan isi kolom
+  persetujuan butir DoD. Keduanya ikut di merge commit (`git add -- <berkas>`, `git commit
+  --no-edit`). Sesudahnya, hanya bila `git merge-base --is-ancestor <branch.integrasi>
+  <branch.basis>` sukses: `git branch -d <branch.integrasi>`.
 - Bersih-bersih dan merge mengikuti "Cara merge", bagian "Mode lokal".
 
 ## Langkah -1 — Spesifikasi eksternal

@@ -43,8 +43,10 @@ dengan pengganti berikut:
 - Tanpa `git fetch` dan tanpa `git push`; `origin/<branch>` dibaca sebagai `<branch>` lokal (mis.
   `--base=<tujuan>`, basis diff reviewer = `<tujuan>`). Tidak ada yang di-push, termasuk tag.
 - Langkah 7: tanpa MR. Syarat CI diganti `gate.ci` lokal yang hijau pada HEAD branch integrasi
-  langkah 6 (keluarannya di laporan), dan checklist DoD dicentang di laporan. Sesudah persetujuan
-  menurut jalurnya (langkah 7): `git switch <tujuan>` lalu `git merge --no-ff <branch integrasi>`.
+  langkah 6; keluarannya dan checklist DoD yang dicentang masuk catatan merge yang ikut di merge
+  commit ("Cara merge", bagian "Mode lokal"). Sesudah persetujuan menurut jalurnya (langkah 7):
+  `git switch <tujuan>` lalu `git merge --no-ff --no-commit <branch integrasi>`, tulis catatan
+  merge, `git add -- <catatan merge>`, `git commit --no-edit`.
 - Langkah 8: tanpa pemantauan pipeline; deploy di luar kit, laporkan ke manusia. Bersih-bersih
   mengikuti "Cara merge", bagian "Mode lokal".
 - Back-merge: `claude/backmerge-$0` dari `<branch.basis>` lokal, merge `<tujuan>` (merge commit),

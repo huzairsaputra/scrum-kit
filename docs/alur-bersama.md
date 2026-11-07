@@ -78,7 +78,13 @@ forge dilewati" di laporan, lalu:
   ditempel di laporan. Pemeriksaan forge (status merge, approval, pengaturan merge) dilewati.
 - Merge tetap merge commit, secara lokal: `git switch <tujuan>` lalu `git merge --no-ff <branch>`.
   Aturan persetujuan sama dengan merge lewat MR (mis. branch integrasi sprint ke `branch.basis` hanya
-  atas persetujuan PO).
+  atas persetujuan PO; branch integrasi disimpan sampai merge itu, lalu dihapus).
+- **Catatan merge** (pengganti deskripsi MR, untuk merge `/scrum-kit:sprint` dan `/scrum-kit:hotfix`):
+  satu berkas per merge di folder laporan sprint, `<dokumen.laporan>/merge-<branch sumber, "/" menjadi
+  "->.md`, berisi branch sumber dan tujuan, SHA HEAD yang diuji, keluaran asli `gate.ci` pada HEAD
+  itu, dan checklist DoD templat MR proyek yang sudah dicentang. Berkas itu ikut di merge commit:
+  `git merge --no-ff --no-commit <branch>`, tulis berkasnya, `git add -- <berkas>`, lalu
+  `git commit --no-edit` (pesan bawaan `Merge branch '<branch>'` tetap, dibaca `/scrum-kit:rilis`).
 - Sesudah merge, hanya bila `git merge-base --is-ancestor <branch> <tujuan>` sukses:
   `git worktree remove <worktree>` dan `git branch -D <branch>`. Tidak ada `git push`, termasuk
   `git push origin --delete`. Selain itu simpan branch dan worktree-nya, lalu laporkan.

@@ -93,8 +93,9 @@ Sebuah item selesai bila **semuanya** benar:
    dapat diakses pengguna lain.
 3. Endpoint/kontrak publik terdokumentasi{{kontrak_teks}}.
 4. Ditinjau `code-reviewer` sampai BERSIH.
-5. MR dengan checklist DoD tercentang, pipeline MR hijau pada HEAD (mode lokal: checklist di laporan
-   item dan `gate.ci` lokal hijau, lihat aturan keras 5).
+5. MR dengan checklist DoD tercentang, pipeline MR hijau pada HEAD (mode lokal: checklist dan
+   keluaran `gate.ci` lokal yang hijau di catatan merge `{{laporan}}merge-<branch>.md` yang ikut di
+   merge commit, lihat aturan keras 5).
 
 Butir yang tidak berlaku untuk sebuah item (mis. uji negatif otorisasi di proyek tanpa login) boleh
 ditandai "tidak berlaku" hanya bila alasannya tertulis di dokumen serah terima sprint

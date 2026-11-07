@@ -64,7 +64,10 @@ mempercayai folder proyek untuk mendapatkan plugin yang sama.
 melewati pemeriksaan forge, membuat branch integrasi secara lokal dari branch basis, me-merge tiap
 branch item ke sana dengan merge commit, dan me-merge branch integrasi ke branch basis secara lokal
 hanya sesudah product owner menyetujui. Tidak ada yang di-push; `gate.ci` lokal yang hijau menggantikan
-CI forge. `/scrum-kit:hotfix` dan `/scrum-kit:rilis` bekerja dengan cara yang sama (merge commit lokal
+CI forge. Tiap merge commit sprint memuat catatan merge (`merge-<branch>.md` di folder laporan
+sprint: keluaran gate dan checklist DoD yang dicentang). Branch integrasi disimpan sampai product owner
+menyetujui dan branch itu di-merge ke branch basis, lalu dihapus; serah terima diperbarui di merge
+commit itu. `/scrum-kit:hotfix` dan `/scrum-kit:rilis` bekerja dengan cara yang sama (merge commit lokal
 sesudah product owner menyetujui, tag lokal), dan `/scrum-kit:kit-init` meng-commit branch-nya tanpa
 push dan tanpa menawarkan MR.
 

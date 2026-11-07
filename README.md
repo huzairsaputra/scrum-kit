@@ -85,7 +85,11 @@ backlog ──► orchestrator ──► claude -p --agent scrum-kit:<role> ─�
 **Local mode.** With no git remote (`git remote` is empty), `/scrum-kit:sprint` says so and skips the
 forge checks, creates the integration branch locally from the base branch, merges each item branch
 into it with a merge commit, and merges the integration branch into the base branch locally only after
-the product owner approves. Nothing is pushed; a green local `gate.ci` stands in for forge CI.
+the product owner approves. Nothing is pushed; a green local `gate.ci` stands in for forge CI. Each
+sprint merge commit carries a merge record (`merge-<branch>.md` in the sprint reports folder: the gate
+output and the ticked DoD checklist). The integration branch is kept until the product owner has
+approved and it is merged into the base branch, then deleted; the handover is updated in that merge
+commit.
 `/scrum-kit:hotfix` and `/scrum-kit:rilis` work the same way (local merge commits after the product
 owner approves, local tags), and `/scrum-kit:kit-init` commits its branch without pushing or offering
 a merge request.
