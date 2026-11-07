@@ -3,6 +3,41 @@
 All notable changes to scrum-kit. Versions follow [Semantic Versioning](https://semver.org/):
 a breaking change to `.claude/kit.json`, a command name, or an agent name bumps the major version.
 
+## v1.3.0 — 2026-11-07
+
+Enam perbaikan dari uji end-to-end, di titik-titik tempat agen harus menebak atau berhenti.
+
+- **Peluncur Python di gate:** `kit-init` memilih peluncur yang benar-benar jalan lewat
+  `hooks/cari-python.sh --peluncur` (`python3`, `python`, lalu `py -3`; layak hanya bila `--version`
+  mencetak versi Python 3). Di Windows `python` sering stub Microsoft Store yang keluar dengan kode 49.
+  Gate `ci`/`test`/`build` ditulis dengan peluncur itu dan pilihannya dijelaskan; berkas CI proyek
+  tidak diubah, gate lokal hanya berbeda di peluncur.
+- **Sprint, dokumen ter-commit:** langkah 0.3 baru memastikan backlog sprint, `docs/requirements/`, dan
+  rencana mingguan sudah ter-commit di branch basis sebelum worktree pertama dibuat. Bila belum,
+  orkestrator menunjukkan daftarnya dan, sesudah dikonfirmasi, meng-commit hanya berkas itu. Branch
+  integrasi dibuat dari basis lokal itu; basis tidak di-push.
+- **Sprint dan QA, bentuk item QA:** item QA terpisah (`Menguji: <ID>`) mendapat branch dan MR sendiri
+  di atas branch item yang diujinya; item implementasi tanpa item QA mendapat MR dari branch-nya
+  sendiri dengan catatan "tanpa item QA"; item QA tanpa implementasi (mis. fixture) bercabang dari
+  integrasi. Branch dan laporan memakai ID item itu sendiri. Model lama (QA di item implementer) tetap.
+- **`worktree-new.sh`:** `--modul` opsional. Pada `kit.json` dengan `modul` kosong, `--modul` ditolak
+  dengan pesan "proyek ini tidak punya modul; hilangkan --modul"; `/sprint` dan `/hotfix` menyebut
+  untuk menghilangkannya.
+- **Definition of Done:** butir boleh ditandai "tidak berlaku" hanya dengan alasan di dokumen serah
+  terima sprint dan persetujuan PO, tidak pernah diam-diam (bagian baru di templat serah terima, butir
+  baru di checklist MR). Dokumentasi API publik ditulis implementer modul sebagai docstring; perubahan
+  README adalah item terpisah milik `platform-tooling` (`README.md` masuk wilayah `tooling` contoh).
+- **Mode lokal:** tanpa remote (`git remote` kosong), `/sprint` melewati pemeriksaan forge dengan pesan
+  eksplisit, membuat branch integrasi lokal dari basis, me-merge branch item secara lokal dengan merge
+  commit, dan me-merge integrasi ke basis secara lokal sesudah PO menyetujui; tidak ada yang di-push.
+  Tercantum juga di `docs/alur-bersama.md` dan kedua README. `worktree-new.sh` tidak lagi
+  memperingatkan "fetch gagal" tanpa remote.
+- Self-test hook: 37 → 44 uji.
+
+Proyek yang sudah memasang kit: salin ulang `scripts/kit/worktree-new.sh`, lalu jalankan
+`/scrum-kit:kit-init --perbarui` untuk menyisipkan teks DoD baru ke `CLAUDE.md`, bagian "Butir DoD
+tidak berlaku" ke serah terima, dan `README.md` ke wilayah `tooling`.
+
 ## v1.2.1 — 2026-11-06
 
 Correctness fixes found by running real sprints (Claude Code and Codex CLI) against the same
