@@ -13,6 +13,12 @@ dan menyiapkan branch serta MR.
 
 Baca `${CLAUDE_PLUGIN_ROOT}/docs/alur-bersama.md` bagian "Mendispatch agen" dan ikuti.
 
+Catatan: `claude -p --agent scrum-kit:<agen>` menjawab agen "not found" bila plugin ini tidak
+terpasang untuk CLI (mis. sesi ini memuat plugin lewat `--plugin-dir`). Ulangi dengan plugin
+ditambahkan dan `CLAUDE_CODE_SIMPLE` dibuang dari lingkungan:
+`env -u ANTHROPIC_API_KEY -u CLAUDE_CODE_SIMPLE claude -p --plugin-dir "${CLAUDE_PLUGIN_ROOT}" --agent scrum-kit:<agen> --permission-mode auto "<prompt>"`.
+Masih gagal → pakai tool agen milik host (Agent/subagen) bila ada, dan catat di ringkasan sprint.
+
 **Cara merge** (termasuk syarat CI dan bersih-bersih branch): baca berkas yang sama bagian "Cara
 merge" dan ikuti.
 
