@@ -3,6 +3,41 @@
 All notable changes to scrum-kit. Versions follow [Semantic Versioning](https://semver.org/):
 a breaking change to `.claude/kit.json`, a command name, or an agent name bumps the major version.
 
+## v1.4.0 — 2026-11-07
+
+A readiness gate in front of the sprint, local mode for every command, and prompt caching.
+
+- **Sprint, backlog readiness gate:** a new step 0.3 reads `docs/sprints/backlog-check-<nn>.md`, the
+  report the free Lanewright Planning skill Backlog Check writes. No report: the orchestrator says so
+  once and asks whether to go on without it; the report is never required. A different SHA-256 for
+  the backlog means the report is stale: it says so and asks once whether to continue or re-run the
+  check. A NOT READY / BELUM SIAP verdict or an empty sign-off stops the sprint until the product owner
+  decides; going on is recorded as "Gerbang laporan: dilanjutkan tanpa persetujuan, alasan ..." in the
+  handover. A fresh, approved READY or READY WITH WARNINGS report passes and is noted there too. The
+  orchestrator never fills the sign-off. Old steps 0.3–0.5 are now 0.4–0.6; step 0.4 also commits the
+  report and the handover line. Reading rules in `docs/alur-bersama.md`, a "Gerbang laporan" line in
+  the handover template, one paragraph in both READMEs.
+- **`scripts/backlog-sidik.py`:** prints the SHA-256 of a file with CRLF read as LF, computed exactly
+  like the `sha256` line of Backlog Check, so a report written on Windows matches on Linux and back.
+  Standard library, Python 3.8+, run through the launcher from `hooks/cari-python.sh --peluncur`;
+  has `--self-test`.
+- **Local mode for `/hotfix`, `/rilis` and `kit-init`:** with no remote (`git remote` empty), `/hotfix`
+  and `/rilis` skip the forge checks with an explicit message, merge locally with a merge commit after
+  the product owner approves, tag locally, and push nothing. `/rilis` freezes the release on a local
+  `claude/rilis-<version>` branch and uses the release notes as the merge commit message. The last
+  step of `kit-init` no longer pushes or offers a merge request; it gives the local merge command
+  instead. Also in `docs/alur-bersama.md`, rule 5 of the `CLAUDE.md` template, and both READMEs.
+- **`panggil_llm.py`, prompt caching:** the Anthropic system prompt is sent as a block with
+  `cache_control`, so repeated calls with the same system prompt read it from cache (5 minutes, or 1
+  hour with `SCRUM_KIT_CACHE_TTL=1h`); `permintaan_batch` builds one Message Batches request with a
+  cached system block (1-hour TTL by default); `SCRUM_KIT_TANPA_CACHE=1` (or `--tanpa-cache`,
+  `cache=False`) turns caching off for tests that must measure uncached input. Token usage, cache
+  writes and reads included, goes to stderr.
+- Hook self-test: 44 → 48 tests.
+
+Projects that already installed the kit: run `/scrum-kit:kit-init --perbarui` to add the "Gerbang
+laporan" line to the handover and the new local-mode wording to rule 5 of `CLAUDE.md`.
+
 ## v1.3.0 — 2026-11-07
 
 Six fixes from an end-to-end test, at the points where an agent had to guess or stop.
