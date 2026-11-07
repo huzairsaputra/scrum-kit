@@ -13,6 +13,12 @@ dan menyiapkan branch serta MR.
 
 Baca `${CLAUDE_PLUGIN_ROOT}/docs/alur-bersama.md` bagian "Mendispatch agen" dan ikuti.
 
+Catatan: `claude -p --agent scrum-kit:<agen>` menjawab agen "not found" bila plugin ini tidak
+terpasang untuk CLI (mis. sesi ini memuat plugin lewat `--plugin-dir`). Ulangi dengan plugin
+ditambahkan dan `CLAUDE_CODE_SIMPLE` dibuang dari lingkungan:
+`env -u ANTHROPIC_API_KEY -u CLAUDE_CODE_SIMPLE claude -p --plugin-dir "${CLAUDE_PLUGIN_ROOT}" --agent scrum-kit:<agen> --permission-mode auto "<prompt>"`.
+Masih gagal → pakai tool agen milik host (Agent/subagen) bila ada, dan catat di ringkasan sprint.
+
 **Cara merge** (termasuk syarat CI dan bersih-bersih branch): baca berkas yang sama bagian "Cara
 merge" dan ikuti.
 
@@ -31,12 +37,21 @@ CI pada SHA HEAD) dilewati." Semua langkah tetap berlaku, dengan pengganti berik
 - Langkah 0: pipeline basis dilewati (hanya `gate.ci` lokal); branch integrasi dibuat lokal dari
   branch basis: `git branch <branch.integrasi> <branch.basis>`.
 - Langkah 5: tanpa MR. Syarat CI diganti `gate.ci` lokal yang hijau pada HEAD branch yang akan
-  di-merge (keluarannya di laporan), dan checklist DoD dicentang di laporan item. Branch item (branch
+  di-merge. Keluaran gate itu dan checklist DoD yang dicentang ditulis ke **catatan merge**: satu
+  berkas per merge di folder laporan sprint, `<dokumen.laporan>/merge-<branch item>.md` dengan `/`
+  di nama branch diganti `-` (mis. `merge-sprint-03-tests-QA-01.md`), yang ikut di merge commit. Branch item (branch
   yang sama yang akan menjadi sumber MR, lihat Langkah 5) di-merge ke branch integrasi dengan merge
-  commit: `git switch <branch.integrasi>` lalu `git merge --no-ff <branch item>`.
-- Langkah 6: tanpa MR integrasi. Sesudah product owner menyetujui di chat: `git switch
-  <branch.basis>` lalu `git merge --no-ff <branch.integrasi>`. Belum disetujui → berhenti dan
-  laporkan; branch integrasi tetap ada.
+  commit: `git switch <branch.integrasi>`, `git merge --no-ff --no-commit <branch item>`, tulis
+  catatan merge, `git add -- <catatan merge>`, lalu `git commit --no-edit`.
+- Langkah 6: tanpa MR integrasi. Branch integrasi disimpan sampai product owner menyetujui dan merge
+  akhir selesai. Belum disetujui (atau masih ada persetujuan butir DoD yang tertunda) → berhenti dan
+  laporkan. Sesudah product owner menyetujui di chat: `git switch <branch.basis>`, `git merge --no-ff
+  --no-commit <branch.integrasi>`, tulis catatan merge `<dokumen.laporan>/merge-<branch.integrasi>.md`,
+  dan perbarui lagi `dokumen.serah_terima`: baris "menunggu persetujuan" (merge akhir dan butir DoD)
+  tidak boleh tertinggal; ganti dengan merge akhir (sprint, tanggal, persetujuan PO) dan isi kolom
+  persetujuan butir DoD. Keduanya ikut di merge commit (`git add -- <berkas>`, `git commit
+  --no-edit`). Sesudahnya, hanya bila `git merge-base --is-ancestor <branch.integrasi>
+  <branch.basis>` sukses: `git branch -d <branch.integrasi>`.
 - Bersih-bersih dan merge mengikuti "Cara merge", bagian "Mode lokal".
 
 ## Langkah -1 — Spesifikasi eksternal
@@ -73,6 +88,10 @@ Hanya bila `spek_eksternal.drive_folder_id` terisi; selain itu lewati.
      Bila laporan juga usang, satukan dalam pertanyaan yang sama.
    - Sidik jari cocok, putusan READY / READY WITH WARNINGS (atau padanan Indonesianya), dan
      persetujuan terisi → lanjut dan catat di serah terima.
+   - Baca juga kolom `Butir DoD tidak berlaku (disetujui):` / `DoD not applicable (approved):` di blok
+     persetujuan. Himpunan butir DoD tidak berlaku yang disetujui = butir yang disebut di sana, hanya
+     bila persetujuan terisi dan sidik jari cocok; selain itu (termasuk tanpa laporan, atau laporan
+     tanpa kolom itu) kosong. Himpunan ini dipakai di langkah 5 dan 6.
    Jangan pernah mengisi blok persetujuan atau mengubah laporan itu sendiri.
 4. **Dokumen sprint ter-commit di basis, sebelum worktree pertama dibuat.** Worktree peran hanya
    melihat berkas yang ter-commit; backlog yang belum ter-commit terlihat sebagai templat kosong, dan
@@ -99,7 +118,9 @@ Hanya bila `spek_eksternal.drive_folder_id` terisi; selain itu lewati.
 
 Item skema/pustaka bersama (`shared-module-owner`) dan perkakas (`platform-tooling`) paralel, masing-
 masing di worktree sendiri (`scripts/kit/worktree-new.sh <wilayah> <id> $0`). Keduanya merge ke branch
-integrasi sebelum lanjut. Lewati bila tidak ada.
+integrasi sebelum lanjut. Lewati bila tidak ada. Langkah ini hanya untuk item kedua peran itu: item
+berlabel "fondasi" (*foundation*) yang wilayahnya milik `module-dev` bukan item langkah 1; ia berjalan
+di langkah 3 seperti item modul lain.
 
 ## Langkah 2 — Kontrak lebih dulu
 
@@ -124,16 +145,17 @@ Itu model bawaan: QA mengerjakan item implementer, dengan ID item itu. Backlog b
 **item QA sendiri** (item berwilayah `tests` dengan ID-nya sendiri). Worktree, branch, laporan, dan MR
 item QA selalu memakai ID item QA itu sendiri:
 
-- **(a) Item QA yang menyebut item yang diujinya** (`Menguji: <ID>` di teks item): dibuat sesudah
+- **(a) Item QA yang menyebut item yang diujinya** (penanda `Menguji: <ID>` atau `Tests: <ID>` di
+  teks item; Sprint Planner menulis `Tests:`, keduanya sama artinya): dibuat sesudah
   build item yang diuji hijau, di atas branch item itu:
   `worktree-new.sh tests <id-QA> $0 --base=<branch item yang diuji>` (ditambah `--modul=<m>` bila
   ada modul). Branch item yang diuji tidak ada (sudah merge, atau di luar sprint) → tanpa `--base`.
   Menguji beberapa item → `--base` ke branch item pertama, lalu merge branch item lainnya ke worktree
   itu (`git merge --no-ff`) sebelum agen mulai. Prompt agen memuat ID item QA dan ID item yang diuji.
-- **(b) Item implementasi tanpa item QA**: begitu minimal satu item backlog memuat `Menguji:`, model
-  bawaan tidak dipakai di sprint ini; item implementasi yang tidak disebut `Menguji:` item mana pun
+- **(b) Item implementasi tanpa item QA**: begitu minimal satu item backlog memuat penanda itu, model
+  bawaan tidak dipakai di sprint ini; item implementasi yang tidak disebut penanda item mana pun
   tidak mendapat QA.
-- **(c) Item QA tanpa item implementasi** (mis. fixture; tanpa `Menguji:`): worktree dari branch
+- **(c) Item QA tanpa item implementasi** (mis. fixture; tanpa penanda): worktree dari branch
   integrasi (`worktree-new.sh tests <id-QA> $0`), tanpa menunggu item lain.
 
 ## Langkah 5 — Review dan merge per item
@@ -155,18 +177,33 @@ item QA selalu memakai ID item QA itu sendiri:
 
   Tandai siap hanya bila review
   BERSIH dan CI pada SHA HEAD sukses ("Cara merge"); merah = berhenti, baca log job, jangan menumpuk
-  MR di atasnya, tidak ada "merah yang diharapkan".
+  MR di atasnya, tidak ada "merah yang diharapkan". Satu pengecualian: test lama yang gagal hanya
+  karena item itu sengaja mengganti perilaku yang diujinya (dan backlog mengharapkannya) boleh merah
+  di branch item implementasi, asalkan item QA yang menulis ulang test itu (bentuk (a)) di-merge di
+  sprint yang sama dan branch integrasi hijau. Item itu merge lewat branch QA-nya, tidak pernah
+  sendiri; branch QA (yang dinilai CI dan review) tetap harus hijau. Tanpa item QA seperti itu, merah
+  tetap merah.
+- Butir DoD yang ditandai "tidak berlaku" oleh peran atau peninjau: ikuti
+  `${CLAUDE_PLUGIN_ROOT}/docs/alur-bersama.md` bagian "Butir DoD tidak berlaku selama sprint" (diterima
+  bila ada di himpunan langkah 0.3, selain itu tanya product owner sekali). Butir yang "menunggu
+  persetujuan product owner" tidak dicentang dan tidak dihitung terpenuhi; item tetap merge ke branch
+  integrasi hanya bila semua butir DoD lainnya terpenuhi.
 - Merge **hanya lewat MR** (`--no-ff`, satu merge commit per item); centang checklist DoD di deskripsi
   sebelum merge; sesudahnya bersihkan branch item ("Cara merge").
 
 ## Langkah 6 — Penutup
 
-1. `api-contract-keeper` sekali lagi: kontrak = kode yang benar-benar ada.
+1. Bila `kontrak` terisi (seperti langkah 2; selain itu lewati): `api-contract-keeper` sekali lagi:
+   kontrak = kode yang benar-benar ada.
 2. Tulis `<dokumen.laporan>/ringkasan.md`: goal, item selesai/tidak (alasannya), item terblokir,
    item yang merge "tanpa item QA",
    worktree dan branch item yang belum merge, story point, temuan terbuka, impediment. Perbarui
    `dokumen.serah_terima` dan `dokumen.code_debt`, lalu commit ringkasan, putusan review yang disimpan,
    serah terima, dan code debt di branch integrasi, dan push.
+   Ada persetujuan butir DoD yang tertunda → cantumkan setiap persetujuan itu (item, butir, alasan) di
+   ringkasan dan di serah terima (bagian "Menunggu pihak lain"), lalu berhenti di sini: tanpa merge
+   branch integrasi ke basis, langsung ke langkah 5, dan laporkan bahwa merge akhir menunggu product
+   owner. Sesudah product owner menyetujui semuanya, lanjutkan dari langkah 3.
 3. Hanya bila minimal satu item sudah merge: **SATU** MR draft branch integrasi → `branch.basis`, isi
    dari templat MR proyek. Tidak ada item yang merge → tanpa MR integrasi; laporkan. Setelah merge,
    pekerjaan baru masuk backlog sprint berikutnya, bukan MR susulan dari branch integrasi.
@@ -182,6 +219,7 @@ item QA selalu memakai ID item QA itu sendiri:
 - Jangan merge MR ke `branch.basis` tanpa persetujuan manusia (pengecualian tertulis: hotfix jalur biasa
   dan back-merge di `/scrum-kit:hotfix`); jangan pernah push langsung ke basis
   maupun `branch.rilis`; jangan membuka MR ke `branch.rilis` tanpa diminta (itu tugas `/scrum-kit:rilis`).
+- Jangan pernah merge ke `branch.basis` selama ada persetujuan butir DoD "tidak berlaku" yang tertunda.
 - Jangan membuat worktree sebelum langkah 0.4 lulus: peran tidak pernah mulai dari backlog yang belum
   ter-commit.
 - Jangan menonaktifkan/melewati test merah; akar masalahnya yang diperbaiki.

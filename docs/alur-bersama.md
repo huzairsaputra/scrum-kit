@@ -78,7 +78,13 @@ forge dilewati" di laporan, lalu:
   ditempel di laporan. Pemeriksaan forge (status merge, approval, pengaturan merge) dilewati.
 - Merge tetap merge commit, secara lokal: `git switch <tujuan>` lalu `git merge --no-ff <branch>`.
   Aturan persetujuan sama dengan merge lewat MR (mis. branch integrasi sprint ke `branch.basis` hanya
-  atas persetujuan PO).
+  atas persetujuan PO; branch integrasi disimpan sampai merge itu, lalu dihapus).
+- **Catatan merge** (pengganti deskripsi MR, untuk merge `/scrum-kit:sprint` dan `/scrum-kit:hotfix`):
+  satu berkas per merge di folder laporan sprint, `<dokumen.laporan>/merge-<branch sumber>.md` (`/`
+  di nama branch diganti `-`), berisi branch sumber dan tujuan, SHA HEAD yang diuji, keluaran asli `gate.ci` pada HEAD
+  itu, dan checklist DoD templat MR proyek yang sudah dicentang. Berkas itu ikut di merge commit:
+  `git merge --no-ff --no-commit <branch>`, tulis berkasnya, `git add -- <berkas>`, lalu
+  `git commit --no-edit` (pesan bawaan `Merge branch '<branch>'` tetap, dibaca `/scrum-kit:rilis`).
 - Sesudah merge, hanya bila `git merge-base --is-ancestor <branch> <tujuan>` sukses:
   `git worktree remove <worktree>` dan `git branch -D <branch>`. Tidak ada `git push`, termasuk
   `git push origin --delete`. Selain itu simpan branch dan worktree-nya, lalu laporkan.
@@ -107,6 +113,13 @@ Cara membaca laporan (bahasa Inggris atau Indonesia):
   "Tanggal" berisi nilai (bukan kosong atau `____`) dan baris Status = "approved" / "disetujui".
   Selain itu blok persetujuan dianggap kosong. Isi "Overrides" / "Pengecualian" disebutkan saat
   bertanya ke product owner.
+- **Butir DoD tidak berlaku yang disetujui**: kolom `Butir DoD tidak berlaku (disetujui):` /
+  `DoD not applicable (approved):` di blok persetujuan, sesudah "Overrides" / "Pengecualian": nama
+  butir DoD dipisah titik koma. Himpunan yang disetujui = butir yang disebut di sana, hanya bila
+  persetujuan terisi (butir di atas) dan sidik jari cocok; selain itu kosong. Kosong juga bila
+  isinya `____`, `tidak ada` / `none`, atau kolomnya tidak ada (laporan dengan blok persetujuan versi
+  lama). Daftar usulan Sprint Planner di atas blok persetujuan ("butir DoD yang diusulkan tidak
+  berlaku") hanya usulan, tidak pernah masuk himpunan.
 
 Aturan:
 
@@ -124,3 +137,24 @@ Aturan:
     persetujuan, alasan <alasan product owner>`, ditambah "laporan usang" bila berlaku.
 - Berhenti di gerbang (pengguna tidak melanjutkan) → tidak ada worktree yang dibuat; laporkan apa yang
   perlu dilakukan (membuat laporan, menjalankan ulang Backlog Check, atau persetujuan).
+
+### Butir DoD tidak berlaku selama sprint
+
+Berlaku setiap kali peran atau peninjau menandai sebuah butir Definition of Done "tidak berlaku" untuk
+sebuah item. Aturan lama tetap: alasannya tertulis di `dokumen.serah_terima` bagian "Butir DoD tidak
+berlaku" dan product owner menyetujuinya; tidak pernah diam-diam. Yang ditambahkan di sini: dari mana
+persetujuan itu boleh datang, dan apa yang terjadi selama persetujuan belum ada.
+
+- Butir ada di himpunan yang disetujui (gerbang di atas; dicocokkan dengan nama butir di Definition of
+  Done `CLAUDE.md`, ragu → anggap tidak ada) → terima, dan isi kolom persetujuan di serah terima dengan
+  `disetujui di laporan kesiapan <nama berkas laporan> (<tanggal persetujuan>)`.
+- Butir tidak ada di himpunan → tanya product owner sekali, di chat. Disetujui → `disetujui PO di chat
+  (<tanggal>)`. Ditolak → butir itu tetap wajib; kembalikan item ke agen pemiliknya.
+- Tidak ada yang bisa menjawab (sesi non-interaktif) → tandai baris DoD itu `menunggu persetujuan
+  product owner`, di checklist DoD item dan di kolom persetujuan serah terima. Butir itu tidak
+  dihitung terpenuhi. Branch item tetap di-merge ke branch integrasi hanya bila semua butir DoD
+  lainnya terpenuhi, tetapi branch integrasi **tidak** di-merge ke `branch.basis`: berhenti sesudah
+  ringkasan sprint, cantumkan setiap persetujuan yang tertunda, dan laporkan bahwa merge akhir
+  menunggu product owner.
+
+Tidak pernah merge ke `branch.basis` selama ada persetujuan yang tertunda.

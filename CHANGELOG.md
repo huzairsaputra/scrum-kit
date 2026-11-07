@@ -3,6 +3,48 @@
 All notable changes to scrum-kit. Versions follow [Semantic Versioning](https://semver.org/):
 a breaking change to `.claude/kit.json`, a command name, or an agent name bumps the major version.
 
+## v1.4.1 — 2026-11-07
+
+Seven fixes from a second end-to-end test, at the points where an agent had to guess or stop.
+
+- **Definition of Done, "not applicable" approvals:** at the readiness gate (step 0.3) the
+  orchestrator also reads the sign-off field `Butir DoD tidak berlaku (disetujui):` /
+  `DoD not applicable (approved):` of the Backlog Check report. The items named there are approved
+  only when the rest of the sign-off is filled and the fingerprint matches; otherwise, and for reports
+  without the field, none are. An item marked "not applicable" during the sprint is accepted when it
+  is in that set (recorded in the handover as approved in the readiness report), otherwise the product
+  owner is asked once in chat. When nobody can answer, the DoD line is marked "menunggu persetujuan
+  product owner" and not counted as met; the item branch still merges into integration if every other
+  DoD item is met, but the sprint stops after the summary, lists every pending approval, and the
+  integration branch is never merged into the base branch while one is pending. Rules in the gate
+  section of `docs/alur-bersama.md`; the `CLAUDE.md` DoD text, the handover template and the merge
+  request checklist follow.
+- **QA pairing marker:** `Tests: <ID>` (written by the Sprint Planner) is accepted everywhere
+  `Menguji: <ID>` is, in `/sprint` and `qa-test-engineer`.
+- **Dispatch without the plugin installed for the CLI:** `/sprint` notes that `claude -p --agent
+  scrum-kit:<agent>` answers "not found" then, and gives the retry with `--plugin-dir
+  "${CLAUDE_PLUGIN_ROOT}"` and `env -u CLAUDE_CODE_SIMPLE`; if that still fails, the host's own agent
+  tool is used and noted in the summary.
+- **Expected red, one exception:** an old test that fails only because the item deliberately replaces
+  the behaviour it tested may be red on the code item's branch, provided the QA item that rewrites it
+  merges in the same sprint and the integration branch is green; the item merges through its QA
+  branch. `module-dev` leaves such a test alone and names it in its report.
+- **Contract step 6.1** runs only when `kontrak` is configured, like step 2.
+- **Local mode:** every sprint or hotfix merge writes a merge record,
+  `<dokumen.laporan>/merge-<source branch>.md` (gate output and the ticked DoD checklist), included in
+  the merge commit (`git merge --no-ff --no-commit`, then `git commit --no-edit`). The integration
+  branch is kept until the product owner has approved and merged, then deleted; the final merge commit
+  also updates the handover, so no "waiting for approval" line stays behind.
+- **Step 1:** an item labelled "foundation" that belongs to `module-dev` is not a step-1 item; step 1
+  is for `shared-module-owner` and `platform-tooling` only.
+
+No hook or script changes; hook self-test stays at 48 tests.
+
+Projects that already installed the kit: copy the changed text by hand from the plugin's `templates/`:
+the paragraph after the DoD list and point 5 of section 6 in `CLAUDE.md`, the intro of "Butir DoD tidak
+berlaku" in the handover, and the last DoD line of the merge request template. `kit-init --perbarui`
+only inserts sections that are missing, so it does not rewrite these existing paragraphs.
+
 ## v1.4.0 — 2026-11-07
 
 A readiness gate in front of the sprint, local mode for every command, and prompt caching.

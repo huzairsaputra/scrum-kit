@@ -7,7 +7,7 @@
 
 <p align="center">
   <a href="LICENSE"><img alt="License: MIT" src="https://img.shields.io/badge/license-MIT-blue.svg"></a>
-  <a href="CHANGELOG.md"><img alt="Version" src="https://img.shields.io/badge/version-1.4.0-green.svg"></a>
+  <a href="CHANGELOG.md"><img alt="Version" src="https://img.shields.io/badge/version-1.4.1-green.svg"></a>
   <img alt="Claude Code plugin" src="https://img.shields.io/badge/Claude%20Code-plugin-orange.svg">
 </p>
 
@@ -85,7 +85,11 @@ backlog ──► orchestrator ──► claude -p --agent scrum-kit:<role> ─�
 **Local mode.** With no git remote (`git remote` is empty), `/scrum-kit:sprint` says so and skips the
 forge checks, creates the integration branch locally from the base branch, merges each item branch
 into it with a merge commit, and merges the integration branch into the base branch locally only after
-the product owner approves. Nothing is pushed; a green local `gate.ci` stands in for forge CI.
+the product owner approves. Nothing is pushed; a green local `gate.ci` stands in for forge CI. Each
+sprint merge commit carries a merge record (`merge-<branch>.md` in the sprint reports folder: the gate
+output and the ticked DoD checklist). The integration branch is kept until the product owner has
+approved and it is merged into the base branch, then deleted; the handover is updated in that merge
+commit.
 `/scrum-kit:hotfix` and `/scrum-kit:rilis` work the same way (local merge commits after the product
 owner approves, local tags), and `/scrum-kit:kit-init` commits its branch without pushing or offering
 a merge request.
@@ -96,7 +100,10 @@ a merge request.
 never required. If the report's SHA-256 for the backlog differs from the current file, the report is
 stale and the orchestrator asks once. A NOT READY verdict or an empty sign-off stops the sprint until
 the product owner decides, and that decision goes into the handover document. The orchestrator never
-fills the sign-off itself.
+fills the sign-off itself. Definition of Done items the product owner lists in the sign-off field
+`DoD not applicable (approved):` (`Butir DoD tidak berlaku (disetujui):`) may be marked not applicable
+during the sprint; any other such item is asked once, and while its approval is pending the
+integration branch is never merged into the base branch.
 
 A minimal `kit.json` for a single-module Laravel app:
 

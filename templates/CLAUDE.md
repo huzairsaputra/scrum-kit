@@ -93,13 +93,18 @@ Sebuah item selesai bila **semuanya** benar:
    dapat diakses pengguna lain.
 3. Endpoint/kontrak publik terdokumentasi{{kontrak_teks}}.
 4. Ditinjau `code-reviewer` sampai BERSIH.
-5. MR dengan checklist DoD tercentang, pipeline MR hijau pada HEAD (mode lokal: checklist di laporan
-   item dan `gate.ci` lokal hijau, lihat aturan keras 5).
+5. MR dengan checklist DoD tercentang, pipeline MR hijau pada HEAD (mode lokal: checklist dan
+   keluaran `gate.ci` lokal yang hijau di catatan merge `{{laporan}}merge-<branch>.md` yang ikut di
+   merge commit, lihat aturan keras 5).
 
 Butir yang tidak berlaku untuk sebuah item (mis. uji negatif otorisasi di proyek tanpa login) boleh
 ditandai "tidak berlaku" hanya bila alasannya tertulis di dokumen serah terima sprint
 (`{{serah_terima}}`, bagian "Butir DoD tidak berlaku") dan disetujui product owner. Tidak pernah
-diam-diam.
+diam-diam. Persetujuan itu datang dari kolom `Butir DoD tidak berlaku (disetujui):` di blok
+persetujuan laporan kesiapan backlog sprint (hanya bila blok itu terisi dan laporannya tidak usang),
+atau dari product owner di chat. Selama belum disetujui, butir itu "menunggu persetujuan product
+owner" dan tidak dihitung terpenuhi: item boleh merge ke branch integrasi bila semua butir lain
+terpenuhi, tetapi branch integrasi tidak di-merge ke `{{basis}}` sampai product owner menyetujui.
 
 Dokumentasi API publik di kode (fungsi, kelas, modul) ditulis implementer modul sebagai docstring di
 kode wilayahnya. Perubahan README adalah item terpisah milik wilayah tooling (`platform-tooling`),
