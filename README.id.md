@@ -44,9 +44,9 @@ Lalu, di repo proyek:
 
 Perintah ini mewawancarai Anda, lalu menulis `.claude/kit.json`, `CLAUDE.md`,
 `scripts/kit/worktree-new.sh`, templat MR/PR, dan kerangka dokumen sprint ke branch
-`claude/pasang-scrum-kit`. Setelah itu ia menawarkan MR. `.claude/settings.json` proyek ikut
-mendaftarkan marketplace ini, sehingga rekan tim cukup mempercayai folder proyek untuk mendapatkan
-plugin yang sama.
+`claude/pasang-scrum-kit`. Setelah itu ia menawarkan MR (tanpa remote: tanpa push dan tanpa MR).
+`.claude/settings.json` proyek ikut mendaftarkan marketplace ini, sehingga rekan tim cukup
+mempercayai folder proyek untuk mendapatkan plugin yang sama.
 
 ### Catatan upgrade ke 1.2.0
 
@@ -64,7 +64,17 @@ plugin yang sama.
 melewati pemeriksaan forge, membuat branch integrasi secara lokal dari branch basis, me-merge tiap
 branch item ke sana dengan merge commit, dan me-merge branch integrasi ke branch basis secara lokal
 hanya sesudah product owner menyetujui. Tidak ada yang di-push; `gate.ci` lokal yang hijau menggantikan
-CI forge.
+CI forge. `/scrum-kit:hotfix` dan `/scrum-kit:rilis` bekerja dengan cara yang sama (merge commit lokal
+sesudah product owner menyetujui, tag lokal), dan `/scrum-kit:kit-init` meng-commit branch-nya tanpa
+push dan tanpa menawarkan MR.
+
+**Gerbang kesiapan backlog.** Sebelum meng-commit dokumen sprint, `/scrum-kit:sprint` mencari
+`docs/sprints/backlog-check-<nn>.md`, laporan kesiapan dari skill gratis Backlog Check
+([Lanewright Planning](https://github.com/huzairsaputra/lanewright-planning)). Tanpa laporan, ia menyampaikannya sekali dan bertanya apakah lanjut tanpa laporan; laporan
+ini tidak pernah wajib. SHA-256 backlog di laporan yang berbeda dari berkas saat ini berarti laporan
+usang, dan orkestrator bertanya sekali. Putusan BELUM SIAP (NOT READY) atau blok persetujuan yang
+kosong menghentikan sprint sampai product owner memutuskan, dan keputusan itu dicatat di serah
+terima. Orkestrator tidak pernah mengisi blok persetujuan sendiri.
 
 ## Struktur
 
@@ -75,6 +85,7 @@ CI forge.
 | `commands/` | `kit-init`, `sprint`, `hotfix`, `rilis`. |
 | `hooks/` | `hooks.json`, `jalankan.sh` (memilih interpreter Python), `path_ownership.py` beserta self-test. |
 | `scripts/worktree-new.sh` | Membuat worktree + branch wilayah, dengan sparse-checkout opsional. |
+| `scripts/backlog-sidik.py` | SHA-256 backlog dengan CRLF dibaca sebagai LF, sama dengan laporan Backlog Check; dipakai gerbang kesiapan backlog `/scrum-kit:sprint`. |
 | `scripts/panggil_llm.py` | Satu pintu pemanggilan LLM untuk skrip proyek: Gemini → Anthropic → CLI `claude` (lalu sesi Claude Desktop). Pustaka (`panggil_llm()`) atau CLI (prompt lewat stdin). Hanya stdlib; SDK `anthropic` opsional. |
 | `templates/` | CLAUDE.md, templat MR/PR, backlog, serah terima, utang kode. |
 | `docs/kit-json.md` | Kontrak `.claude/kit.json`. Baca ini sebelum menyunting konfigurasi proyek. |
@@ -88,6 +99,10 @@ py -I hooks/test_path_ownership.py
 
 ```bash
 py -I scripts/panggil_llm.py --uji
+```
+
+```bash
+py -I scripts/backlog-sidik.py --self-test
 ```
 
 ```bash

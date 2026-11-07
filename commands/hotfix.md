@@ -33,6 +33,27 @@ bercabang dari integrasi sprint berjalan dan pekerjaan sprint yang belum selesai
 **Cara merge** (langkah 7 dan back-merge): baca `${CLAUDE_PLUGIN_ROOT}/docs/alur-bersama.md` bagian
 "Cara merge" dan ikuti.
 
+## Mode lokal (tanpa remote)
+
+Periksa `git remote` sekali di awal. Kosong → hotfix berjalan dalam **mode lokal**, seperti
+`/scrum-kit:sprint`. Tulis di awal laporan ke manusia dan di ringkasan: "Mode lokal: tidak ada
+remote; pemeriksaan forge (pipeline, MR, CI pada SHA HEAD) dilewati." Semua langkah tetap berlaku,
+dengan pengganti berikut:
+
+- Tanpa `git fetch` dan tanpa `git push`; `origin/<branch>` dibaca sebagai `<branch>` lokal (mis.
+  `--base=<tujuan>`, basis diff reviewer = `<tujuan>`). Tidak ada yang di-push, termasuk tag.
+- Langkah 7: tanpa MR. Syarat CI diganti `gate.ci` lokal yang hijau pada HEAD branch integrasi
+  langkah 6 (keluarannya di laporan), dan checklist DoD dicentang di laporan. Sesudah persetujuan
+  menurut jalurnya (langkah 7): `git switch <tujuan>` lalu `git merge --no-ff <branch integrasi>`.
+- Langkah 8: tanpa pemantauan pipeline; deploy di luar kit, laporkan ke manusia. Bersih-bersih
+  mengikuti "Cara merge", bagian "Mode lokal".
+- Back-merge: `claude/backmerge-$0` dari `<branch.basis>` lokal, merge `<tujuan>` (merge commit),
+  `gate.ci` lokal hijau menggantikan pipeline, lalu `git switch <branch.basis>` dan
+  `git merge --no-ff claude/backmerge-$0`. Konflik → berhenti dan laporkan (lihat "Back-merge" di
+  bagian jalur darurat).
+- Tag: tag terakhir dari `git describe --tags --abbrev=0 <tujuan>`; tag beranotasi dibuat lokal dan
+  tidak di-push.
+
 ## Langkah
 
 1. **Spesifikasi.** Tulis spesifikasi singkat ke scratchpad: perilaku yang diminta, modul tersentuh,

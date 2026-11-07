@@ -16,7 +16,8 @@ Teks bebas lain di argumen adalah batasan dari manusia (mis. "jangan push", "non
 
 ## 1. Kenali repo (tanpa bertanya)
 
-- Akar git, remote (`git remote -v` → GitLab/GitHub, path proyek), branch yang ada (`staging`? `main`?).
+- Akar git, remote (`git remote -v` → GitLab/GitHub, path proyek; kosong → mode lokal, lihat langkah 5),
+  branch yang ada (`staging`? `main`?).
 - Stack per direktori: `go.mod`/`go.work`, `composer.json` (versi Laravel/PHP), `package.json`,
   `pyproject.toml`/`requirements.txt`, `Dockerfile`, `docker-compose*.yml`.
 - Calon modul: direktori aplikasi di akar (monorepo) atau satu modul (repo tunggal).
@@ -87,5 +88,8 @@ Tanyakan hanya yang tidak bisa disimpulkan, dengan usulan hasil deteksi sebagai 
 ## 5. Selesai
 
 Commit (bahasa sesuai jawaban, akhiri dengan baris `Co-Authored-By` dari harness). Push branch dan
-tawarkan MR ke `branch.basis` — kecuali argumen melarangnya. Laporkan ringkas: wilayah yang terbentuk, gate, hasil verifikasi,
-dan hal yang masih harus diputuskan manusia. Jangan merge sendiri.
+tawarkan MR ke `branch.basis` — kecuali argumen melarangnya. `git remote` kosong (mode lokal, seperti
+`/scrum-kit:sprint`): jangan push dan jangan tawarkan MR; tulis "Mode lokal: tidak ada remote; push
+dan MR dilewati", lalu sebutkan perintah merge lokal untuk manusia: `git switch <branch.basis>` lalu
+`git merge --no-ff claude/pasang-scrum-kit`. Laporkan ringkas: wilayah yang terbentuk, gate, hasil
+verifikasi, dan hal yang masih harus diputuskan manusia. Jangan merge sendiri.

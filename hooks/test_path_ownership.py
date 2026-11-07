@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Self-test hook path_ownership.py dan pembungkus jalankan.sh (unittest stdlib).
+"""Self-test hook path_ownership.py, pembungkus jalankan.sh, dan skrip kit (unittest stdlib).
 
 Jalankan: py -I hooks/test_path_ownership.py   (atau python3 hooks/test_path_ownership.py)
 Hook dijalankan sebagai subprocess terhadap repo git sementara.
@@ -7,6 +7,7 @@ Hook dijalankan sebagai subprocess terhadap repo git sementara.
 
 from __future__ import annotations
 
+import hashlib
 import json
 import os
 import shutil
@@ -468,6 +469,54 @@ class UjiWorktreeNew(unittest.TestCase):
         self.assertFalse(os.path.exists(os.path.join(self.kedua, "mobile", "m.go")), "prasyarat: pemanggil sparse")
         self.skrip("shared", "SH-2", "3", "--base=HEAD")
         self.assertTrue(os.path.isfile(os.path.join(self.wt, "shared-SH-2", "mobile", "m.go")), "wilayah tanpa SPARSE harus checkout penuh")
+
+
+SIDIK = os.path.join(os.path.dirname(AKAR_HOOK), "scripts", "backlog-sidik.py")
+
+
+class UjiBacklogSidik(unittest.TestCase):
+    """scripts/backlog-sidik.py: sidik jari sama dengan baris sha256 Lanewright Backlog Check."""
+
+    def setUp(self):
+        self.d = tempfile.mkdtemp(prefix="kit-sidik-")
+
+    def tearDown(self):
+        shutil.rmtree(self.d, ignore_errors=True)
+
+    def berkas(self, nama, isi):
+        jalur = os.path.join(self.d, nama)
+        with open(jalur, "wb") as f:
+            f.write(isi)
+        return jalur
+
+    def sidik(self, *argumen):
+        return subprocess.run([sys.executable, SIDIK, *argumen], capture_output=True, timeout=60)
+
+    def test_crlf_dan_lf_sama(self):
+        lf = "# Backlog Sprint 03\n| ID |\n|---|\n".encode("utf-8")
+        hasil_lf = self.sidik(self.berkas("lf.md", lf))
+        hasil_crlf = self.sidik(self.berkas("crlf.md", lf.replace(b"\n", b"\r\n")))
+        self.assertEqual(hasil_lf.returncode, 0, hasil_lf.stderr.decode())
+        self.assertEqual(hasil_lf.stdout.strip().decode(), hashlib.sha256(lf).hexdigest())
+        self.assertEqual(hasil_crlf.stdout, hasil_lf.stdout)
+
+    def test_rumus_sama_dengan_backlog_check(self):
+        # backlog_check.fingerprint: sha256(data.replace(b"\r\n", b"\n")); BOM dan CR tunggal tetap.
+        data = b"\xef\xbb\xbf# Backlog\r\na\rb\r\n"
+        hasil = self.sidik(self.berkas("bom.md", data))
+        self.assertEqual(hasil.stdout.strip().decode(), hashlib.sha256(b"\xef\xbb\xbf# Backlog\na\rb\n").hexdigest())
+
+    def test_berkas_tidak_ada_dan_argumen_salah(self):
+        hasil = self.sidik(os.path.join(self.d, "tidak-ada.md"))
+        self.assertEqual(hasil.returncode, 2)
+        self.assertIn("tidak terbaca", hasil.stderr.decode())
+        self.assertEqual(hasil.stdout, b"")
+        self.assertEqual(self.sidik().returncode, 2)
+
+    def test_self_test(self):
+        hasil = self.sidik("--self-test")
+        self.assertEqual(hasil.returncode, 0, hasil.stderr.decode())
+        self.assertIn("self-test OK", hasil.stdout.decode())
 
 
 if __name__ == "__main__":

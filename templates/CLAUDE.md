@@ -59,8 +59,9 @@ Selalu lewat perintah gate di `kit.json` — jangan menghafal perintah lepas:
 4. **Jangan push langsung ke `{{basis}}`{{rilis_teks}}.** Pekerjaan mengalir lewat Merge Request.
 5. **Pipeline MR harus hijau pada commit HEAD sebelum merge.** Gate lokal tidak menggantikannya;
    pipeline merah = berhenti dan baca log job-nya. Pengecualian: repo tanpa remote (mode lokal
-   `/scrum-kit:sprint`) tidak punya MR maupun pipeline; di sana `gate.ci` lokal yang hijau pada HEAD
-   menjadi syaratnya, dan merge lokal ke `{{basis}}` hanya atas persetujuan product owner.
+   `/scrum-kit:sprint`, `/scrum-kit:hotfix`, `/scrum-kit:rilis`) tidak punya MR maupun pipeline; di
+   sana `gate.ci` lokal yang hijau pada HEAD menjadi syaratnya, dan merge lokal ke `{{basis}}`{{rilis_teks}}
+   hanya atas persetujuan product owner.
 6. **Dependensi berpenulis tunggal:** hanya pemilik modul yang mengubah berkas dependensi modul itu.
 {{aturan_tambahan}}
 
