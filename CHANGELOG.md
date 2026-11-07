@@ -5,38 +5,40 @@ a breaking change to `.claude/kit.json`, a command name, or an agent name bumps 
 
 ## v1.3.0 — 2026-11-07
 
-Enam perbaikan dari uji end-to-end, di titik-titik tempat agen harus menebak atau berhenti.
+Six fixes from an end-to-end test, at the points where an agent had to guess or stop.
 
-- **Peluncur Python di gate:** `kit-init` memilih peluncur yang benar-benar jalan lewat
-  `hooks/cari-python.sh --peluncur` (`python3`, `python`, lalu `py -3`; layak hanya bila `--version`
-  mencetak versi Python 3). Di Windows `python` sering stub Microsoft Store yang keluar dengan kode 49.
-  Gate `ci`/`test`/`build` ditulis dengan peluncur itu dan pilihannya dijelaskan; berkas CI proyek
-  tidak diubah, gate lokal hanya berbeda di peluncur.
-- **Sprint, dokumen ter-commit:** langkah 0.3 baru memastikan backlog sprint, `docs/requirements/`, dan
-  rencana mingguan sudah ter-commit di branch basis sebelum worktree pertama dibuat. Bila belum,
-  orkestrator menunjukkan daftarnya dan, sesudah dikonfirmasi, meng-commit hanya berkas itu. Branch
-  integrasi dibuat dari basis lokal itu; basis tidak di-push.
-- **Sprint dan QA, bentuk item QA:** item QA terpisah (`Menguji: <ID>`) mendapat branch dan MR sendiri
-  di atas branch item yang diujinya; item implementasi tanpa item QA mendapat MR dari branch-nya
-  sendiri dengan catatan "tanpa item QA"; item QA tanpa implementasi (mis. fixture) bercabang dari
-  integrasi. Branch dan laporan memakai ID item itu sendiri. Model lama (QA di item implementer) tetap.
-- **`worktree-new.sh`:** `--modul` opsional. Pada `kit.json` dengan `modul` kosong, `--modul` ditolak
-  dengan pesan "proyek ini tidak punya modul; hilangkan --modul"; `/sprint` dan `/hotfix` menyebut
-  untuk menghilangkannya.
-- **Definition of Done:** butir boleh ditandai "tidak berlaku" hanya dengan alasan di dokumen serah
-  terima sprint dan persetujuan PO, tidak pernah diam-diam (bagian baru di templat serah terima, butir
-  baru di checklist MR). Dokumentasi API publik ditulis implementer modul sebagai docstring; perubahan
-  README adalah item terpisah milik `platform-tooling` (`README.md` masuk wilayah `tooling` contoh).
-- **Mode lokal:** tanpa remote (`git remote` kosong), `/sprint` melewati pemeriksaan forge dengan pesan
-  eksplisit, membuat branch integrasi lokal dari basis, me-merge branch item secara lokal dengan merge
-  commit, dan me-merge integrasi ke basis secara lokal sesudah PO menyetujui; tidak ada yang di-push.
-  Tercantum juga di `docs/alur-bersama.md` dan kedua README. `worktree-new.sh` tidak lagi
-  memperingatkan "fetch gagal" tanpa remote.
-- Self-test hook: 37 → 44 uji.
+- **Python launcher in the gate:** `kit-init` picks a launcher that actually runs through
+  `hooks/cari-python.sh --peluncur` (`python3`, `python`, then `py -3`; usable only when `--version`
+  prints a Python 3 version). On Windows `python` is often the Microsoft Store stub, which exits with
+  code 49. The `ci`/`test`/`build` gates are written with that launcher and the choice is explained;
+  the project's own CI file is left alone, so the local gate differs only in the launcher.
+- **Sprint, documents committed:** a new step 0.3 makes sure the sprint backlog, `docs/requirements/`
+  and the weekly plan are committed on the base branch before the first worktree is created. If not,
+  the orchestrator lists them and, once confirmed, commits only those files. The integration branch is
+  created from that local base; the base is not pushed.
+- **Sprint and QA, item shapes:** a separate QA item (`Menguji: <ID>`) gets its own branch and merge
+  request on top of the tested item's branch; an implementation item without a QA item gets its merge
+  request from its own branch with a "tanpa item QA" note; a QA item without an implementation item
+  (for example fixtures) branches from integration. Branches and reports use the item's own ID. The
+  old model (QA works on the implementer's item) still applies.
+- **`worktree-new.sh`:** `--modul` is optional. With a `kit.json` whose `modul` is empty, `--modul` is
+  refused with the message "proyek ini tidak punya modul; hilangkan --modul", and `/sprint` and
+  `/hotfix` say to leave it out.
+- **Definition of Done:** an item may be marked "tidak berlaku" only with a reason in the sprint's
+  handover document and the product owner's approval, never silently (new section in the handover
+  template, new line in the merge request checklist). Public API documentation is written by the module
+  implementer as docstrings; a README change is a separate item owned by `platform-tooling`
+  (`README.md` is now in the example `tooling` region).
+- **Local mode:** with no remote (`git remote` empty), `/sprint` skips the forge checks with an explicit
+  message, creates the integration branch locally from the base, merges item branches locally with a
+  merge commit, and merges integration into the base locally after the product owner approves; nothing
+  is pushed. Also described in `docs/alur-bersama.md` and both READMEs. `worktree-new.sh` no longer
+  warns "fetch failed" when there is no remote.
+- Hook self-test: 37 → 44 tests.
 
-Proyek yang sudah memasang kit: salin ulang `scripts/kit/worktree-new.sh`, lalu jalankan
-`/scrum-kit:kit-init --perbarui` untuk menyisipkan teks DoD baru ke `CLAUDE.md`, bagian "Butir DoD
-tidak berlaku" ke serah terima, dan `README.md` ke wilayah `tooling`.
+Projects that already installed the kit: copy `scripts/kit/worktree-new.sh` again, then run
+`/scrum-kit:kit-init --perbarui` to insert the new DoD text into `CLAUDE.md`, the "Butir DoD tidak
+berlaku" section into the handover, and `README.md` into the `tooling` region.
 
 ## v1.2.1 — 2026-11-06
 
