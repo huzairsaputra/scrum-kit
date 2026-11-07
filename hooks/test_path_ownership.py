@@ -42,7 +42,7 @@ KIT = {
         "shared": {"agen": "shared-module-owner", "tulis": ["shared/**", "*/bootstrap/migrations.go"]},
         "tests": {"agen": "qa-test-engineer", "tulis": ["*/tests/**", "**/*_test.go"]},
         "contract": {"agen": "api-contract-keeper", "tulis": ["docs/api/**"]},
-        "tooling": {"agen": "platform-tooling", "tulis": [".claude/**", "scripts/**", "Makefile"]},
+        "tooling": {"agen": "platform-tooling", "tulis": [".claude/**", "scripts/**", "Makefile", "README.md"]},
     },
     "dokumen": {
         "backlog": "docs/sprints/sprint-{nn}-backlog.md",
@@ -245,6 +245,14 @@ class UjiKepemilikan(unittest.TestCase):
         self.assertTolak(self.tulis("sprint-03/admin/BE-1", "docs/sprints/sprint-03-backlog.md"))
         self.assertTolak(self.tulis("sprint-03/admin/BE-1", "docs/sprints/serah-terima.md"))
 
+    def test_readme_milik_tooling_bukan_implementer(self):
+        # DoD: dokumentasi API = docstring oleh implementer; README = item terpisah milik tooling.
+        hasil = self.tulis("sprint-03/admin/BE-1", "README.md")
+        self.assertTolak(hasil)
+        self.assertIn("platform-tooling", hasil.stderr.decode())
+        self.assertIzin(self.tulis("sprint-03/admin/BE-1", "admin/handler.go"))  # docstring di kode modul
+        self.assertIzin(self.tulis("sprint-03/tooling/T-2", "README.md"))
+
     def test_dokumen_sprint_dari_tooling(self):
         for relatif in ("docs/sprints/sprint-03-backlog.md", "docs/sprints/serah-terima.md", "docs/sprints/code-debt-backlog.md"):
             self.assertIzin(self.tulis("sprint-03/tooling/T-1", relatif))
@@ -355,6 +363,40 @@ class UjiPembungkus(unittest.TestCase):
             shutil.rmtree(kosong, ignore_errors=True)
 
 
+@unittest.skipUnless(shutil.which("sh"), "sh tidak tersedia")
+class UjiCariPeluncur(unittest.TestCase):
+    """cari-python.sh --peluncur: python3 → python → py -3; stub Microsoft Store (exit 49) dilewati."""
+
+    STUB = '#!/bin/sh\necho "Python was not found; run without arguments to install from the Microsoft Store" >&2\nexit 49\n'
+    PY_LAYAK = '#!/bin/sh\n[ "$1" = "-3" ] && [ "$2" = "--version" ] && echo "Python 3.12.0" && exit 0\nexit 9\n'
+
+    def peluncur(self, berkas):
+        palsu = tempfile.mkdtemp(prefix="kit-peluncur-")
+        try:
+            for nama, isi in berkas.items():
+                jalur = os.path.join(palsu, nama)
+                with open(jalur, "w", encoding="utf-8", newline="\n") as f:
+                    f.write(isi)
+                os.chmod(jalur, 0o755)
+            sh = shutil.which("sh")
+            # Direktori palsu di depan: python3/python/py asli di PATH tertutup oleh stub.
+            env = dict(LINGKUNGAN, PATH=palsu + os.pathsep + os.path.dirname(sh))
+            hasil = subprocess.run([sh, os.path.join(AKAR_HOOK, "cari-python.sh"), "--peluncur"], capture_output=True, env=env, timeout=60)
+            return hasil.returncode, hasil.stdout.decode().strip()
+        finally:
+            shutil.rmtree(palsu, ignore_errors=True)
+
+    def test_stub_store_dilewati_jatuh_ke_py_3(self):
+        self.assertEqual(self.peluncur({"python3": self.STUB, "python": self.STUB, "py": self.PY_LAYAK}), (0, "py -3"))
+
+    def test_python3_didahulukan(self):
+        layak = '#!/bin/sh\necho "Python 3.11.2"\n'
+        self.assertEqual(self.peluncur({"python3": layak, "python": layak, "py": self.PY_LAYAK}), (0, "python3"))
+
+    def test_semua_stub_gagal(self):
+        self.assertEqual(self.peluncur({"python3": self.STUB, "python": self.STUB, "py": self.STUB}), (1, ""))
+
+
 # `which` mengikuti urutan PATH, jadi di Windows bisa mengembalikan System32\bash.exe (WSL), yang tidak
 # memahami path Windows; kelas ini dilewati di situ alih-alih gagal.
 BASH = shutil.which("bash")
@@ -373,9 +415,40 @@ class UjiWorktreeNew(unittest.TestCase):
         for d in (self.wt, self.kedua, self.akar):
             shutil.rmtree(d, ignore_errors=True)
 
+    def jalankan(self, *argumen):
+        return subprocess.run([BASH, WORKTREE_NEW, *argumen], cwd=self.kedua, capture_output=True, env=LINGKUNGAN, timeout=120)
+
     def skrip(self, *argumen):
-        hasil = subprocess.run([BASH, WORKTREE_NEW, *argumen], cwd=self.kedua, capture_output=True, env=LINGKUNGAN, timeout=120)
+        hasil = self.jalankan(*argumen)
         self.assertEqual(hasil.returncode, 0, hasil.stderr.decode(errors="replace"))
+        return hasil
+
+    def tanpa_modul(self):
+        # Skrip membaca kit.json worktree pemanggil lebih dulu; tidak perlu di-commit.
+        with open(os.path.join(self.kedua, ".claude", "kit.json"), "w", encoding="utf-8") as f:
+            json.dump(dict(KIT, modul=[]), f)
+
+    def test_mode_lokal_tanpa_remote_memakai_integrasi_lokal(self):
+        # Repo uji tidak punya remote: tanpa peringatan "fetch gagal", basis = branch integrasi lokal.
+        git(self.kedua, "commit", "-q", "--allow-empty", "-m", "integrasi lokal")
+        git(self.kedua, "branch", "integrasi-3")
+        hasil = self.skrip("shared", "SH-3", "3")
+        galat, keluar = hasil.stderr.decode(errors="replace"), hasil.stdout.decode(errors="replace")
+        self.assertIn("mode lokal", galat)
+        self.assertNotIn("fetch dari origin gagal", galat)
+        self.assertIn("(dari integrasi-3)", keluar)
+
+    def test_tanpa_modul_tests_tanpa_opsi_modul(self):
+        self.tanpa_modul()
+        self.skrip("tests", "QA-1", "3", "--base=HEAD")
+        self.assertTrue(os.path.isdir(os.path.join(self.wt, "tests-QA-1")))
+
+    def test_tanpa_modul_opsi_modul_ditolak_dengan_pesan_jelas(self):
+        self.tanpa_modul()
+        hasil = self.jalankan("tests", "QA-1", "3", "--modul=admin", "--base=HEAD")
+        self.assertEqual(hasil.returncode, 1)
+        self.assertIn("proyek ini tidak punya modul; hilangkan --modul", hasil.stderr.decode(errors="replace"))
+        self.assertFalse(os.path.exists(os.path.join(self.wt, "tests-QA-1")))
 
     def test_base_head_dari_worktree_kedua(self):
         git(self.kedua, "commit", "-q", "--allow-empty", "-m", "di worktree kedua")

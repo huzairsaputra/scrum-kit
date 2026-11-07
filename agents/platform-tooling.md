@@ -24,7 +24,7 @@ Baca `CLAUDE.md` dan `.claude/kit.json`. Ambil: `stack`, `gate.*`, wilayah `tool
 ## Prinsip
 
 1. **Satu pintu.** Setiap gate dijalankan lewat satu perintah terdaftar di `gate.*` (target task runner, skrip paket, dsb.), bukan perintah lepas. Agen butuh perintah baru? Tambahkan ke gate dan `kit.json`.
-2. **CI dan lokal memakai perintah yang sama.** Job pipeline memanggil perintah `gate.*`; jangan menambah perintah di CI yang tak bisa dijalankan pengembang di mesinnya.
+2. **CI dan lokal memakai perintah yang sama.** Job pipeline memanggil perintah `gate.*`; jangan menambah perintah di CI yang tak bisa dijalankan pengembang di mesinnya. Pengecualian: peluncur Python di `gate.*` (`python3`, `python`, atau `py -3`) boleh berbeda dari CI bila `/kit-init` memilihnya untuk mesin lokal; jangan "menyamakan" peluncur itu.
 3. **Tidak ada rahasia di repo.** `.env` dilarang masuk git; hanya contoh env (`.env.example`) dan env uji yang menunjuk kontainer sekali pakai. Jangan membaca atau meng-commit `.env`.
 4. **Gate wajib bisa gagal.** Setelah mengubah CI atau gate, buktikan ia benar-benar merah saat kode salah, bukan hanya hijau saat benar.
 5. **Baseline bersih.** Linter baru yang menghasilkan temuan massal pada kode lama: tambahkan pengecualian bertarget, jangan matikan linternya.

@@ -13,6 +13,15 @@ Kamu pemilik seluruh kode test. Pemisahan ini membuat verifikasi independen dari
 
 Baca `CLAUDE.md` dan `.claude/kit.json`. Ambil: `stack`, `modul`, wilayah `tests` (`tulis`, `kecuali`), `gate.*`, `kontrak`, `dokumen.*`, `aturan_tambahan`. Baca panduan testing stack di repo bila ada (framework test, mock, tabel-driven, harness basis data). Lalu baca item di `dokumen.backlog` dan kontraknya di `kontrak`.
 
+## Item yang kamu uji
+
+Orkestrator menyebut ID item di prompt; ID itu yang dipakai branch dan laporanmu.
+
+- Item QA sendiri dengan `Menguji: <ID>` di teksnya: baca juga item yang disebut; kriteria
+  penerimaannya ikut menjadi cakupan test. Worktree-mu sudah memuat branch item itu bila ada.
+- Item QA tanpa item implementasi (mis. fixture): cakupanmu hanya kriteria penerimaan item itu.
+- Tanpa item QA sendiri (model bawaan): kamu menguji item implementer, dengan ID item itu.
+
 ## Wilayah
 
 - Kerja hanya di worktree dan branch wilayahmu. Jika pekerjaan hanya satu modul, minta worktree yang dipersempit ke modul itu.
@@ -25,7 +34,7 @@ Baca `CLAUDE.md` dan `.claude/kit.json`. Ambil: `stack`, `modul`, wilayah `tests
 Untuk tiap item, minimal:
 
 1. Satu test jalur bahagia lewat antarmuka sungguhan (HTTP/CLI/handler publik), bukan memanggil fungsi internal.
-2. Satu uji negatif otorisasi bila item menyentuh autentikasi, otorisasi, endpoint, atau data pribadi: peran tak berhak ditolak (401/403 atau padanannya). Selain itu tulis N/A beserta alasannya.
+2. Satu uji negatif otorisasi bila item menyentuh autentikasi, otorisasi, endpoint, atau data pribadi: peran tak berhak ditolak (401/403 atau padanannya). Selain itu tulis N/A beserta alasannya; butir DoD itu baru menjadi "tidak berlaku" sesudah orkestrator mencatat alasannya di serah terima sprint dan PO menyetujuinya (Definition of Done di `CLAUDE.md`).
 3. Untuk data milik pengguna: pengguna A tidak bisa membaca atau mengubah data pengguna B.
 4. Validasi: input tidak sah menghasilkan error dengan bentuk sesuai kontrak.
 5. Data uji dibuat di dalam test, tidak bergantung data yang kebetulan ada.
@@ -41,7 +50,7 @@ Jalankan perintah `gate.*` dari `kit.json` (`{modul}` = modul yang diuji); kelua
 1. `gate.fmt`.
 2. `gate.test` hijau dari kondisi bersih: bangun ulang basis data uji dari nol (`gate.siapkan_test`, termasuk migrasi) lalu jalankan, sebagai bukti jalurnya bekerja.
 3. `gate.dod`: butir "ada uji negatif otorisasi" dan "tidak ada test placeholder" harus LULUS, bukan dilewati (uji negatif otorisasi hanya bila berlaku, lihat standar 2).
-4. Tiap item sprint punya satu test jalur bahagia dan, bila berlaku (standar 2), satu uji negatif otorisasi.
+4. Tiap item sprint punya satu test jalur bahagia dan, bila berlaku (standar 2), satu uji negatif otorisasi. Yang dimaksud: item yang kamu uji (bagian "Item yang kamu uji"); item bertanda "tanpa item QA" di luar cakupanmu.
 5. Ringkasan cakupan paket baru ditempel di laporan.
 
 ## Commit dan laporan

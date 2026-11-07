@@ -20,6 +20,25 @@ Baca dulu `CLAUDE.md` dan `.claude/kit.json`. Semua nama berikut berasal dari `k
 `{n}` = $0, `{nn}` = $0 dua digit; branch integrasi `branch.integrasi`, basis `branch.basis`,
 backlog `dokumen.backlog`, laporan `dokumen.laporan`, gate `gate.*`.
 
+## Mode lokal (tanpa remote)
+
+Periksa `git remote` sekali di awal. Kosong → sprint berjalan dalam **mode lokal**. Tulis di awal
+laporan ke manusia dan di ringkasan: "Mode lokal: tidak ada remote; pemeriksaan forge (pipeline, MR,
+CI pada SHA HEAD) dilewati." Semua langkah tetap berlaku, dengan pengganti berikut:
+
+- Tanpa `git fetch` dan tanpa `git push`; `origin/<branch>` dibaca sebagai `<branch>` lokal (mis.
+  basis diff reviewer = `<branch.integrasi>`). Tidak ada yang di-push.
+- Langkah 0: pipeline basis dilewati (hanya `gate.ci` lokal); branch integrasi dibuat lokal dari
+  branch basis: `git branch <branch.integrasi> <branch.basis>`.
+- Langkah 5: tanpa MR. Syarat CI diganti `gate.ci` lokal yang hijau pada HEAD branch yang akan
+  di-merge (keluarannya di laporan), dan checklist DoD dicentang di laporan item. Branch item (branch
+  yang sama yang akan menjadi sumber MR, lihat Langkah 5) di-merge ke branch integrasi dengan merge
+  commit: `git switch <branch.integrasi>` lalu `git merge --no-ff <branch item>`.
+- Langkah 6: tanpa MR integrasi. Sesudah product owner menyetujui di chat: `git switch
+  <branch.basis>` lalu `git merge --no-ff <branch.integrasi>`. Belum disetujui → berhenti dan
+  laporkan; branch integrasi tetap ada.
+- Bersih-bersih dan merge mengikuti "Cara merge", bagian "Mode lokal".
+
 ## Langkah -1 — Spesifikasi eksternal
 
 Hanya bila `spek_eksternal.drive_folder_id` terisi; selain itu lewati.
@@ -36,8 +55,25 @@ Hanya bila `spek_eksternal.drive_folder_id` terisi; selain itu lewati.
 1. Baca backlog sprint $0. Belum ada/kosong → berhenti, minta manusia mengisinya. Jangan mengarang backlog.
 2. Jalankan `gate.ci` secara lokal di basis, dan periksa juga pipeline basis bila forge punya;
    laporkan keduanya. Merah → serahkan ke `scrum-kit:platform-tooling` lebih dulu.
-3. `git fetch origin`; buat branch integrasi dari `origin/<branch.basis>` bila belum ada, push.
-4. Kelompokkan item menurut wilayah pemiliknya (`wilayah.*.agen`).
+3. **Dokumen sprint ter-commit di basis, sebelum worktree pertama dibuat.** Worktree peran hanya
+   melihat berkas yang ter-commit; backlog yang belum ter-commit terlihat sebagai templat kosong, dan
+   ID yang dikutip kriteria penerimaan (mis. F-01, BR-03, A-04) tidak bisa dicari. Daftar: backlog
+   sprint $0, ditambah `docs/requirements/` dan rencana mingguan bila ada.
+   - Di branch basis (`git switch <branch.basis>`, `git fetch origin`,
+     `git merge --ff-only origin/<branch.basis>`): `git status --porcelain -- <daftar>` harus kosong
+     dan `git ls-files -- <daftar>` memuat setiap berkas.
+   - Belum → tunjukkan daftar berkas yang belum ter-commit ke manusia. Sesudah dikonfirmasi, commit
+     hanya berkas itu: `git add -- <daftar>` lalu `git commit -m "docs: dokumen sprint $0" -- <daftar>`
+     (perubahan lain yang ter-stage tidak ikut). Tidak dikonfirmasi → berhenti.
+   - Dokumen ini milik orkestrator. Hook kepemilikan tidak membatasi branch basis (di luar pola
+     `branch.wilayah`), dan ia tidak memeriksa `git commit`. Commit ini **tidak** di-push ke basis; ia
+     sampai ke basis lewat MR integrasi (langkah 4).
+4. `git fetch origin`; buat branch integrasi bila belum ada dari `<branch.basis>` lokal (=
+   `origin/<branch.basis>` ditambah commit dokumen langkah 3; `git merge-base --is-ancestor
+   origin/<branch.basis> <branch.basis>` harus sukses, selain itu berhenti), push. Branch integrasi
+   sudah ada tetapi tanpa backlog itu (`git cat-file -e <branch.integrasi>:<backlog>` gagal) → merge
+   `<branch.basis>` lokal ke branch integrasi (merge commit), push.
+5. Kelompokkan item menurut wilayah pemiliknya (`wilayah.*.agen`).
 
 ## Langkah 1 — Fondasi (barrier)
 
@@ -61,7 +97,24 @@ integrasi (`git fetch origin` dulu) sesudah item pertama merge.
 
 Begitu build sebuah modul hijau, `scrum-kit:qa-test-engineer` untuk modul itu
 (`worktree-new.sh tests <id> $0 --modul=<m>`), di atas branch implementasinya. Tidak perlu menunggu
-modul lain.
+modul lain. Bila `modul` di `kit.json` kosong (proyek satu modul), hilangkan `--modul`:
+`worktree-new.sh tests <id> $0`.
+
+Itu model bawaan: QA mengerjakan item implementer, dengan ID item itu. Backlog bisa juga memuat
+**item QA sendiri** (item berwilayah `tests` dengan ID-nya sendiri). Worktree, branch, laporan, dan MR
+item QA selalu memakai ID item QA itu sendiri:
+
+- **(a) Item QA yang menyebut item yang diujinya** (`Menguji: <ID>` di teks item): dibuat sesudah
+  build item yang diuji hijau, di atas branch item itu:
+  `worktree-new.sh tests <id-QA> $0 --base=<branch item yang diuji>` (ditambah `--modul=<m>` bila
+  ada modul). Branch item yang diuji tidak ada (sudah merge, atau di luar sprint) → tanpa `--base`.
+  Menguji beberapa item → `--base` ke branch item pertama, lalu merge branch item lainnya ke worktree
+  itu (`git merge --no-ff`) sebelum agen mulai. Prompt agen memuat ID item QA dan ID item yang diuji.
+- **(b) Item implementasi tanpa item QA**: begitu minimal satu item backlog memuat `Menguji:`, model
+  bawaan tidak dipakai di sprint ini; item implementasi yang tidak disebut `Menguji:` item mana pun
+  tidak mendapat QA.
+- **(c) Item QA tanpa item implementasi** (mis. fixture; tanpa `Menguji:`): worktree dari branch
+  integrasi (`worktree-new.sh tests <id-QA> $0`), tanpa menunggu item lain.
 
 ## Langkah 5 — Review dan merge per item
 
@@ -71,7 +124,16 @@ modul lain.
   wilayah item → tandai item terblokir, tanya manusia sekali beserta opsinya, lanjutkan item lain, dan
   cantumkan di ringkasan.
 - Satu MR per item → branch integrasi, dibuka sebagai draft dari branch QA (memuat commit
-  implementasinya); branch implementasi tidak mendapat MR sendiri. Tandai siap hanya bila review
+  implementasinya); branch implementasi tidak mendapat MR sendiri. Backlog dengan item QA sendiri
+  (Langkah 4):
+  - (a) MR dari branch item QA itu sendiri. Item yang diuji ikut di MR itu (commitnya ada di branch
+    QA) dan tidak mendapat MR sendiri; deskripsi MR menyebut kedua ID.
+  - (b) MR dari branch item implementasi itu sendiri, dengan catatan terlihat **"tanpa item QA"** di
+    judul dan di awal deskripsi MR. Butir pengujian di checklist DoD tidak dicentang, tetapi ditandai
+    "tanpa item QA".
+  - (c) MR dari branch item QA itu sendiri.
+
+  Tandai siap hanya bila review
   BERSIH dan CI pada SHA HEAD sukses ("Cara merge"); merah = berhenti, baca log job, jangan menumpuk
   MR di atasnya, tidak ada "merah yang diharapkan".
 - Merge **hanya lewat MR** (`--no-ff`, satu merge commit per item); centang checklist DoD di deskripsi
@@ -81,6 +143,7 @@ modul lain.
 
 1. `api-contract-keeper` sekali lagi: kontrak = kode yang benar-benar ada.
 2. Tulis `<dokumen.laporan>/ringkasan.md`: goal, item selesai/tidak (alasannya), item terblokir,
+   item yang merge "tanpa item QA",
    worktree dan branch item yang belum merge, story point, temuan terbuka, impediment. Perbarui
    `dokumen.serah_terima` dan `dokumen.code_debt`, lalu commit ringkasan, putusan review yang disimpan,
    serah terima, dan code debt di branch integrasi, dan push.
@@ -99,5 +162,7 @@ modul lain.
 - Jangan merge MR ke `branch.basis` tanpa persetujuan manusia (pengecualian tertulis: hotfix jalur biasa
   dan back-merge di `/scrum-kit:hotfix`); jangan pernah push langsung ke basis
   maupun `branch.rilis`; jangan membuka MR ke `branch.rilis` tanpa diminta (itu tugas `/scrum-kit:rilis`).
+- Jangan membuat worktree sebelum langkah 0.3 lulus: peran tidak pernah mulai dari backlog yang belum
+  ter-commit.
 - Jangan menonaktifkan/melewati test merah; akar masalahnya yang diperbaiki.
 - Agen yang melapor selesai tanpa keluaran gate → kembalikan.

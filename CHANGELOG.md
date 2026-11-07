@@ -3,6 +3,43 @@
 All notable changes to scrum-kit. Versions follow [Semantic Versioning](https://semver.org/):
 a breaking change to `.claude/kit.json`, a command name, or an agent name bumps the major version.
 
+## v1.3.0 — 2026-11-07
+
+Six fixes from an end-to-end test, at the points where an agent had to guess or stop.
+
+- **Python launcher in the gate:** `kit-init` picks a launcher that actually runs through
+  `hooks/cari-python.sh --peluncur` (`python3`, `python`, then `py -3`; usable only when `--version`
+  prints a Python 3 version). On Windows `python` is often the Microsoft Store stub, which exits with
+  code 49. The `ci`/`test`/`build` gates are written with that launcher and the choice is explained;
+  the project's own CI file is left alone, so the local gate differs only in the launcher.
+- **Sprint, documents committed:** a new step 0.3 makes sure the sprint backlog, `docs/requirements/`
+  and the weekly plan are committed on the base branch before the first worktree is created. If not,
+  the orchestrator lists them and, once confirmed, commits only those files. The integration branch is
+  created from that local base; the base is not pushed.
+- **Sprint and QA, item shapes:** a separate QA item (`Menguji: <ID>`) gets its own branch and merge
+  request on top of the tested item's branch; an implementation item without a QA item gets its merge
+  request from its own branch with a "tanpa item QA" note; a QA item without an implementation item
+  (for example fixtures) branches from integration. Branches and reports use the item's own ID. The
+  old model (QA works on the implementer's item) still applies.
+- **`worktree-new.sh`:** `--modul` is optional. With a `kit.json` whose `modul` is empty, `--modul` is
+  refused with the message "proyek ini tidak punya modul; hilangkan --modul", and `/sprint` and
+  `/hotfix` say to leave it out.
+- **Definition of Done:** an item may be marked "tidak berlaku" only with a reason in the sprint's
+  handover document and the product owner's approval, never silently (new section in the handover
+  template, new line in the merge request checklist). Public API documentation is written by the module
+  implementer as docstrings; a README change is a separate item owned by `platform-tooling`
+  (`README.md` is now in the example `tooling` region).
+- **Local mode:** with no remote (`git remote` empty), `/sprint` skips the forge checks with an explicit
+  message, creates the integration branch locally from the base, merges item branches locally with a
+  merge commit, and merges integration into the base locally after the product owner approves; nothing
+  is pushed. Also described in `docs/alur-bersama.md` and both READMEs. `worktree-new.sh` no longer
+  warns "fetch failed" when there is no remote.
+- Hook self-test: 37 → 44 tests.
+
+Projects that already installed the kit: copy `scripts/kit/worktree-new.sh` again, then run
+`/scrum-kit:kit-init --perbarui` to insert the new DoD text into `CLAUDE.md`, the "Butir DoD tidak
+berlaku" section into the handover, and `README.md` into the `tooling` region.
+
 ## v1.2.1 — 2026-11-06
 
 Correctness fixes found by running real sprints (Claude Code and Codex CLI) against the same

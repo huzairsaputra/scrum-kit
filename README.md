@@ -7,7 +7,7 @@
 
 <p align="center">
   <a href="LICENSE"><img alt="License: MIT" src="https://img.shields.io/badge/license-MIT-blue.svg"></a>
-  <a href="CHANGELOG.md"><img alt="Version" src="https://img.shields.io/badge/version-1.2.1-green.svg"></a>
+  <a href="CHANGELOG.md"><img alt="Version" src="https://img.shields.io/badge/version-1.3.0-green.svg"></a>
   <img alt="Claude Code plugin" src="https://img.shields.io/badge/Claude%20Code-plugin-orange.svg">
 </p>
 
@@ -81,6 +81,11 @@ backlog ──► orchestrator ──► claude -p --agent scrum-kit:<role> ─�
                     │
                     └──► gate (your CI commands) ──► code-reviewer ──► one MR/PR to base
 ```
+
+**Local mode.** With no git remote (`git remote` is empty), `/scrum-kit:sprint` says so and skips the
+forge checks, creates the integration branch locally from the base branch, merges each item branch
+into it with a merge commit, and merges the integration branch into the base branch locally only after
+the product owner approves. Nothing is pushed; a green local `gate.ci` stands in for forge CI.
 
 A minimal `kit.json` for a single-module Laravel app:
 

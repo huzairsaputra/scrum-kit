@@ -42,7 +42,8 @@ bercabang dari integrasi sprint berjalan dan pekerjaan sprint yang belum selesai
    rilis ikut diperbarui.
 3. **Implementasi** paralel per wilayah: `shared-module-owner` (skema/bersama) lebih dulu bila
    dibutuhkan modul lain, lalu `module-dev` per modul. Tiap agen menjalankan gate fmt/lint/build.
-4. **QA** per modul: `qa-test-engineer` di worktree `tests --modul=<m>` yang sudah memuat merge
+4. **QA** per modul: `qa-test-engineer` di worktree `tests --modul=<m>` (tanpa `--modul` bila
+   `modul` di `kit.json` kosong) yang sudah memuat merge
    kontrak + implementasi; suite penuh modul itu hijau; tanpa `skip`.
 5. **Review**: `code-reviewer` atas seluruh diff (basis diff `origin/<tujuan>`). Temuan → agen pemilik → QA ulang + review ulang
    sampai BERSIH. Risiko yang sengaja diterima PO dicatat di `dokumen.code_debt`.

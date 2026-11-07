@@ -58,7 +58,9 @@ Selalu lewat perintah gate di `kit.json` — jangan menghafal perintah lepas:
 3. **Jangan pernah commit `.env`** atau rahasia apa pun. Hanya contoh env (`.env.example`) yang masuk git.
 4. **Jangan push langsung ke `{{basis}}`{{rilis_teks}}.** Pekerjaan mengalir lewat Merge Request.
 5. **Pipeline MR harus hijau pada commit HEAD sebelum merge.** Gate lokal tidak menggantikannya;
-   pipeline merah = berhenti dan baca log job-nya.
+   pipeline merah = berhenti dan baca log job-nya. Pengecualian: repo tanpa remote (mode lokal
+   `/scrum-kit:sprint`) tidak punya MR maupun pipeline; di sana `gate.ci` lokal yang hijau pada HEAD
+   menjadi syaratnya, dan merge lokal ke `{{basis}}` hanya atas persetujuan product owner.
 6. **Dependensi berpenulis tunggal:** hanya pemilik modul yang mengubah berkas dependensi modul itu.
 {{aturan_tambahan}}
 
@@ -90,7 +92,18 @@ Sebuah item selesai bila **semuanya** benar:
    dapat diakses pengguna lain.
 3. Endpoint/kontrak publik terdokumentasi{{kontrak_teks}}.
 4. Ditinjau `code-reviewer` sampai BERSIH.
-5. MR dengan checklist DoD tercentang, pipeline MR hijau pada HEAD.
+5. MR dengan checklist DoD tercentang, pipeline MR hijau pada HEAD (mode lokal: checklist di laporan
+   item dan `gate.ci` lokal hijau, lihat aturan keras 5).
+
+Butir yang tidak berlaku untuk sebuah item (mis. uji negatif otorisasi di proyek tanpa login) boleh
+ditandai "tidak berlaku" hanya bila alasannya tertulis di dokumen serah terima sprint
+(`{{serah_terima}}`, bagian "Butir DoD tidak berlaku") dan disetujui product owner. Tidak pernah
+diam-diam.
+
+Dokumentasi API publik di kode (fungsi, kelas, modul) ditulis implementer modul sebagai docstring di
+kode wilayahnya. Perubahan README adalah item terpisah milik wilayah tooling (`platform-tooling`),
+bukan bagian item implementasi; implementer yang melihat README perlu berubah mencatatnya sebagai
+temuan. Dengan begitu butir 3 tidak pernah meminta implementer menulis di luar wilayahnya.
 
 ## 7. Otomasi
 

@@ -23,7 +23,7 @@ wawancara; sesudahnya boleh disunting tangan (di-commit ke repo proyek).
     "shared":   { "agen": "shared-module-owner", "tulis": ["shared/**", "*/bootstrap/migrations.go"] },
     "tests":    { "agen": "qa-test-engineer",    "tulis": ["*/tests/**", "**/*_test.go"] },
     "contract": { "agen": "api-contract-keeper", "tulis": ["docs/api/**"] },
-    "tooling":  { "agen": "platform-tooling",    "tulis": [".claude/**", "scripts/**", "Makefile", ".gitlab-ci.yml", "*/Dockerfile", "*/.env.example"] },
+    "tooling":  { "agen": "platform-tooling",    "tulis": [".claude/**", "scripts/**", "Makefile", ".gitlab-ci.yml", "*/Dockerfile", "*/.env.example", "README.md"] },
     "security": { "agen": "security-auditor",    "tulis": ["docs/security/**"] },
     "adaptasi": { "agen": "spec-change-adapter", "tulis": ["shared/**", "docs/api/**", "docs/db/**", "admin/**", "mobile/**", "opd/**"], "kecuali": ["*/tests/**", "**/*_test.go"] }
   },
@@ -70,7 +70,7 @@ wawancara; sesudahnya boleh disunting tangan (di-commit ke repo proyek).
 | `wilayah.<nama>.per_modul` | tidak | `true`: wilayah ini berlaku per modul. Nama wilayah di branch adalah nama modulnya (`sprint-03/admin/BE-1`), dan `{modul}` di glob diganti modul itu. |
 | `wilayah.adaptasi` | bila Drive dipakai | Wilayah `spec-change-adapter`: tumpang tindih dengan skema, kontrak, dan kode modul, jadi selalu berjalan sendirian (barrier). Tidak perlu bila `spek_eksternal.drive_folder_id` kosong. |
 | `checkout_bersama` | tidak | Direktori yang ikut ter-checkout di worktree sparse wilayah modul. Kosong/tidak ada = tanpa sparse-checkout. |
-| `gate.*` | `ci` wajib | Perintah gate. `{modul}` diganti nama modul. Agen menjalankan persis perintah ini — CI harus memanggil perintah yang sama. |
+| `gate.*` | `ci` wajib | Perintah gate. `{modul}` diganti nama modul. Agen menjalankan persis perintah ini — CI harus memanggil perintah yang sama. Satu-satunya beda yang boleh: peluncur Python (`python3`, `python`, atau `py -3`) yang dipilih `/kit-init` karena berfungsi di mesin lokal; berkas CI tetap memakai peluncurnya sendiri. |
 | `kontrak` | tidak | Lokasi kontrak API per modul. Kosong = proyek tanpa kontrak API (agen kontrak tidak dipakai). |
 | `dokumen.*` | ya | Lokasi backlog, laporan agen, serah terima, dan backlog utang kode. Laporan agen ditulis ke `<dokumen.laporan>/<agen>-<id-item>.md` (mis. `module-dev-BE-1.md`), satu berkas per item agar instans paralel tidak bentrok. |
 | `spek_eksternal.drive_folder_id` | tidak | ID folder Google Drive sumber spesifikasi (DDL, ERD, changelog). `null` = Langkah -1 `/sprint` dilewati. |

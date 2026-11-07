@@ -19,6 +19,14 @@ segera. Pekerjaan yang sudah selesai dan tersinkron dipangkas — dokumen ini ha
 
 -
 
+## Butir DoD tidak berlaku
+
+Hanya berlaku dengan alasan tertulis dan persetujuan product owner (Definition of Done di `CLAUDE.md`).
+
+| Sprint | Item | Butir DoD | Alasan | Disetujui PO (tanggal) |
+|---|---|---|---|---|
+| | | | | |
+
 ## Checklist sebelum rilis ke produksi
 
 - [ ]
