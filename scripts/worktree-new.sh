@@ -177,7 +177,16 @@ TUJUAN="$(dirname "$AKAR")/${NAMA_REPO}-wt/$WILAYAH-$ITEM"
 if git show-ref --verify --quiet "refs/heads/$BRANCH"; then gagal "branch $BRANCH sudah ada."; fi
 
 # --- basis. Fetch tidak boleh menggagalkan skrip (offline, atau branch remote sudah dihapus).
-ambil() { git fetch --quiet origin "$1" 2>/dev/null; }
+# Mode lokal (`git remote` kosong): tidak ada yang di-fetch; branch lokal adalah sumbernya.
+TANPA_REMOTE=""
+if [[ -z "$(git remote)" ]]; then
+	TANPA_REMOTE=1
+	echo "CATATAN: mode lokal (tanpa remote); fetch dilewati, memakai branch lokal." >&2
+fi
+ambil() {
+	[[ -z "$TANPA_REMOTE" ]] || return 0
+	git fetch --quiet origin "$1" 2>/dev/null
+}
 FETCH_GAGAL=""
 if [[ -z "$BASE" ]]; then
 	if [[ -n "$INTEGRASI" ]]; then
@@ -191,7 +200,11 @@ if [[ -z "$BASE" ]]; then
 	fi
 	if [[ -z "$BASE" ]]; then
 		echo "CATATAN: branch integrasi '$INTEGRASI' belum ada, jatuh ke basis (origin/$KIT_BASIS, atau $KIT_BASIS lokal bila remote tak ada)." >&2
-		[[ -z "$INTEGRASI" ]] || echo "         Buat lebih dulu: git push origin origin/$KIT_BASIS:refs/heads/$INTEGRASI" >&2
+		if [[ -n "$INTEGRASI" && -n "$TANPA_REMOTE" ]]; then
+			echo "         Buat lebih dulu (mode lokal): git branch $INTEGRASI $KIT_BASIS" >&2
+		elif [[ -n "$INTEGRASI" ]]; then
+			echo "         Buat lebih dulu: git push origin origin/$KIT_BASIS:refs/heads/$INTEGRASI" >&2
+		fi
 		ambil "$KIT_BASIS" || FETCH_GAGAL=1
 		BASE="origin/$KIT_BASIS"
 		git rev-parse --verify --quiet "$BASE" >/dev/null || BASE="$KIT_BASIS"

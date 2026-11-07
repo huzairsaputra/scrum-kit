@@ -428,6 +428,16 @@ class UjiWorktreeNew(unittest.TestCase):
         with open(os.path.join(self.kedua, ".claude", "kit.json"), "w", encoding="utf-8") as f:
             json.dump(dict(KIT, modul=[]), f)
 
+    def test_mode_lokal_tanpa_remote_memakai_integrasi_lokal(self):
+        # Repo uji tidak punya remote: tanpa peringatan "fetch gagal", basis = branch integrasi lokal.
+        git(self.kedua, "commit", "-q", "--allow-empty", "-m", "integrasi lokal")
+        git(self.kedua, "branch", "integrasi-3")
+        hasil = self.skrip("shared", "SH-3", "3")
+        galat, keluar = hasil.stderr.decode(errors="replace"), hasil.stdout.decode(errors="replace")
+        self.assertIn("mode lokal", galat)
+        self.assertNotIn("fetch dari origin gagal", galat)
+        self.assertIn("(dari integrasi-3)", keluar)
+
     def test_tanpa_modul_tests_tanpa_opsi_modul(self):
         self.tanpa_modul()
         self.skrip("tests", "QA-1", "3", "--base=HEAD")

@@ -65,3 +65,17 @@ hotfix yang belum di-back-merge.
   `git merge-base --is-ancestor <branch> origin/<tujuan MR>` sukses: `git worktree remove <worktree>`,
   `git branch -D <branch>`, dan `git push origin --delete <branch>`. Selain itu simpan branch dan
   worktree-nya, lalu laporkan.
+
+### Mode lokal (tanpa remote)
+
+Bila `git remote` kosong, tidak ada forge. Nyatakan "Mode lokal: tidak ada remote; pemeriksaan forge
+dilewati" di laporan, lalu:
+
+- Syarat CI pada SHA HEAD diganti `gate.ci` lokal yang hijau pada HEAD yang akan di-merge; keluarannya
+  ditempel di laporan. Pemeriksaan forge (status merge, approval, pengaturan merge) dilewati.
+- Merge tetap merge commit, secara lokal: `git switch <tujuan>` lalu `git merge --no-ff <branch>`.
+  Aturan persetujuan sama dengan merge lewat MR (mis. branch integrasi sprint ke `branch.basis` hanya
+  atas persetujuan PO).
+- Sesudah merge, hanya bila `git merge-base --is-ancestor <branch> <tujuan>` sukses:
+  `git worktree remove <worktree>` dan `git branch -D <branch>`. Tidak ada `git push`, termasuk
+  `git push origin --delete`. Selain itu simpan branch dan worktree-nya, lalu laporkan.

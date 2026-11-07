@@ -82,6 +82,11 @@ backlog ──► orchestrator ──► claude -p --agent scrum-kit:<role> ─�
                     └──► gate (your CI commands) ──► code-reviewer ──► one MR/PR to base
 ```
 
+**Local mode.** With no git remote (`git remote` is empty), `/scrum-kit:sprint` says so and skips the
+forge checks, creates the integration branch locally from the base branch, merges each item branch
+into it with a merge commit, and merges the integration branch into the base branch locally only after
+the product owner approves. Nothing is pushed; a green local `gate.ci` stands in for forge CI.
+
 A minimal `kit.json` for a single-module Laravel app:
 
 ```json

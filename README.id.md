@@ -58,6 +58,14 @@ plugin yang sama.
 - Dispatch agen memakai `env -u ANTHROPIC_API_KEY claude -p ...` agar CLI memakai langganan, bukan
   menagih key API (lihat `docs/alur-bersama.md`).
 
+## Cara kerja
+
+**Mode lokal.** Tanpa remote git (`git remote` kosong), `/scrum-kit:sprint` menyatakannya dan
+melewati pemeriksaan forge, membuat branch integrasi secara lokal dari branch basis, me-merge tiap
+branch item ke sana dengan merge commit, dan me-merge branch integrasi ke branch basis secara lokal
+hanya sesudah product owner menyetujui. Tidak ada yang di-push; `gate.ci` lokal yang hijau menggantikan
+CI forge.
+
 ## Struktur
 
 | Path | Isi |

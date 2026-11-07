@@ -20,6 +20,25 @@ Baca dulu `CLAUDE.md` dan `.claude/kit.json`. Semua nama berikut berasal dari `k
 `{n}` = $0, `{nn}` = $0 dua digit; branch integrasi `branch.integrasi`, basis `branch.basis`,
 backlog `dokumen.backlog`, laporan `dokumen.laporan`, gate `gate.*`.
 
+## Mode lokal (tanpa remote)
+
+Periksa `git remote` sekali di awal. Kosong → sprint berjalan dalam **mode lokal**. Tulis di awal
+laporan ke manusia dan di ringkasan: "Mode lokal: tidak ada remote; pemeriksaan forge (pipeline, MR,
+CI pada SHA HEAD) dilewati." Semua langkah tetap berlaku, dengan pengganti berikut:
+
+- Tanpa `git fetch` dan tanpa `git push`; `origin/<branch>` dibaca sebagai `<branch>` lokal (mis.
+  basis diff reviewer = `<branch.integrasi>`). Tidak ada yang di-push.
+- Langkah 0: pipeline basis dilewati (hanya `gate.ci` lokal); branch integrasi dibuat lokal dari
+  branch basis: `git branch <branch.integrasi> <branch.basis>`.
+- Langkah 5: tanpa MR. Syarat CI diganti `gate.ci` lokal yang hijau pada HEAD branch yang akan
+  di-merge (keluarannya di laporan), dan checklist DoD dicentang di laporan item. Branch item (branch
+  yang sama yang akan menjadi sumber MR, lihat Langkah 5) di-merge ke branch integrasi dengan merge
+  commit: `git switch <branch.integrasi>` lalu `git merge --no-ff <branch item>`.
+- Langkah 6: tanpa MR integrasi. Sesudah product owner menyetujui di chat: `git switch
+  <branch.basis>` lalu `git merge --no-ff <branch.integrasi>`. Belum disetujui → berhenti dan
+  laporkan; branch integrasi tetap ada.
+- Bersih-bersih dan merge mengikuti "Cara merge", bagian "Mode lokal".
+
 ## Langkah -1 — Spesifikasi eksternal
 
 Hanya bila `spek_eksternal.drive_folder_id` terisi; selain itu lewati.
