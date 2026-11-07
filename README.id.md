@@ -69,8 +69,8 @@ sesudah product owner menyetujui, tag lokal), dan `/scrum-kit:kit-init` meng-com
 push dan tanpa menawarkan MR.
 
 **Gerbang kesiapan backlog.** Sebelum meng-commit dokumen sprint, `/scrum-kit:sprint` mencari
-`docs/sprints/backlog-check-<nn>.md`, laporan kesiapan dari skill gratis Backlog Check (Lanewright
-Planning). Tanpa laporan, ia menyampaikannya sekali dan bertanya apakah lanjut tanpa laporan; laporan
+`docs/sprints/backlog-check-<nn>.md`, laporan kesiapan dari skill gratis Backlog Check
+([Lanewright Planning](https://github.com/huzairsaputra/lanewright-planning)). Tanpa laporan, ia menyampaikannya sekali dan bertanya apakah lanjut tanpa laporan; laporan
 ini tidak pernah wajib. SHA-256 backlog di laporan yang berbeda dari berkas saat ini berarti laporan
 usang, dan orkestrator bertanya sekali. Putusan BELUM SIAP (NOT READY) atau blok persetujuan yang
 kosong menghentikan sprint sampai product owner memutuskan, dan keputusan itu dicatat di serah

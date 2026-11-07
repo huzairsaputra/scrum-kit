@@ -91,8 +91,8 @@ owner approves, local tags), and `/scrum-kit:kit-init` commits its branch withou
 a merge request.
 
 **Backlog readiness gate.** Before committing the sprint documents, `/scrum-kit:sprint` looks for
-`docs/sprints/backlog-check-<nn>.md`, the readiness report written by the free Lanewright Planning
-skill Backlog Check. No report: it says so once and asks whether to go on without one; the report is
+`docs/sprints/backlog-check-<nn>.md`, the readiness report written by the free
+[Lanewright Planning](https://github.com/huzairsaputra/lanewright-planning) skill Backlog Check. No report: it says so once and asks whether to go on without one; the report is
 never required. If the report's SHA-256 for the backlog differs from the current file, the report is
 stale and the orchestrator asks once. A NOT READY verdict or an empty sign-off stops the sprint until
 the product owner decides, and that decision goes into the handover document. The orchestrator never
