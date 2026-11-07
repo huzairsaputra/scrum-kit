@@ -36,8 +36,25 @@ Hanya bila `spek_eksternal.drive_folder_id` terisi; selain itu lewati.
 1. Baca backlog sprint $0. Belum ada/kosong → berhenti, minta manusia mengisinya. Jangan mengarang backlog.
 2. Jalankan `gate.ci` secara lokal di basis, dan periksa juga pipeline basis bila forge punya;
    laporkan keduanya. Merah → serahkan ke `scrum-kit:platform-tooling` lebih dulu.
-3. `git fetch origin`; buat branch integrasi dari `origin/<branch.basis>` bila belum ada, push.
-4. Kelompokkan item menurut wilayah pemiliknya (`wilayah.*.agen`).
+3. **Dokumen sprint ter-commit di basis, sebelum worktree pertama dibuat.** Worktree peran hanya
+   melihat berkas yang ter-commit; backlog yang belum ter-commit terlihat sebagai templat kosong, dan
+   ID yang dikutip kriteria penerimaan (mis. F-01, BR-03, A-04) tidak bisa dicari. Daftar: backlog
+   sprint $0, ditambah `docs/requirements/` dan rencana mingguan bila ada.
+   - Di branch basis (`git switch <branch.basis>`, `git fetch origin`,
+     `git merge --ff-only origin/<branch.basis>`): `git status --porcelain -- <daftar>` harus kosong
+     dan `git ls-files -- <daftar>` memuat setiap berkas.
+   - Belum → tunjukkan daftar berkas yang belum ter-commit ke manusia. Sesudah dikonfirmasi, commit
+     hanya berkas itu: `git add -- <daftar>` lalu `git commit -m "docs: dokumen sprint $0" -- <daftar>`
+     (perubahan lain yang ter-stage tidak ikut). Tidak dikonfirmasi → berhenti.
+   - Dokumen ini milik orkestrator. Hook kepemilikan tidak membatasi branch basis (di luar pola
+     `branch.wilayah`), dan ia tidak memeriksa `git commit`. Commit ini **tidak** di-push ke basis; ia
+     sampai ke basis lewat MR integrasi (langkah 4).
+4. `git fetch origin`; buat branch integrasi bila belum ada dari `<branch.basis>` lokal (=
+   `origin/<branch.basis>` ditambah commit dokumen langkah 3; `git merge-base --is-ancestor
+   origin/<branch.basis> <branch.basis>` harus sukses, selain itu berhenti), push. Branch integrasi
+   sudah ada tetapi tanpa backlog itu (`git cat-file -e <branch.integrasi>:<backlog>` gagal) → merge
+   `<branch.basis>` lokal ke branch integrasi (merge commit), push.
+5. Kelompokkan item menurut wilayah pemiliknya (`wilayah.*.agen`).
 
 ## Langkah 1 — Fondasi (barrier)
 
@@ -100,5 +117,7 @@ modul lain. Bila `modul` di `kit.json` kosong (proyek satu modul), hilangkan `--
 - Jangan merge MR ke `branch.basis` tanpa persetujuan manusia (pengecualian tertulis: hotfix jalur biasa
   dan back-merge di `/scrum-kit:hotfix`); jangan pernah push langsung ke basis
   maupun `branch.rilis`; jangan membuka MR ke `branch.rilis` tanpa diminta (itu tugas `/scrum-kit:rilis`).
+- Jangan membuat worktree sebelum langkah 0.3 lulus: peran tidak pernah mulai dari backlog yang belum
+  ter-commit.
 - Jangan menonaktifkan/melewati test merah; akar masalahnya yang diperbaiki.
 - Agen yang melapor selesai tanpa keluaran gate → kembalikan.
