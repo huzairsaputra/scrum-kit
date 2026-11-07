@@ -27,8 +27,16 @@ Pakai sebagai pustaka:
 
 Pakai dari shell (prompt lewat stdin, jawaban ke stdout, backend ke stderr):
 
-    echo "Halo" | python3 panggil_llm.py [--sistem "..."] [--json]
+    echo "Halo" | python3 panggil_llm.py [--sistem "..."] [--json] [--tanpa-cache]
     python3 panggil_llm.py --uji     # uji urutan tanpa jaringan
+
+Cache prompt (Anthropic API): bagian sistem dikirim sebagai blok dengan `cache_control`, sehingga
+panggilan berulang dengan sistem yang sama (dalam 5 menit, atau 1 jam dengan SCRUM_KIT_CACHE_TTL=1h)
+membaca masukan dari cache dengan harga sekitar sepersepuluh. Hemat hanya bila awalan yang sama
+dipakai berulang; panggilan tunggal dengan sistem unik justru membayar tulis cache 1,25x. Awalan di
+bawah 512 token tidak di-cache. UJI YANG HARUS TANPA CACHE (mis. mengukur biaya masukan mentah)
+mematikannya dengan SCRUM_KIT_TANPA_CACHE=1, argumen `cache=False`, atau `--tanpa-cache`.
+Pemakaian token (masukan, tulis cache, baca cache, keluaran) dicetak ke stderr tiap panggilan.
 """
 from __future__ import annotations
 
@@ -44,6 +52,8 @@ TIMEOUT_DETIK = 900
 GEMINI_MODEL_BAWAAN = "gemini-3.6-flash"
 ANTHROPIC_MODEL_BAWAAN = "claude-opus-5-5"
 INSTRUKSI_JSON = "Balas hanya JSON valid, tanpa pagar kode atau teks lain."
+ENV_TANPA_CACHE = "SCRUM_KIT_TANPA_CACHE"
+ENV_CACHE_TTL = "SCRUM_KIT_CACHE_TTL"
 
 
 class PanggilanLLMGagal(RuntimeError):
@@ -95,7 +105,50 @@ def panggil_gemini(prompt: str, sistem: str | None = None, json_saja: bool = Fal
         return None
 
 
-def panggil_anthropic(prompt: str, sistem: str | None = None) -> str | None:
+def cache_aktif(cache: bool | None = None) -> bool:
+    """Cache prompt menyala kecuali dimatikan: argumen `cache=False` menang, lalu env ENV_TANPA_CACHE."""
+    if cache is not None:
+        return cache
+    return os.environ.get(ENV_TANPA_CACHE, "").strip().lower() not in ("1", "true", "ya")
+
+
+def blok_sistem(sistem: str | None, cache: bool | None = None, ttl: str | None = None):
+    """Nilai parameter `system`: teks biasa, atau satu blok dengan `cache_control` bila cache menyala.
+    Awalan stabil (sistem) di-cache; prompt yang berubah-ubah tetap di `messages`, setelah titik cache."""
+    if not sistem or not cache_aktif(cache):
+        return sistem
+    kontrol = {"type": "ephemeral"}
+    if (ttl or os.environ.get(ENV_CACHE_TTL, "")) == "1h":
+        kontrol["ttl"] = "1h"
+    return [{"type": "text", "text": sistem, "cache_control": kontrol}]
+
+
+def permintaan_batch(custom_id: str, prompt: str, sistem: str | None = None, cache: bool | None = None,
+                     ttl: str = "1h") -> dict:
+    """Satu baris permintaan Message Batches API (`{custom_id, params}`) dengan sistem ber-cache.
+    TTL 1 jam sebagai bawaan, karena batch bisa berjalan lebih lama dari 5 menit; cache di batch
+    bersifat upaya terbaik. Kirim lewat `client.messages.batches.create(requests=[...])`."""
+    params = {
+        "model": os.environ.get("SCRUM_KIT_ANTHROPIC_MODEL", ANTHROPIC_MODEL_BAWAAN),
+        "max_tokens": 64000,
+        "messages": [{"role": "user", "content": prompt}],
+    }
+    if sistem:
+        params["system"] = blok_sistem(sistem, cache, ttl)
+    return {"custom_id": custom_id, "params": params}
+
+
+def _catat_pemakaian(pesan) -> None:
+    u = pesan.usage
+    print(
+        "pemakaian anthropic: masukan=%s tulis_cache=%s baca_cache=%s keluaran=%s" % (
+            u.input_tokens, getattr(u, "cache_creation_input_tokens", 0) or 0,
+            getattr(u, "cache_read_input_tokens", 0) or 0, u.output_tokens),
+        file=sys.stderr,
+    )
+
+
+def panggil_anthropic(prompt: str, sistem: str | None = None, cache: bool | None = None) -> str | None:
     """Anthropic Messages API (streaming). None bila key/SDK tidak ada atau gagal."""
     if not os.environ.get("ANTHROPIC_API_KEY"):
         return None
@@ -116,7 +169,7 @@ def panggil_anthropic(prompt: str, sistem: str | None = None) -> str | None:
         "messages": [{"role": "user", "content": prompt}],
     }
     if sistem:
-        argumen["system"] = sistem
+        argumen["system"] = blok_sistem(sistem, cache)
     try:
         with klien.messages.stream(**argumen) as aliran:
             pesan = aliran.get_final_message()
@@ -128,6 +181,7 @@ def panggil_anthropic(prompt: str, sistem: str | None = None) -> str | None:
         _peringatan("Anthropic API tidak terjangkau -- lanjut ke CLI claude.")
         return None
 
+    _catat_pemakaian(pesan)
     if pesan.stop_reason in ("refusal", "max_tokens"):
         _peringatan(f"Anthropic API berhenti ({pesan.stop_reason}) -- lanjut ke CLI claude.")
         return None
@@ -161,7 +215,8 @@ def panggil_claude_cli(prompt: str, sistem: str | None = None) -> str | None:
     return teks or None
 
 
-def panggil_llm(prompt: str, sistem: str | None = None, json_saja: bool = False) -> tuple[str, str]:
+def panggil_llm(prompt: str, sistem: str | None = None, json_saja: bool = False,
+                cache: bool | None = None) -> tuple[str, str]:
     """Kembalikan (teks, nama_backend) dari backend pertama yang berhasil:
     gemini -> anthropic -> claude-cli. Lempar PanggilanLLMGagal bila semua gagal
     (langkah 4: kerjakan di sesi Claude Desktop). `json_saja`: jawaban yang bukan
@@ -171,7 +226,7 @@ def panggil_llm(prompt: str, sistem: str | None = None, json_saja: bool = False)
         sistem_lain = f"{sistem}\n\n{INSTRUKSI_JSON}" if sistem else INSTRUKSI_JSON
     for nama, panggil in (
         ("gemini", lambda: panggil_gemini(prompt, sistem, json_saja)),
-        ("anthropic", lambda: panggil_anthropic(prompt, sistem_lain)),
+        ("anthropic", lambda: panggil_anthropic(prompt, sistem_lain, cache=cache)),
         ("claude-cli", lambda: panggil_claude_cli(prompt, sistem_lain)),
     ):
         teks = panggil()
@@ -247,18 +302,54 @@ def _uji() -> None:
     assert teks_gemini(respons("MAX_TOKENS")) is None
 
     assert main(["--sistem"]) == 2  # tanpa nilai: pesan pemakaian, bukan IndexError
-    print("OK: urutan gemini -> anthropic -> claude-cli -> PanggilanLLMGagal, --json, finishReason, --sistem")
+
+    # Cache prompt: sistem jadi blok ber-cache; dimatikan oleh argumen, env, atau --tanpa-cache.
+    env_asli = {k: os.environ.pop(k, None) for k in (ENV_TANPA_CACHE, ENV_CACHE_TTL)}
+    try:
+        assert blok_sistem("S") == [{"type": "text", "text": "S", "cache_control": {"type": "ephemeral"}}]
+        assert blok_sistem("S", ttl="1h")[0]["cache_control"] == {"type": "ephemeral", "ttl": "1h"}
+        assert blok_sistem("S", cache=False) == "S" and blok_sistem(None) is None
+        os.environ[ENV_TANPA_CACHE] = "1"
+        assert blok_sistem("S") == "S", "env harus mematikan cache"
+        assert blok_sistem("S", cache=True)[0]["cache_control"]["type"] == "ephemeral", "argumen menang atas env"
+        del os.environ[ENV_TANPA_CACHE]
+        os.environ[ENV_CACHE_TTL] = "1h"
+        assert blok_sistem("S")[0]["cache_control"].get("ttl") == "1h"
+        baris = permintaan_batch("a1", "P", "S")
+        assert baris["custom_id"] == "a1" and baris["params"]["messages"][0]["content"] == "P"
+        assert baris["params"]["system"][0]["cache_control"]["ttl"] == "1h"
+        assert permintaan_batch("a2", "P", "S", cache=False)["params"]["system"] == "S"
+        assert "system" not in permintaan_batch("a3", "P")["params"]
+        # panggil_llm meneruskan `cache` ke backend Anthropic sebagai argumen kata kunci.
+        diteruskan: dict = {}
+        asli_a = modul.panggil_anthropic
+        modul.panggil_anthropic = lambda p, s=None, cache=None: diteruskan.update(cache=cache) or "ok"
+        modul.panggil_gemini = lambda *a, **k: None
+        try:
+            panggil_llm("x", "S", cache=False)
+        finally:
+            modul.panggil_anthropic = asli_a
+        assert diteruskan == {"cache": False}, diteruskan
+    finally:
+        modul.panggil_gemini = asli[0]
+        for k in (ENV_TANPA_CACHE, ENV_CACHE_TTL):
+            os.environ.pop(k, None)
+            if env_asli[k] is not None:
+                os.environ[k] = env_asli[k]
+    print("OK: urutan gemini -> anthropic -> claude-cli -> PanggilanLLMGagal, --json, finishReason, --sistem, cache prompt")
 
 
 def main(argv: list[str]) -> int:
     if "--uji" in argv:
         _uji()
         return 0
+    if "--tanpa-cache" in argv:
+        os.environ[ENV_TANPA_CACHE] = "1"
     sistem = None
     if "--sistem" in argv:
         i = argv.index("--sistem") + 1
         if i >= len(argv):
-            print('Pemakaian: panggil_llm.py [--sistem "<teks>"] [--json] < prompt', file=sys.stderr)
+            print('Pemakaian: panggil_llm.py [--sistem "<teks>"] [--json] [--tanpa-cache] < prompt', file=sys.stderr)
             return 2
         sistem = argv[i]
     # Byte mentah: sys.stdin memakai code page ANSI di Windows.
