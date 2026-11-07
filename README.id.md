@@ -77,7 +77,10 @@ push dan tanpa menawarkan MR.
 ini tidak pernah wajib. SHA-256 backlog di laporan yang berbeda dari berkas saat ini berarti laporan
 usang, dan orkestrator bertanya sekali. Putusan BELUM SIAP (NOT READY) atau blok persetujuan yang
 kosong menghentikan sprint sampai product owner memutuskan, dan keputusan itu dicatat di serah
-terima. Orkestrator tidak pernah mengisi blok persetujuan sendiri.
+terima. Orkestrator tidak pernah mengisi blok persetujuan sendiri. Butir Definition of Done yang
+ditulis product owner di kolom persetujuan `Butir DoD tidak berlaku (disetujui):` boleh ditandai tidak
+berlaku selama sprint; butir lain ditanyakan sekali, dan selama persetujuannya tertunda branch
+integrasi tidak pernah di-merge ke branch basis.
 
 ## Struktur
 

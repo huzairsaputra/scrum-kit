@@ -100,7 +100,10 @@ a merge request.
 never required. If the report's SHA-256 for the backlog differs from the current file, the report is
 stale and the orchestrator asks once. A NOT READY verdict or an empty sign-off stops the sprint until
 the product owner decides, and that decision goes into the handover document. The orchestrator never
-fills the sign-off itself.
+fills the sign-off itself. Definition of Done items the product owner lists in the sign-off field
+`DoD not applicable (approved):` (`Butir DoD tidak berlaku (disetujui):`) may be marked not applicable
+during the sprint; any other such item is asked once, and while its approval is pending the
+integration branch is never merged into the base branch.
 
 A minimal `kit.json` for a single-module Laravel app:
 
