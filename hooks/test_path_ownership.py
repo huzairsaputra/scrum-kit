@@ -407,9 +407,30 @@ class UjiWorktreeNew(unittest.TestCase):
         for d in (self.wt, self.kedua, self.akar):
             shutil.rmtree(d, ignore_errors=True)
 
+    def jalankan(self, *argumen):
+        return subprocess.run([BASH, WORKTREE_NEW, *argumen], cwd=self.kedua, capture_output=True, env=LINGKUNGAN, timeout=120)
+
     def skrip(self, *argumen):
-        hasil = subprocess.run([BASH, WORKTREE_NEW, *argumen], cwd=self.kedua, capture_output=True, env=LINGKUNGAN, timeout=120)
+        hasil = self.jalankan(*argumen)
         self.assertEqual(hasil.returncode, 0, hasil.stderr.decode(errors="replace"))
+        return hasil
+
+    def tanpa_modul(self):
+        # Skrip membaca kit.json worktree pemanggil lebih dulu; tidak perlu di-commit.
+        with open(os.path.join(self.kedua, ".claude", "kit.json"), "w", encoding="utf-8") as f:
+            json.dump(dict(KIT, modul=[]), f)
+
+    def test_tanpa_modul_tests_tanpa_opsi_modul(self):
+        self.tanpa_modul()
+        self.skrip("tests", "QA-1", "3", "--base=HEAD")
+        self.assertTrue(os.path.isdir(os.path.join(self.wt, "tests-QA-1")))
+
+    def test_tanpa_modul_opsi_modul_ditolak_dengan_pesan_jelas(self):
+        self.tanpa_modul()
+        hasil = self.jalankan("tests", "QA-1", "3", "--modul=admin", "--base=HEAD")
+        self.assertEqual(hasil.returncode, 1)
+        self.assertIn("proyek ini tidak punya modul; hilangkan --modul", hasil.stderr.decode(errors="replace"))
+        self.assertFalse(os.path.exists(os.path.join(self.wt, "tests-QA-1")))
 
     def test_base_head_dari_worktree_kedua(self):
         git(self.kedua, "commit", "-q", "--allow-empty", "-m", "di worktree kedua")

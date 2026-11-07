@@ -89,8 +89,8 @@ pakai() {
 Pemakaian: worktree-new.sh <wilayah> <id-item> <nomor-sprint> [--modul=<m>] [--base=<ref>]
 
 Wilayah yang sah: ${NAMA_WILAYAH_SAH[*]}
-  --modul=<m>   hanya untuk wilayah 'tests'; mempersempit worktree ke satu modul
-                (${KIT_MODUL[*]:-tanpa modul})
+  --modul=<m>   opsional, hanya untuk wilayah 'tests'; mempersempit worktree ke satu modul
+                (${KIT_MODUL[*]:-tanpa modul: hilangkan opsi ini})
   --base=<ref>  titik cabang; bawaan origin/${KIT_INTEGRASI:-<integrasi>} (lalu ref lokalnya),
                 jatuh ke origin/$KIT_BASIS dengan peringatan bila belum ada.
                 Pakai --base=HEAD bila perkakas yang dibutuhkan belum ada di basis.
@@ -151,6 +151,7 @@ WILAYAH_MODUL=""
 for m in ${KIT_MODUL[@]+"${KIT_MODUL[@]}"}; do [[ "$WILAYAH" == "$m" ]] && WILAYAH_MODUL=1; done
 
 if [[ -n "$MODUL" ]]; then
+	((${#KIT_MODUL[@]} > 0)) || gagal "proyek ini tidak punya modul; hilangkan --modul (kit.json: modul kosong)."
 	[[ "$WILAYAH" == "tests" ]] || gagal "--modul hanya berlaku untuk wilayah 'tests'."
 	ada=0
 	for m in ${KIT_MODUL[@]+"${KIT_MODUL[@]}"}; do [[ "$MODUL" == "$m" ]] && ada=1; done

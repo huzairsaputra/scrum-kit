@@ -61,7 +61,8 @@ integrasi (`git fetch origin` dulu) sesudah item pertama merge.
 
 Begitu build sebuah modul hijau, `scrum-kit:qa-test-engineer` untuk modul itu
 (`worktree-new.sh tests <id> $0 --modul=<m>`), di atas branch implementasinya. Tidak perlu menunggu
-modul lain.
+modul lain. Bila `modul` di `kit.json` kosong (proyek satu modul), hilangkan `--modul`:
+`worktree-new.sh tests <id> $0`.
 
 ## Langkah 5 — Review dan merge per item
 
