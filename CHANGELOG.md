@@ -77,8 +77,10 @@ A readiness gate in front of the sprint, local mode for every command, and promp
   writes and reads included, goes to stderr.
 - Hook self-test: 44 → 48 tests.
 
-Projects that already installed the kit: run `/scrum-kit:kit-init --perbarui` to add the "Gerbang
-laporan" line to the handover and the new local-mode wording to rule 5 of `CLAUDE.md`.
+Projects that already installed the kit: copy the changed text by hand from the plugin's `templates/`:
+the "Gerbang laporan" line in the handover and the new local-mode wording in rule 5 of `CLAUDE.md`.
+`kit-init --perbarui` only inserts sections that are missing, so it does not rewrite these existing
+lines.
 
 ## v1.3.0 — 2026-11-07
 
@@ -113,9 +115,11 @@ Six fixes from an end-to-end test, at the points where an agent had to guess or 
   warns "fetch failed" when there is no remote.
 - Hook self-test: 37 → 44 tests.
 
-Projects that already installed the kit: copy `scripts/kit/worktree-new.sh` again, then run
-`/scrum-kit:kit-init --perbarui` to insert the new DoD text into `CLAUDE.md`, the "Butir DoD tidak
-berlaku" section into the handover, and `README.md` into the `tooling` region.
+Projects that already installed the kit: copy `scripts/kit/worktree-new.sh` again, add `README.md` to
+the `tooling` region of `.claude/kit.json`, and copy the new DoD text and the "Butir DoD tidak berlaku"
+section by hand from the plugin's `templates/` into `CLAUDE.md` and the handover. `kit-init --perbarui`
+only inserts sections that are missing and leaves existing handover and merge request files alone, so it
+does not bring these texts in.
 
 ## v1.2.1 — 2026-11-06
 
