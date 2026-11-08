@@ -115,7 +115,9 @@ Cara membaca laporan (bahasa Inggris atau Indonesia):
   bertanya ke product owner.
 - **Butir DoD tidak berlaku yang disetujui**: kolom `Butir DoD tidak berlaku (disetujui):` /
   `DoD not applicable (approved):` di blok persetujuan, sesudah "Overrides" / "Pengecualian": nama
-  butir DoD dipisah titik koma. Himpunan yang disetujui = butir yang disebut di sana, hanya bila
+  butir DoD dipisah titik koma. Cocokkan lebih dulu dengan daftar usulan di laporan itu sendiri: butir
+  usulan yang nama lengkapnya muncul di kolom dihitung satu butir walau namanya memuat titik koma;
+  hanya sisanya yang dipecah di titik koma. Himpunan yang disetujui = butir yang disebut di sana, hanya bila
   persetujuan terisi (butir di atas) dan sidik jari cocok; selain itu kosong. Kosong juga bila
   isinya `____`, `tidak ada` / `none`, atau kolomnya tidak ada (laporan dengan blok persetujuan versi
   lama). Daftar usulan Sprint Planner di atas blok persetujuan ("butir DoD yang diusulkan tidak
@@ -133,8 +135,11 @@ Aturan:
   - lulus: `Gerbang laporan: lulus, putusan <putusan>, disetujui <nama> (<peran>) <tanggal persetujuan>`;
   - tanpa laporan: `Gerbang laporan: tanpa laporan kesiapan, dilanjutkan atas keputusan pengguna`;
   - hanya usang: `Gerbang laporan: laporan usang (sidik jari berbeda), dilanjutkan atas keputusan pengguna`;
-  - `NOT READY` atau belum disetujui (usang atau tidak): `Gerbang laporan: dilanjutkan tanpa
-    persetujuan, alasan <alasan product owner>`, ditambah "laporan usang" bila berlaku.
+  - blok persetujuan kosong (belum disetujui; usang atau tidak): `Gerbang laporan: dilanjutkan tanpa
+    persetujuan, alasan <alasan product owner>`, ditambah "laporan usang" bila berlaku;
+  - `NOT READY` dengan blok persetujuan terisi: `Gerbang laporan: dilanjutkan walau putusan NOT READY,
+    disetujui <nama> (<peran>) <tanggal persetujuan>, butir DoD tidak berlaku yang disetujui:
+    <himpunan, atau tidak ada>, alasan <alasan product owner>`, ditambah "laporan usang" bila berlaku.
 - Berhenti di gerbang (pengguna tidak melanjutkan) → tidak ada worktree yang dibuat; laporkan apa yang
   perlu dilakukan (membuat laporan, menjalankan ulang Backlog Check, atau persetujuan).
 

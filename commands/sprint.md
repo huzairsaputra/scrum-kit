@@ -110,8 +110,10 @@ Hanya bila `spek_eksternal.drive_folder_id` terisi; selain itu lewati.
 5. `git fetch origin`; buat branch integrasi bila belum ada dari `<branch.basis>` lokal (=
    `origin/<branch.basis>` ditambah commit dokumen langkah 4; `git merge-base --is-ancestor
    origin/<branch.basis> <branch.basis>` harus sukses, selain itu berhenti), push. Branch integrasi
-   sudah ada tetapi tanpa backlog itu (`git cat-file -e <branch.integrasi>:<backlog>` gagal) → merge
-   `<branch.basis>` lokal ke branch integrasi (merge commit), push.
+   sudah ada tetapi `<branch.basis>` lokal belum menjadi bagiannya (`git merge-base --is-ancestor
+   <branch.basis> <branch.integrasi>` gagal: tanpa backlog itu, atau laporan kesiapan dan serah terima
+   yang di-commit di langkah 4 belum ada) → merge `<branch.basis>` lokal ke branch integrasi (merge
+   commit), push, supaya worktree peran melihat persetujuan yang sama dengan orkestrator.
 6. Kelompokkan item menurut wilayah pemiliknya (`wilayah.*.agen`).
 
 ## Langkah 1 — Fondasi (barrier)
@@ -162,7 +164,9 @@ item QA selalu memakai ID item QA itu sendiri:
 
 - `scrum-kit:code-reviewer` untuk tiap item (basis diff `origin/<branch.integrasi>`);
   `scrum-kit:security-auditor` bila item menyentuh autentikasi, data pribadi, atau berkas unggahan.
-  Temuan dikirim ke agen pemilik; ulangi sampai BERSIH. Perbaikan butuh keputusan di luar cakupan atau
+  "Data pribadi" ialah apa pun yang disebut SRS atau backlog sebagai data pribadi, juga bila seluruh
+  tim boleh melihatnya; melewati audit untuk item seperti itu butuh keputusan product owner yang
+  ditulis di `dokumen.serah_terima`, bukan penilaian orkestrator sendiri. Temuan dikirim ke agen pemilik; ulangi sampai BERSIH. Perbaikan butuh keputusan di luar cakupan atau
   wilayah item → tandai item terblokir, tanya manusia sekali beserta opsinya, lanjutkan item lain, dan
   cantumkan di ringkasan.
 - Satu MR per item → branch integrasi, dibuka sebagai draft dari branch QA (memuat commit
