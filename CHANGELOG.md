@@ -3,6 +3,27 @@
 All notable changes to scrum-kit. Versions follow [Semantic Versioning](https://semver.org/):
 a breaking change to `.claude/kit.json`, a command name, or an agent name bumps the major version.
 
+## v1.4.2 — 2026-11-08
+
+Four fixes from the third test's approved-path sprints, at the points where the run had to guess.
+
+- **Names with a semicolon in the "not applicable" approval:** the sign-off field separates names with
+  `;`, but a proposed item can contain one. The orchestrator now matches the field against the report's
+  own list of proposals first (a proposal whose full name appears counts as one item) and splits only
+  what is left on `;`. The Planning skills (Sprint Planner, Backlog Check 1.0.3) also write proposal
+  names without a semicolon.
+- **Gate line when the verdict is NOT READY but the sign-off is filled:** it used to read "continued
+  without sign-off", which is wrong there. It now has its own line with the approver, the date, the
+  approved set and the reason. The line for an empty sign-off is unchanged.
+- **Integration branch that already exists:** step 0.5 merged the base into it only when the backlog
+  was missing, so role worktrees could see an older sign-off than the orchestrator. It now merges the
+  base whenever the local base is not yet part of the integration branch.
+- **Security audit and personal data:** "personal data" is whatever the SRS or backlog calls personal
+  data, even when the whole team may see it. Skipping the audit for such an item needs the product
+  owner's decision written in the handover, not the orchestrator's own judgment.
+
+Upgrade: update the plugin. No change to `.claude/kit.json` or to project files.
+
 ## v1.4.1 — 2026-11-07
 
 Seven fixes from a second end-to-end test, at the points where an agent had to guess or stop.
