@@ -3,14 +3,6 @@
 All notable changes to scrum-kit. Versions follow [Semantic Versioning](https://semver.org/):
 a breaking change to `.claude/kit.json`, a command name, or an agent name bumps the major version.
 
-## v1.5.1 — 2026-11-09
-
-- **Stack badges in the `rilis` README step:** besides pipeline, coverage and release, the step adds
-  one badge each for the language or runtime, the framework and the database, with versions read from
-  `go.mod`, `composer.json`, `package.json`, `pyproject.toml`, compose files or `.env.example`. A
-  stack item that cannot be evidenced gets no badge. The GitLab coverage badge now names the job
-  that reports coverage (`?job=<test job>`). Still not exercised in a real release.
-
 ## v1.5.0 — 2026-11-09
 
 `/scrum-kit:rilis` now checks the README before it freezes the release.
@@ -23,6 +15,10 @@ a breaking change to `.claude/kit.json`, a command name, or an agent name bumps 
 - **Three badges are required:** pipeline, coverage and release, for GitLab and for GitHub. The
   coverage value is checked from the forge, and a project whose CI reports no coverage stops the
   release for a decision instead of getting a badge that says "unknown".
+- **Stack badges:** one each for the language or runtime, the framework and the database, with
+  versions read from `go.mod`, `composer.json`, `package.json`, `pyproject.toml`, compose files or
+  `.env.example`. A stack item that cannot be evidenced gets no badge. The GitLab coverage badge
+  names the job that reports coverage (`?job=<test job>`).
 - **Delivery:** a small MR to the base branch, shown to the product owner in chat and merged on their
   approval before `S` is recorded. Local mode (no remote) rewrites the README but skips the badges.
 - **Forge release:** step 8 now also creates a release from the tag (`gh release create` or
