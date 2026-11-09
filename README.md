@@ -7,7 +7,7 @@
 
 <p align="center">
   <a href="LICENSE"><img alt="License: MIT" src="https://img.shields.io/badge/license-MIT-blue.svg"></a>
-  <a href="CHANGELOG.md"><img alt="Version" src="https://img.shields.io/badge/version-1.4.2-green.svg"></a>
+  <a href="CHANGELOG.md"><img alt="Version" src="https://img.shields.io/badge/version-1.5.0-green.svg"></a>
   <img alt="Claude Code plugin" src="https://img.shields.io/badge/Claude%20Code-plugin-orange.svg">
 </p>
 
@@ -70,7 +70,7 @@ plugin just by trusting the folder.
 | `/scrum-kit:kit-init` | Install the kit in a project (interview, then config + templates). `--perbarui` to revisit. |
 | `/scrum-kit:sprint <n>` | Run one sprint: spec sync → foundation → contract → parallel implementation → QA → review → one integration MR/PR. |
 | `/scrum-kit:hotfix <id> <description>` | Out-of-sprint work with the same gates. Normal path: a small change approved by the product owner, to the base branch. Emergency path: an urgent production fix with no downtime, merged to the release branch on the product owner's approval, then merged back into base. |
-| `/scrum-kit:rilis [version] [schedule]` | Scheduled release from the base branch to production: readiness checks, downtime assessment, release notes, one MR/PR merged on the product owner's approval, then a tag. |
+| `/scrum-kit:rilis [version] [schedule]` | README check (rewrite a stack-template README, add pipeline, coverage and release badges), then scheduled release from the base branch to production: readiness checks, downtime assessment, release notes, one MR/PR merged on the product owner's approval, then a tag. |
 
 ## How it works
 
