@@ -3,6 +3,26 @@
 All notable changes to scrum-kit. Versions follow [Semantic Versioning](https://semver.org/):
 a breaking change to `.claude/kit.json`, a command name, or an agent name bumps the major version.
 
+## v1.5.0 — 2026-11-09
+
+`/scrum-kit:rilis` now checks the README before it freezes the release.
+
+- **README and badges (new step 0):** when `README.md` is missing or still the stack's template (the
+  framework boilerplate, no project name, no statement of what the app is for), the command rewrites
+  it from what the project already records (`kit.json`, `CLAUDE.md`, SRS, backlog, handover, code).
+  Facts it cannot find become visible `TODO (PO)` lines, not invented text. A README that already
+  describes the app is left alone.
+- **Three badges are required:** pipeline, coverage and release, for GitLab and for GitHub. The
+  coverage value is checked from the forge, and a project whose CI reports no coverage stops the
+  release for a decision instead of getting a badge that says "unknown".
+- **Delivery:** a small MR to the base branch, shown to the product owner in chat and merged on their
+  approval before `S` is recorded. Local mode (no remote) rewrites the README but skips the badges.
+- **Forge release:** step 8 now also creates a release from the tag (`gh release create` or
+  `glab release create`), because the release badge shows the latest release, not a tag.
+- Not yet exercised in a real release. Treat the first run as a trial.
+
+Upgrade: update the plugin. No change to `.claude/kit.json`.
+
 ## v1.4.2 — 2026-11-08
 
 Four fixes from the third test's approved-path sprints, at the points where the run had to guess.

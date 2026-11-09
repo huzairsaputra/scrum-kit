@@ -33,6 +33,11 @@ berikut:
 
 - Tanpa `git fetch` dan tanpa `git push`; `origin/<branch>` dibaca sebagai `<branch>` lokal. Tidak
   ada yang di-push, termasuk tag.
+- Langkah 0: README diperiksa dan ditulis ulang dengan cara yang sama, tetapi tanpa forge tidak ada
+  lencana dan tidak ada pemeriksaan coverage: laporkan "Mode lokal: tanpa forge, lencana pipeline,
+  coverage, dan rilis dilewati". Perubahan README masuk ke basis sebagai merge lokal
+  (`git merge --no-ff`) dari branch `claude/readme-<versi>` setelah `gate.ci` lokal hijau dan PO
+  menyetujui di chat.
 - Langkah 1: daftar perubahan diambil dari merge commit lokal (`Merge branch '<branch>'`), bukan
   nomor MR/PR.
 - Langkah 2: pipeline basis diganti `gate.ci` lokal yang hijau pada `S` (di worktree sementara pada
@@ -46,19 +51,61 @@ berikut:
 - Langkah 7: sesudah PO menyetujui di chat: `git switch <rilis>` lalu
   `git merge --no-ff -F <berkas catatan> claude/rilis-<versi>` (catatan rilis menjadi pesan merge
   commit).
-- Langkah 8: tanpa pemantauan pipeline; deploy di luar kit, laporkan ke manusia. Tag beranotasi
+- Langkah 8: tanpa pemantauan pipeline dan tanpa rilis di forge; deploy di luar kit, laporkan ke manusia. Tag beranotasi
   dibuat lokal. Hapus `claude/rilis-<versi>` hanya bila `git merge-base --is-ancestor
   claude/rilis-<versi> <rilis>` sukses.
 
 ## Langkah
 
+0. **README dan lencana.** Kerjakan sebelum `S` dicatat, karena perubahan README harus sudah ada di
+   basis sebelum isi rilis dibekukan. Baca `README.md` di akar repositori.
+   - **Template atau aplikasi?** README masih template stack bila berkasnya tidak ada, atau salah satu
+     ini berlaku: memuat teks bawaan framework (mis. "About Laravel", "Create Next App", "bootstrapped
+     with", "This template provides a minimal setup", "Getting started with Create React App",
+     "Welcome to Goravel", "Getting started / To make it easy for you to get started with GitLab" milik
+     GitLab, "This README would normally document" milik Rails); tidak pernah menyebut proyek ini
+     (`proyek` di `kit.json`); tidak menjelaskan aplikasi ini untuk apa. Selain itu README sudah
+     menjelaskan aplikasi: biarkan.
+   - **Tulis ulang README template.** Susun dari yang sudah dicatat proyek: `kit.json` (nama, stack,
+     modul, gate), `CLAUDE.md`, SRS dan backlog bila ada, serah terima, dan kodenya. Jelaskan aplikasi
+     ini untuk apa, siapa penggunanya, modulnya, cara menjalankan, cara menjalankan gate (hanya perintah
+     yang memang ada di `Makefile`, skrip `composer.json`/`package.json`, atau CI), branch, dan lisensi
+     bila sebelumnya ada. Buang teks bawaan stack. Tulis dalam bahasa dokumen proyek itu sendiri kecuali
+     PO meminta lain. Jangan mengarang: fakta yang tidak ditemukan menjadi baris tampak
+     `TODO (PO): <yang kurang>`; jangan baca berkas `.env`.
+   - **Lencana, tiga wajib,** dalam satu blok di bawah judul, masing-masing bertaut ke sumbernya
+     (`<host>`, `<proyek>` = `forge.proyek`, `<prod>` = `branch.rilis`):
+     - GitLab: pipeline `https://<host>/<proyek>/badges/<prod>/pipeline.svg`, coverage
+       `https://<host>/<proyek>/badges/<prod>/coverage.svg`, rilis
+       `https://<host>/<proyek>/-/badges/release.svg`.
+     - GitHub: `badge.svg?branch=<prod>` dari workflow CI; coverage dari layanan coverage tempat CI
+       mengunggah (Codecov `https://codecov.io/gh/<proyek>/branch/<prod>/graph/badge.svg`, atau
+       Coveralls); rilis `https://img.shields.io/github/v/release/<proyek>`.
+
+     Tambahkan hanya lencana yang belum ada; lencana yang sudah ada dan isi README yang sungguhan
+     dibiarkan.
+   - **Coverage harus ada, atau berhenti.** Periksa dari forge, bukan dari gambarnya (lencana proyek
+     GitLab privat butuh login): GitLab, pipeline basis terbaru punya nilai `coverage` yang tidak
+     kosong; GitHub, workflow CI mengunggah coverage ke layanan yang lencananya dipilih. CI belum
+     melaporkan coverage → **berhenti dan tanya PO**: jangan merge lencana yang akan menampilkan
+     "unknown". Jelaskan yang kurang (GitLab: kata kunci `coverage:` berisi regex pada job test; GitHub:
+     langkah unggah ke Codecov atau Coveralls). Mengubah CI adalah pekerjaan `platform-tooling` dan
+     item tersendiri, bukan bagian langkah ini. Lencana rilis menampilkan "no release" sampai
+     langkah 8 membuat rilis pertama; itu wajar, bukan kegagalan.
+   - **Kirim lewat MR kecil ke basis.** Ada yang perlu diubah → di checkout sendiri (`git worktree add`
+     biasa, bukan worktree wilayah) buat branch `claude/readme-<versi>` dari `origin/<basis>`, commit
+     hanya `README.md`, push, dan buka MR ke `branch.basis`. Tunjukkan README barunya ke PO di chat
+     (seluruh berkas bila ditulis ulang, baris tambahan saja bila tidak), sebut setiap baris
+     `TODO (PO)`, dan merge hanya setelah PO menyetujuinya di chat, dengan CI hijau pada SHA HEAD-nya
+     ("Cara merge"). Lalu tunggu pipeline basis pada merge itu dan lanjut ke langkah 1. Tidak ada yang
+     perlu diubah → tulis "README menjelaskan aplikasi dan punya tiga lencana" di laporan dan lanjut.
 1. **Isi rilis.** `git fetch origin`, catat `S` = `git rev-parse origin/<basis>`. Isi rilis =
    `git log --oneline origin/<rilis>..S`; daftar MR/PR-nya diambil dari pesan merge commit di range
    itu (GitLab: `See merge request !N`; GitHub: `Merge pull request #N`). Kosong → tidak ada yang
    dirilis, berhenti.
 2. **Kesiapan basis.**
    - Pipeline basis hijau pada `S`, dan `S` sudah ter-deploy di staging (`dokumen.serah_terima`,
-     "terakhir di-deploy").
+     "terakhir di-deploy"). Beda yang hanya `README.md` dari langkah 0 tidak dihitung.
    - MR integrasi sprint yang masih terbuka: isinya belum ada di basis. Tanya PO apakah rilis
      menunggunya. Menunggu → berhenti; jalankan ulang perintah ini sesudah MR itu merge.
    - Item di "Sedang berjalan" yang sudah masuk basis tetapi belum selesai: tanya PO apakah ikut
@@ -94,6 +141,10 @@ berikut:
    - Pantau pipeline rilis sampai deploy; bila ada job migrasi, pastikan lognya melaporkan sukses.
    - Tag beranotasi `<versi>` pada merge commit di `branch.rilis`, lalu push tag itu. Hapus branch
      `claude/rilis-<versi>`.
+   - Buat rilis di forge dari tag itu dengan catatan rilis langkah 5 (GitHub
+     `gh release create <versi> --verify-tag --notes-file <berkas>`; GitLab `glab release create
+     <versi> --notes-file <berkas>` atau API Releases), karena lencana rilis menampilkan rilis
+     terbaru, bukan tag. Bila rilis tidak bisa dibuat, laporkan bahwa lencana tetap "no release".
    - Perbarui `dokumen.serah_terima`: "Rilis produksi terakhir" (versi, MR, SHA, tanggal), kosongkan
      checklist produksi yang sudah terpenuhi.
    - Serahkan teks pengumuman/pemberitahuan ke PO; jangan mengirimnya sendiri.
