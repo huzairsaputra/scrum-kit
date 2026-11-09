@@ -73,14 +73,27 @@ berikut:
      bila sebelumnya ada. Buang teks bawaan stack. Tulis dalam bahasa dokumen proyek itu sendiri kecuali
      PO meminta lain. Jangan mengarang: fakta yang tidak ditemukan menjadi baris tampak
      `TODO (PO): <yang kurang>`; jangan baca berkas `.env`.
-   - **Lencana, tiga wajib,** dalam satu blok di bawah judul, masing-masing bertaut ke sumbernya
+   - **Lencana, tiga wajib ditambah lencana stack,** dalam satu blok di bawah judul, masing-masing bertaut ke sumbernya
      (`<host>`, `<proyek>` = `forge.proyek`, `<prod>` = `branch.rilis`):
      - GitLab: pipeline `https://<host>/<proyek>/badges/<prod>/pipeline.svg`, coverage
-       `https://<host>/<proyek>/badges/<prod>/coverage.svg`, rilis
+       `https://<host>/<proyek>/badges/<prod>/coverage.svg?job=<job test>` (job yang lognya melaporkan
+       coverage), rilis
        `https://<host>/<proyek>/-/badges/release.svg`.
      - GitHub: `badge.svg?branch=<prod>` dari workflow CI; coverage dari layanan coverage tempat CI
        mengunggah (Codecov `https://codecov.io/gh/<proyek>/branch/<prod>/graph/badge.svg`, atau
        Coveralls); rilis `https://img.shields.io/github/v/release/<proyek>`.
+
+     **Lencana stack** menyusul yang tiga itu, satu untuk masing-masing: bahasa atau runtime,
+     framework, dan basis data (layanan antrean atau penyimpanan hanya bila dokumen proyek sendiri
+     menyebutnya inti). Baca versinya dari repositori, jangan menebak: `go.mod` (baris `go` dan modul
+     framework), `composer.json` (`require.php`, `laravel/framework`), `package.json` (`engines`,
+     dependensi), `pyproject.toml`; basis data dari image di `docker-compose*.yml` atau
+     `DB_CONNECTION` di `.env.example`, bukan dari `.env`. Unsur stack yang tidak bisa dibuktikan tidak
+     diberi lencana. Pakai lencana statis yang bertaut ke situs resminya:
+     `https://img.shields.io/badge/<Nama>-<versi>-<warna hex>?logo=<slug>&logoColor=white` (spasi di
+     nama jadi `_`, tanda hubung jadi `--`), misalnya Go `00ADD8`, PHP `777BB4`, Laravel `FF2D20`,
+     Node.js `5FA04E`, React `61DAFB`, PostgreSQL `336791`, MySQL `4479A1`; stack lain memakai `555555`
+     tanpa `logo=`. Batasi sekitar lima lencana seluruhnya.
 
      Tambahkan hanya lencana yang belum ada; lencana yang sudah ada dan isi README yang sungguhan
      dibiarkan.
@@ -98,7 +111,7 @@ berikut:
      (seluruh berkas bila ditulis ulang, baris tambahan saja bila tidak), sebut setiap baris
      `TODO (PO)`, dan merge hanya setelah PO menyetujuinya di chat, dengan CI hijau pada SHA HEAD-nya
      ("Cara merge"). Lalu tunggu pipeline basis pada merge itu dan lanjut ke langkah 1. Tidak ada yang
-     perlu diubah → tulis "README menjelaskan aplikasi dan punya tiga lencana" di laporan dan lanjut.
+     perlu diubah → tulis "README menjelaskan aplikasi dan punya lencananya" di laporan dan lanjut.
 1. **Isi rilis.** `git fetch origin`, catat `S` = `git rev-parse origin/<basis>`. Isi rilis =
    `git log --oneline origin/<rilis>..S`; daftar MR/PR-nya diambil dari pesan merge commit di range
    itu (GitLab: `See merge request !N`; GitHub: `Merge pull request #N`). Kosong → tidak ada yang

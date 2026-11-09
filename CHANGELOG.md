@@ -3,6 +3,14 @@
 All notable changes to scrum-kit. Versions follow [Semantic Versioning](https://semver.org/):
 a breaking change to `.claude/kit.json`, a command name, or an agent name bumps the major version.
 
+## v1.5.1 — 2026-11-09
+
+- **Stack badges in the `rilis` README step:** besides pipeline, coverage and release, the step adds
+  one badge each for the language or runtime, the framework and the database, with versions read from
+  `go.mod`, `composer.json`, `package.json`, `pyproject.toml`, compose files or `.env.example`. A
+  stack item that cannot be evidenced gets no badge. The GitLab coverage badge now names the job
+  that reports coverage (`?job=<test job>`). Still not exercised in a real release.
+
 ## v1.5.0 — 2026-11-09
 
 `/scrum-kit:rilis` now checks the README before it freezes the release.
