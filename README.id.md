@@ -95,7 +95,7 @@ integrasi tidak pernah di-merge ke branch basis.
 | `scripts/panggil_llm.py` | Satu pintu pemanggilan LLM untuk skrip proyek: Gemini → Anthropic → CLI `claude` (lalu sesi Claude Desktop). Pustaka (`panggil_llm()`) atau CLI (prompt lewat stdin). Hanya stdlib; SDK `anthropic` opsional. |
 | `templates/` | CLAUDE.md, templat MR/PR, backlog, serah terima, utang kode. |
 | `docs/kit-json.md` | Kontrak `.claude/kit.json`. Baca ini sebelum menyunting konfigurasi proyek. |
-| `docs/alur-bersama.md` | Cara mendispatch agen (CLI headless tanpa key API) dan cara merge, dipakai bersama `sprint`, `hotfix`, `rilis`. |
+| `docs/alur-bersama.md` | Cara mendispatch agen (CLI headless tanpa key API), cara merge, dan yang dikerjakan saat batas pemakaian dekat atau tercapai, dipakai bersama `sprint`, `hotfix`, `rilis`. |
 
 ## Uji
 

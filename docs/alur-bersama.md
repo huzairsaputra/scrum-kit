@@ -15,13 +15,14 @@ CLI terpisah, **bukan** lewat tool Agent/subagen:
   `cd <worktree> && env -u ANTHROPIC_API_KEY claude -p --agent scrum-kit:<agen> --permission-mode auto < <berkas-prompt>`.
   `env -u` membuang key API dari lingkungan proses itu; bila key ada, `claude -p` menagih Anthropic
   API, bukan langganan CLI.
-- Prompt agen memuat ID item dan aturan bagian "Keluaran gate" di bawah; agen menulis laporannya ke `<dokumen.laporan>/<agen>-<id-item>.md`.
+- Prompt agen memuat ID item dan aturan bagian "Keluaran gate" dan butir **Agen** di "Batas pemakaian" di bawah; agen menulis laporannya ke `<dokumen.laporan>/<agen>-<id-item>.md`.
 - Hasil agen dibaca dari keluaran perintah itu (kamu diberi tahu saat prosesnya selesai; jangan
   polling). Laporan yang melanggar bagian "Keluaran gate" diperlakukan sama seperti agen yang belum
   selesai: kembalikan.
 - CLI terkena batas pemakaian (*usage/session limit*) atau gagal → Anthropic API. Tool Agent/subagen
   hanya dipakai bila CLI dan Anthropic API sama-sama habis atau gagal, atau bila pengguna memintanya
   di sesi ini. Bila sudah terlanjur memakai subagen, laporkan ke pengguna dan pindah ke CLI.
+  Yang dikerjakan sebelum dan sesudah pindah ada di "Batas pemakaian" di bawah.
 - `claude -p` tidak bisa memberi persetujuan tulis `.claude/**`. Agen (terutama `platform-tooling`)
   yang perlu mengubah berkas di `.claude/` menulis berkas lain dulu, lalu melaporkan isi utuh berkas
   `.claude/` itu; kamu yang menulisnya di sesi interaktif (dengan persetujuan) dan meng-commit-nya.
@@ -163,3 +164,56 @@ persetujuan itu boleh datang, dan apa yang terjadi selama persetujuan belum ada.
   menunggu product owner.
 
 Tidak pernah merge ke `branch.basis` selama ada persetujuan yang tertunda.
+
+## Batas pemakaian
+
+Berlaku untuk `/scrum-kit:sprint`, `/scrum-kit:hotfix`, dan `/scrum-kit:rilis`. Plugin ini tidak
+membaca angka kuota dan tidak memasang ambang: bertindaklah atas yang ditampilkan Claude Code.
+Tandanya: peringatan bahwa batas pemakaian, sesi, laju, atau kredit sudah dekat, galat bahwa batas
+tercapai, atau proses agen yang berakhir dengan galat semacam itu.
+
+**Batas sudah dekat (masih bisa bekerja):**
+
+1. Jangan memulai agen atau item baru. Agen yang sedang berjalan menyelesaikan langkahnya.
+2. Agen yang punya pekerjaan belum di-commit meng-commit-nya di branch-nya sendiri dengan pesan
+   `wip: <id-item>, berhenti karena batas pemakaian`. Commit itu tidak mengklaim gate apa pun.
+3. Perbarui `dokumen.serah_terima` (baris "Sedang berjalan"): untuk tiap item terbuka, agen, branch,
+   worktree, SHA commit terakhir, yang sudah selesai, yang tersisa, gate yang sudah dijalankan, dan
+   jam batas pulih bila ditampilkan. Commit dan push seperti biasa.
+4. Berhenti dan laporkan: yang sudah merge, yang masih terbuka, dan kapan bisa dilanjutkan.
+
+Tidak ada gate, review, atau persetujuan yang dilewati demi selesai sebelum batas. Item yang belum
+merge tetap belum merge.
+
+**Batas tercapai (proses agen berakhir, atau panggilanmu sendiri ditolak):** laporkan galatnya
+sekali dan jangan mengulang dalam loop. Pindah jalur hanya menurut urutan di "Mendispatch agen"
+(CLI → Anthropic API → tool Agent), dan catat perpindahan itu di serah terima dan ringkasan. Semua
+jalur habis → berhenti. Berkas agen yang belum di-commit dibiarkan di worktree-nya: orkestrator
+tidak meng-commit, mengembalikan, atau menghapusnya. Bila kamu masih bisa menulis, kerjakan butir 3
+dan 4 dan tambahkan `git status --short` tiap worktree itu ke serah terima. Bila sesimu sendiri
+terputus, tidak ada lagi yang tertulis; karena itu serah terima diperbarui setiap pekerjaan dimulai
+dan selesai.
+
+**Agen** (aturan ini ikut di prompt agen): bila Claude Code memperingatkan batas pemakaian sudah
+dekat, berhenti di titik berkas-berkasnya konsisten, commit sebagai
+`wip: <id-item>, berhenti karena batas pemakaian`, dan tulis di laporan yang sudah selesai, yang
+tersisa, dan gate yang belum dijalankan. Jangan mengklaim gate untuk commit itu.
+
+**Melanjutkan.** Bila manusia meminta sprint, hotfix, atau rilis dilanjutkan, kerjakan ini sebelum
+langkah lain:
+
+1. Baca `dokumen.serah_terima`. Jalankan `git worktree list`; untuk tiap branch item jalankan
+   `git status --short` di worktree-nya dan `git log --oneline <tujuan MR>..<branch>`.
+2. Pilah tiap item yang belum selesai:
+   - branch-nya sudah merge (`git merge-base --is-ancestor <branch> origin/<tujuan MR>` sukses
+     sesudah `git fetch origin`; mode lokal: `<tujuan MR>`) → selesai; bersihkan seperti "Cara
+     merge";
+   - MR-nya terbuka → periksa buktinya (SHA HEAD, run CI, vonis review) dan lanjut dari situ;
+   - worktree punya commit atau berkas belum di-commit → agen yang sama melanjutkan di worktree dan
+     branch itu. Jangan membuatnya lagi (`worktree-new.sh` menolak path atau branch yang sudah ada)
+     dan jangan membuang pekerjaannya. Beri tahu agen apa yang ada di sana; sesudah commit `wip:`
+     semua gate dijalankan ulang;
+   - belum ada worktree dan branch → mulai item seperti biasa.
+3. Bila git atau forge berbeda dengan serah terima, git dan forge yang benar: betulkan serah terima.
+4. Lanjutkan perintah dari langkah pertama yang belum selesai, dan tulis di ringkasan (hotfix atau
+   rilis: di laporan) bahwa pekerjaan terhenti karena batas pemakaian dan kapan.
