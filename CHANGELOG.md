@@ -3,6 +3,15 @@
 All notable changes to scrum-kit. Versions follow [Semantic Versioning](https://semver.org/):
 a breaking change to `.claude/kit.json`, a command name, or an agent name bumps the major version.
 
+## Unreleased
+
+- **Usage limits:** `docs/alur-bersama.md` has a new section "Batas pemakaian" for `sprint`, `hotfix`
+  and `rilis`. When a usage limit is near: no new agent starts, agents commit unfinished work as
+  `wip:`, the handover lists every open item, and the command stops. When a stopped command is
+  continued, each unfinished item is sorted from git and the forge first, and a half-done item goes
+  on in its own worktree. No usage numbers are read and no threshold is set. Not yet exercised in a
+  real interrupted sprint.
+
 ## v1.5.0 — 2026-11-09
 
 `/scrum-kit:rilis` now checks the README before it freezes the release.

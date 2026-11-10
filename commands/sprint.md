@@ -13,6 +13,9 @@ dan menyiapkan branch serta MR.
 
 Baca `${CLAUDE_PLUGIN_ROOT}/docs/alur-bersama.md` bagian "Mendispatch agen" dan ikuti.
 
+**Batas pemakaian**: saat batas sudah dekat atau tercapai, dan saat melanjutkan sprint yang
+terhenti, ikuti bagian "Batas pemakaian" di berkas yang sama sebelum langkah mana pun di bawah.
+
 Catatan: `claude -p --agent scrum-kit:<agen>` menjawab agen "not found" bila plugin ini tidak
 terpasang untuk CLI (mis. sesi ini memuat plugin lewat `--plugin-dir`). Ulangi dengan plugin
 ditambahkan dan `CLAUDE_CODE_SIMPLE` dibuang dari lingkungan:

@@ -12,7 +12,8 @@ orkestrator: tidak menulis kode aplikasi sendiri. Baca `CLAUDE.md` dan `.claude/
 nomor sprint = sprint berjalan (tanya bila tidak jelas dari `dokumen.serah_terima`).
 
 **Cara mendispatch agen**: baca `${CLAUDE_PLUGIN_ROOT}/docs/alur-bersama.md` bagian "Mendispatch
-agen" dan ikuti.
+agen" dan ikuti. Saat batas pemakaian sudah dekat atau tercapai, dan saat melanjutkan hotfix yang
+terhenti, ikuti bagian "Batas pemakaian" di berkas yang sama.
 
 ## Pilih jalur dulu
 

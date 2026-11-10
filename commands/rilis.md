@@ -22,7 +22,9 @@ di-deploy dari basis, tidak ada yang perlu dipromosikan (isi `branch.rilis` lewa
 **Lanjutan**: bila MR `claude/rilis-<versi>` → `branch.rilis` sudah terbuka (perintah dijalankan ulang
 saat jadwal tiba), ambil `S` dari baris `S: <sha>` di deskripsinya dan langsung ke langkah 7. Jangan
 menghitung ulang `S` dan jangan push ulang branch itu. Branch `claude/rilis-<versi>` sudah ada tetapi
-MR-nya belum ada → berhenti dan laporkan SHA branch itu ke manusia.
+MR-nya belum ada → berhenti dan laporkan SHA branch itu ke manusia. Rilis yang terhenti karena
+batas pemakaian mengikuti `${CLAUDE_PLUGIN_ROOT}/docs/alur-bersama.md` bagian "Batas pemakaian";
+aturan di atas tetap menentukan `S`.
 
 ## Mode lokal (tanpa remote)
 

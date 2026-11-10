@@ -151,7 +151,7 @@ Full contract: [`docs/kit-json.md`](docs/kit-json.md).
 | `hooks/` | `path_ownership.py` with its self-test, and a wrapper that finds a working Python. |
 | `scripts/` | `worktree-new.sh` (worktree + branch, optional sparse checkout), `panggil_llm.py` (one LLM entry point for project scripts), `backlog-sidik.py` (backlog SHA-256 for the readiness gate). |
 | `templates/` | `CLAUDE.md`, MR/PR template, backlog, handover, code-debt log. |
-| `docs/` | `kit-json.md` (the `.claude/kit.json` contract) and `alur-bersama.md` (how commands dispatch agents and merge, shared by `sprint`, `hotfix`, `rilis`). |
+| `docs/` | `kit-json.md` (the `.claude/kit.json` contract) and `alur-bersama.md` (how commands dispatch agents, merge and stop at a usage limit, shared by `sprint`, `hotfix`, `rilis`). |
 
 ## Test
 
