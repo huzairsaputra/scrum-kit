@@ -28,8 +28,8 @@ project describes itself in one file, `.claude/kit.json`.
 
 > **Want it in English, and on agents other than Claude Code?** [Lanewright](https://www.agensi.io/r/HUZAIRSAPUTRA?to=/skills/lanewright-sprint-workflow-for-ai-coding-agent-teams) is the paid,
 > English rebuild of scrum-kit: one skill with five modes, an ownership check that also runs in Codex
-> CLI and other agents, and a [public benchmark](https://github.com/huzairsaputra/lanewright). (Referral link; scrum-kit stays free
-> and MIT.)
+> CLI and other agents, and a [public benchmark](https://github.com/huzairsaputra/lanewright). scrum-kit stays free
+> and MIT.
 
 ## What you get
 
@@ -96,7 +96,7 @@ a merge request.
 
 **Backlog readiness gate.** Before committing the sprint documents, `/scrum-kit:sprint` looks for
 `docs/sprints/backlog-check-<nn>.md`, the readiness report written by the free
-[Lanewright Planning](https://github.com/huzairsaputra/lanewright-planning) skill Backlog Check. No report: it says so once and asks whether to go on without one; the report is
+[Lanewright Planning](https://github.com/huzairsaputra/lanewright-planning) skill [Backlog Check](https://www.agensi.io/r/HUZAIRSAPUTRA?to=/skills/lanewright-backlog-check-readiness-check-and-human-sign-off). No report: it says so once and asks whether to go on without one; the report is
 never required. If the report's SHA-256 for the backlog differs from the current file, the report is
 stale and the orchestrator asks once. A NOT READY verdict or an empty sign-off stops the sprint until
 the product owner decides, and that decision goes into the handover document. The orchestrator never

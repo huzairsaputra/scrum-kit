@@ -23,7 +23,7 @@ untuk satu proyek:
 > **Butuh versi berbahasa Inggris yang juga jalan di agen selain Claude Code?**
 > [Lanewright](https://www.agensi.io/r/HUZAIRSAPUTRA?to=/skills/lanewright-sprint-workflow-for-ai-coding-agent-teams) adalah versi berbayar scrum-kit yang dibangun ulang dalam bahasa Inggris: satu
 > skill dengan lima mode, pemeriksaan kepemilikan yang juga jalan di Codex CLI dan agen lain, dan
-> [benchmark publik](https://github.com/huzairsaputra/lanewright). (Link referral; scrum-kit tetap gratis dan MIT.)
+> [benchmark publik](https://github.com/huzairsaputra/lanewright). scrum-kit tetap gratis dan MIT.
 
 ## Pasang
 
@@ -72,7 +72,7 @@ sesudah product owner menyetujui, tag lokal), dan `/scrum-kit:kit-init` meng-com
 push dan tanpa menawarkan MR.
 
 **Gerbang kesiapan backlog.** Sebelum meng-commit dokumen sprint, `/scrum-kit:sprint` mencari
-`docs/sprints/backlog-check-<nn>.md`, laporan kesiapan dari skill gratis Backlog Check
+`docs/sprints/backlog-check-<nn>.md`, laporan kesiapan dari skill gratis [Backlog Check](https://www.agensi.io/r/HUZAIRSAPUTRA?to=/skills/lanewright-backlog-check-readiness-check-and-human-sign-off)
 ([Lanewright Planning](https://github.com/huzairsaputra/lanewright-planning)). Tanpa laporan, ia menyampaikannya sekali dan bertanya apakah lanjut tanpa laporan; laporan
 ini tidak pernah wajib. SHA-256 backlog di laporan yang berbeda dari berkas saat ini berarti laporan
 usang, dan orkestrator bertanya sekali. Putusan BELUM SIAP (NOT READY) atau blok persetujuan yang
