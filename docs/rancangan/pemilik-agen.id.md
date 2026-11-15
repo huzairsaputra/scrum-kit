@@ -1,7 +1,7 @@
 # Rancangan: pemilik agen (`pemilik`) di scrum-kit 1.6.0
 
-Status: **draf untuk keputusan PO** (15 Nov 2026). Belum ada kode. Ditulis baru untuk scrum-kit (MIT); tidak menyalin Versi bahasa Inggris: [pemilik-agen.md](pemilik-agen.md).
-teks atau kode dari produk lain.
+Status: **draf untuk keputusan PO** (15 Nov 2026). Belum ada kode. Ditulis baru untuk scrum-kit (MIT); tidak menyalin
+teks atau kode dari produk lain. Versi bahasa Inggris: [pemilik-agen.md](pemilik-agen.md).
 
 ## 1. Tujuan
 
