@@ -1,4 +1,4 @@
-# Design: agent owners (`pemilik`) in scrum-kit 1.6.0
+# Design: agent owners (`pemilik`) in scrum-kit 1.7.0
 
 Status: **draft for the product owner's decision** (15 Nov 2026). No code yet. Written fresh for scrum-kit (MIT); no
 text or code is copied from any other product. Indonesian version: [pemilik-agen.id.md](pemilik-agen.id.md).
@@ -6,8 +6,11 @@ text or code is copied from any other product. Indonesian version: [pemilik-agen
 ## 1. Goal
 
 Every agent region (`wilayah.<name>`) gets **one human owner** with a forge account. The owner reviews and approves the
-merge requests in that region, receives the escalations of that region's agent, and is named in the backlog. The input
-is the **Agent Owner Form** (one row per position: position, name, forge account, regions held, who approves).
+merge requests in that region, receives the escalations of that region's agent, and is named in the backlog.
+
+**Optional, filled in during the `/kit-init` interview.** `/kit-init` asks whether more than one person shares the
+agent positions. One person (or no team) → `pemilik` is left out and nothing changes. A team → per position: name,
+forge account, regions held. The Agent Owner Form is only the human's checklist for that interview; nothing imports it.
 
 Deliberate limits:
 
@@ -89,8 +92,11 @@ When an owner changes (moves to another project, long leave):
 (validation), `CHANGELOG.md`, `README.md`/`README.id.md`. Tests: a sample kit with and without `pemilik`, a doubly held
 region, an unknown region, a region with no owner.
 
-## 7. Product owner decisions
+## 7. Product owner decisions (15 Nov 2026)
 
-1. Key names `pemilik` and `persetujuan_pemilik`, default `peringatan`?
-2. Ship in scrum-kit 1.6.0 (freeze 15 Dec, release 22 Dec) together with the run-mode fix and the merge option?
-3. Pilot: one repository, one sprint, before all four.
+1. Key names `pemilik` and `persetujuan_pemilik`; default `peringatan`. **Decided.**
+2. Input: manual, in the `/kit-init` interview, optional without a team (no form import). **Decided.**
+3. Release: **scrum-kit 1.7.0** (feature release, Tue 26 Jan 2027). The 12 Jan patch, 19 Jan Lanewright patch and
+   26 Jan feature slots had no planned content, so the feature goes to 1.7.0; 1.6.0 (22 Dec) keeps the run-mode fix
+   and the merge option. **Decided.**
+4. Pilot: one repository, one sprint, after 1.7.0, before all repositories.

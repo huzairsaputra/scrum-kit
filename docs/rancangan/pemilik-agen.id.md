@@ -1,4 +1,4 @@
-# Rancangan: pemilik agen (`pemilik`) di scrum-kit 1.6.0
+# Rancangan: pemilik agen (`pemilik`) di scrum-kit 1.7.0
 
 Status: **draf untuk keputusan PO** (15 Nov 2026). Belum ada kode. Ditulis baru untuk scrum-kit (MIT); tidak menyalin
 teks atau kode dari produk lain. Versi bahasa Inggris: [pemilik-agen.md](pemilik-agen.md).
@@ -6,8 +6,11 @@ teks atau kode dari produk lain. Versi bahasa Inggris: [pemilik-agen.md](pemilik
 ## 1. Tujuan
 
 Setiap wilayah agen (`wilayah.<nama>`) punya **satu manusia pemilik** dengan akun forge. Pemilik meninjau dan
-menyetujui MR di wilayahnya, menerima eskalasi agen wilayah itu, dan namanya tercatat di backlog. Sumber datanya adalah
-**Form Pemilik Agen** (satu baris per posisi: posisi, nama, akun forge, wilayah yang dipegang, siapa yang disetujui).
+menyetujui MR di wilayahnya, menerima eskalasi agen wilayah itu, dan namanya tercatat di backlog.
+
+**Opsional, diisi saat wawancara `/kit-init`.** `/kit-init` menanyakan apakah posisi agen dipegang lebih dari satu
+orang. Satu orang (atau tanpa tim) → `pemilik` tidak ditulis dan tidak ada yang berubah. Ada tim → per posisi: nama,
+akun forge, wilayah yang dipegang. Form Pemilik Agen hanya daftar periksa manusia untuk wawancara itu; tidak diimpor.
 
 Batas yang disengaja (dari uji form 11 Nov):
 
@@ -86,8 +89,11 @@ hotfix), `templates/backlog.md`, `templates/serah-terima.md`, `templates/merge_r
 (validasi), `CHANGELOG.md`, `README.md`/`README.id.md`. Uji: kit contoh dengan dan tanpa `pemilik`, wilayah ganda,
 wilayah tak dikenal, wilayah tanpa pemilik.
 
-## 7. Keputusan PO
+## 7. Keputusan PO (15 Nov 2026)
 
-1. Nama kunci `pemilik` dan `persetujuan_pemilik`, bawaan `peringatan`?
-2. Masuk scrum-kit 1.6.0 (freeze 15 Des, rilis 22 Des) bersama tambalan mode jalan dan opsi merge?
-3. Pilot: satu repo, satu sprint, sebelum keempat repo.
+1. Nama kunci `pemilik` dan `persetujuan_pemilik`; bawaan `peringatan`. **Diputuskan.**
+2. Masukan: manual saat wawancara `/kit-init`, opsional tanpa tim (tanpa impor form). **Diputuskan.**
+3. Rilis: **scrum-kit 1.7.0** (rilis fitur, Selasa 26 Jan 2027). Slot patch 12 Jan, patch Lanewright 19 Jan, dan fitur
+   26 Jan belum punya isi, jadi fitur ini masuk 1.7.0; 1.6.0 (22 Des) tetap berisi tambalan mode jalan dan opsi merge.
+   **Diputuskan.**
+4. Pilot: satu repositori, satu sprint, sesudah 1.7.0, sebelum semua repositori.
