@@ -1,0 +1,50 @@
+# DRAFT. Moves to .github/ISSUE_TEMPLATE/laporan-riset.yml only after ethics approval (placeholders filled in).
+name: "Research report / Laporan riset"
+description: "Optional: share the numbers of one scrum-kit sprint for doctoral research. Public. / Opsional, publik."
+title: "[Research report] "
+labels: ["laporan-riset"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **Study / Penelitian:** [study title], Huzair Saputra, [university, programme]. Ethics approval / persetujuan etik: [number].
+        Full statement / pernyataan lengkap: docs/riset/persetujuan-riset.md (English) · docs/riset/persetujuan-riset.id.md (Indonesia).
+        **This issue is public, including your GitHub account. / Issue ini publik, termasuk akun GitHub Anda.**
+  - type: dropdown
+    id: sektor
+    attributes:
+      label: "Sector / Sektor"
+      options: ["government / pemerintah", "private / swasta", "education / pendidikan", "individual / perorangan", "prefer not to say / tidak ingin menyebut"]
+    validations:
+      required: true
+  - type: dropdown
+    id: peran
+    attributes:
+      label: "Your role / Peran Anda"
+      options: ["orchestrator / orkestrator", "product owner", "developer", "other / lain", "prefer not to say / tidak ingin menyebut"]
+  - type: input
+    id: ukuran_tim
+    attributes:
+      label: "Team size (number only) / Ukuran tim (angka saja)"
+  - type: textarea
+    id: laporan
+    attributes:
+      label: "Report from scripts/laporan-riset.py / Laporan dari scripts/laporan-riset.py"
+      description: "Paste the JSON after reading it. Remove anything you do not want to share. / Tempel JSON sesudah dibaca. Hapus yang tidak ingin dibagikan."
+      render: json
+    validations:
+      required: true
+  - type: checkboxes
+    id: persetujuan
+    attributes:
+      label: "Consent / Persetujuan"
+      options:
+        - label: "I have read the statement and agree that this report may be used as described. / Saya sudah membaca pernyataan dan setuju laporan ini dipakai seperti dijelaskan."
+          required: true
+        - label: "The report contains no code, names, accounts, secrets or personal data. / Laporan tidak memuat kode, nama, akun, rahasia, atau data pribadi."
+          required: true
+        - label: "If it covers a team or an organisation, I have the team's agreement and the organisation's permission. / Bila mencakup tim atau organisasi, saya sudah mendapat persetujuan tim dan izin organisasi."
+          required: true
+  - type: markdown
+    attributes:
+      value: "To withdraw, comment `withdraw` / `tarik` on this issue. / Untuk menarik, beri komentar `withdraw` / `tarik` di issue ini."
