@@ -2,6 +2,10 @@
 
 > [English](README.md) · **Bahasa Indonesia**
 
+<p align="center">
+  <img src="docs/img/hero-id.gif" width="880" alt="Cara kerja satu sprint scrum-kit: product owner menyetujui backlog, setiap agen bekerja di git worktree sendiri, hook kepemilikan menolak file di luar wilayah agen, setiap item di-merge hanya setelah CI hijau dan review independen, dan satu MR/PR integrasi masuk ke branch dasar atas persetujuan product owner.">
+</p>
+
 Plugin Claude Code untuk proyek dengan stack apa pun (Go, Laravel, Node, Python, …). Isinya alur
 kerja tim agen ala Scrum yang sudah dipakai di beberapa proyek produksi, tanpa hal yang ditulis mati
 untuk satu proyek:
