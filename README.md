@@ -13,6 +13,10 @@
 
 <p align="center"><strong>English</strong> · <a href="README.id.md">Bahasa Indonesia</a></p>
 
+<p align="center">
+  <img src="docs/img/hero.gif" width="880" alt="How a scrum-kit sprint works: the product owner approves the backlog, each agent works in its own git worktree, an ownership hook blocks a file outside the agent's area, every item merges only after green CI and an independent review, and one integration MR/PR goes to the base branch on the product owner's approval.">
+</p>
+
 ---
 
 Parallel coding agents are fast until two of them edit the same migration. scrum-kit runs a sprint the
